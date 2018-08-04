@@ -1,0 +1,317 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Python] python-2.7升级到python-3.7 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="[下载、解压python3.7]12wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xztar -xvf Python-3.7.0.tar.xz
+[安装编译]123cd Python-3.7.0/./configure --">
+  
+
+  
+  
+  <meta name="keywords" content="python">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Python] python-2.7升级到python-3.7"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Python] python-2.7升级到python-3.7</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/07/30/python-2.7升级到python-3.7/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-07-30T15:40:24.000Z">
+          2018-07-30
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h1 id="下载、解压python3-7"><a href="#下载、解压python3-7" class="headerlink" title="[下载、解压python3.7]"></a>[下载、解压python3.7]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz</span><br><span class="line">tar -xvf Python-3.7.0.tar.xz</span><br></pre></td></tr></table></figure>
+<h1 id="安装编译"><a href="#安装编译" class="headerlink" title="[安装编译]"></a>[安装编译]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> Python-3.7.0/</span><br><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/python3.7</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h1 id="安装报错"><a href="#安装报错" class="headerlink" title="[安装报错]"></a>[安装报错]</h1><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ModuleNotFoundError:</span> <span class="literal">No</span> <span class="string">module</span> <span class="string">named</span> <span class="string">'_ctypes'</span></span><br><span class="line"><span class="attr">make:</span> <span class="string">***</span> <span class="string">[install]</span> <span class="string">Error</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>解决方法：<br> 安装libffi-devel<br> yum install libffi-devel<br> 重新编译安装<br> make &amp;&amp; make install</p>
+<h1 id="备份旧版本的python"><a href="#备份旧版本的python" class="headerlink" title="[备份旧版本的python]"></a>[备份旧版本的python]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ll /usr/bin/python*</span><br><span class="line">lrwxrwxrwx. 1 root root    7 Apr 10 19:35 /usr/bin/python -&gt; python2</span><br><span class="line">lrwxrwxrwx. 1 root root    9 Apr 10 19:35 /usr/bin/python2 -&gt; python2.7</span><br><span class="line">-rwxr-xr-x. 1 root root 7136 Aug  4  2017 /usr/bin/python2.7</span><br><span class="line">-------------------------</span><br><span class="line">一般自带系统已经做好了python2.7的备份，直接替换掉python即可</span><br><span class="line"></span><br><span class="line">如果没有备份，使用一些命令备份：</span><br><span class="line">mv /usr/bin/python /usr/bin/python_old  <span class="comment">#备份旧的python</span></span><br></pre></td></tr></table></figure>
+<h1 id="新版本python软连接到python"><a href="#新版本python软连接到python" class="headerlink" title="[新版本python软连接到python]"></a>[新版本python软连接到python]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/bin/python <span class="comment">#需要删除旧版的python,否则报错</span></span><br><span class="line">ln -s /usr/<span class="built_in">local</span>/python3.7/bin/python3.7 /usr/bin/python <span class="comment">#添加软连接</span></span><br><span class="line">python -V <span class="comment">#查看python版本</span></span><br><span class="line">2.7版本没有pip,升级到python3.7后，自带有pip,做一个pip的软连接即可</span><br><span class="line">ln -s /usr/<span class="built_in">local</span>/python3.7/bin/pip3 /usr/bin/pip</span><br></pre></td></tr></table></figure>
+<h1 id="升级完python之后，yum命令失效，需修改配置文件"><a href="#升级完python之后，yum命令失效，需修改配置文件" class="headerlink" title="[升级完python之后，yum命令失效，需修改配置文件]"></a>[升级完python之后，yum命令失效，需修改配置文件]</h1><p>使用yum命令报以下错误：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> <span class="string">yum</span> <span class="string">clean</span> <span class="string">all</span></span><br><span class="line">  <span class="string">File</span> <span class="string">"/usr/bin/yum"</span><span class="string">,</span> <span class="string">line</span> <span class="number">30</span></span><br><span class="line">    <span class="string">except</span> <span class="string">KeyboardInterrupt,</span> <span class="attr">e:</span></span><br><span class="line">                            <span class="string">^</span></span><br><span class="line"><span class="attr">SyntaxError:</span> <span class="string">invalid</span> <span class="string">syntax</span></span><br></pre></td></tr></table></figure></p>
+<p>解决 yum 不可用：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">修改/usr/bin/yum配置文件</span></span><br><span class="line"><span class="comment">#!/usr/bin/python    改成：    #!/usr/bin/python2.7</span></span><br><span class="line"><span class="string">重新测试yum是否正常：</span></span><br><span class="line"><span class="string">yum</span> <span class="string">clean</span> <span class="string">all</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="升级完python之后，yum使用过程中，额外问题："><a href="#升级完python之后，yum使用过程中，额外问题：" class="headerlink" title="[升级完python之后，yum使用过程中，额外问题：]"></a>[升级完python之后，yum使用过程中，额外问题：]</h1><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">tree</span> <span class="bullet">-y</span> </span><br><span class="line"><span class="bullet">-</span><span class="bullet">---------------------------------</span></span><br><span class="line"><span class="string">报错：</span></span><br><span class="line"><span class="string">File</span> <span class="string">"/usr/libexec/urlgrabber-ext-down"</span><span class="string">,</span> <span class="string">line</span> <span class="number">28</span></span><br><span class="line">    <span class="string">except</span> <span class="string">OSError,</span> <span class="attr">e:</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">--------------------------------</span></span><br></pre></td></tr></table></figure>
+<p>解决方法：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">修改/usr/libexec/urlgrabber-ext-down配置文件</span><br><span class="line"><span class="comment">#!/usr/bin/python    改成：    #!/usr/bin/python2.7</span></span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/python/">python</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#下载、解压python3-7"><span class="toc-number">1.</span> <span class="toc-text">[下载、解压python3.7]</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装编译"><span class="toc-number">2.</span> <span class="toc-text">[安装编译]</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装报错"><span class="toc-number">3.</span> <span class="toc-text">[安装报错]</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#备份旧版本的python"><span class="toc-number">4.</span> <span class="toc-text">[备份旧版本的python]</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#新版本python软连接到python"><span class="toc-number">5.</span> <span class="toc-text">[新版本python软连接到python]</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#升级完python之后，yum命令失效，需修改配置文件"><span class="toc-number">6.</span> <span class="toc-text">[升级完python之后，yum命令失效，需修改配置文件]</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#升级完python之后，yum使用过程中，额外问题："><span class="toc-number">7.</span> <span class="toc-text">[升级完python之后，yum使用过程中，额外问题：]</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Python] python-2.7升级到python-3.7'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>

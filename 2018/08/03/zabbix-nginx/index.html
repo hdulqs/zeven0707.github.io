@@ -1,0 +1,320 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Zabbix] zabbix3.4监控nginx性能 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、查看nginx安装HTTP Stub Status1openresty -V
+如果”–with-http_stub_status_module”参数，表示没有安装，要手动添加：12在编译nginx 的时候要加上参数 –with-http_stub_status_module，执行./config">
+  
+
+  
+  
+  <meta name="keywords" content="linux,zabbix">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Zabbix] zabbix3.4监控nginx性能"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Zabbix] zabbix3.4监控nginx性能</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/03/zabbix-nginx/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-03T07:30:24.000Z">
+          2018-08-03
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="1、查看nginx安装HTTP-Stub-Status"><a href="#1、查看nginx安装HTTP-Stub-Status" class="headerlink" title="1、查看nginx安装HTTP Stub Status"></a>1、查看nginx安装HTTP Stub Status</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openresty -V</span><br></pre></td></tr></table></figure>
+<p>如果”–with-http_stub_status_module”参数，表示没有安装，要手动添加：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">在编译nginx</span> <span class="string">的时候要加上参数</span> <span class="string">–with-http_stub_status_module，</span></span><br><span class="line"><span class="string">执行./configure</span> <span class="string">&amp;&amp;</span> <span class="string">make就可以了，不用make</span> <span class="string">install。不过，一般情况下都是安装了的。</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="2、nginx服务器添加配置"><a href="#2、nginx服务器添加配置" class="headerlink" title="2、nginx服务器添加配置"></a>2、nginx服务器添加配置</h2><p>   2.1添加配置文件nginx_status.conf<br>cat /usr/local/openresty/nginx/conf/conf.d/nginx_status.conf<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 127.0.0.1;</span><br><span class="line"></span><br><span class="line">    location /basic_status &#123;</span><br><span class="line">        stub_status;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>   2.2重新加载配置文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openresty -s reload</span><br></pre></td></tr></table></figure></p>
+<p>   2.3获取nginx监控状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl http://127.0.0.1/basic_status</span><br><span class="line">-------------</span><br><span class="line">Active connections: 1 </span><br><span class="line">server accepts handled requests</span><br><span class="line"> 572 572 764 </span><br><span class="line">Reading: 0 Writing: 1 Waiting: 0</span><br></pre></td></tr></table></figure></p>
+<p>   nginx监控参数详解<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Active connections: 对后端发起的活动连接数</span></span><br><span class="line"><span class="comment">## Server accepts handled requests: Nginx 总共处理了 572 个连接，成功创建了 572 次握手（没有失败次数），总共处理了 764 个请求</span></span><br><span class="line"><span class="comment">## Reading: Nginx 读取到客户端的 Header 信息数</span></span><br><span class="line"><span class="comment">## Writing: Nginx 返回给客户端的 Header 信息数</span></span><br><span class="line"><span class="comment">## Waiting: 开启 keep-alive 的情况下，这个值等于 active - ( reading + writing ), 意思是 Nginx 已经处理完成，正在等待下一次请求指令的驻留连接</span></span><br><span class="line"><span class="comment">## 在访问效率很高，请求很快被处理完毕的情况下，Waiting 数比较多是正常的。如果 reading + writing 数较多，则说明并发访问量很大，正在处理过程中</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="3、配置zabbix"><a href="#3、配置zabbix" class="headerlink" title="3、配置zabbix"></a>3、配置zabbix</h2><p>创建存放脚本目录，（我的zabbix安装路径为 /usr/local/zabbix）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/<span class="built_in">local</span>/zabbix/script</span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/zabbix/script</span><br></pre></td></tr></table></figure></p>
+<p>创建存放数据文件（可自行定义）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch .status.txt</span><br></pre></td></tr></table></figure></p>
+<p>编辑脚本用于获取nginx监控状态参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span>  <span class="string">"</span></span><br><span class="line"><span class="string">#!/bin/bash</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">server_hostname=127.0.0.1</span></span><br><span class="line"><span class="string">data_file=/usr/local/zabbix/script/.status.txt</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">status_data=\`curl -o \$data_file -s http://\$server_hostname/basic_status\`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Active() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Active/&#123;print \$4&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Reading() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Reading/ &#123;print \$3&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Writing() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Writing/ &#123;print \$6&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Waiting() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Waiting/ &#123;print \$9&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">\$1"</span> &gt; /usr/<span class="built_in">local</span>/zabbix/script/nginx_connection.sh</span><br></pre></td></tr></table></figure></p>
+<p>修改目录下所有文件的权限，否则脚本写入文件会有权限问题<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown -R zabbix.zabbix /usr/<span class="built_in">local</span>/zabbix/script</span><br></pre></td></tr></table></figure></p>
+<p>添加zabbix参数到agent配置文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> \<span class="string">"UserParameter=nginx.Active,sh /usr/local/zabbix/script/nginx_connection.sh Active</span></span><br><span class="line"><span class="string">UserParameter=nginx.Writing,sh /usr/local/zabbix/script/nginx_connection.sh Writing</span></span><br><span class="line"><span class="string">UserParameter=nginx.Reading,sh /usr/local/zabbix/script/nginx_connection.sh Reading</span></span><br><span class="line"><span class="string">UserParameter=nginx.Waiting,sh /usr/local/zabbix/script/nginx_connection.sh Waiting\" &gt;&gt; /usr/local/zabbix/etc/zabbix_agentd.conf</span></span><br></pre></td></tr></table></figure></p>
+<p>重新启动agent客户端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/zabbix_agentd restart</span><br></pre></td></tr></table></figure></p>
+<p>在server端测试是否能获取到参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/zabbix/bin/zabbix_get -s 10.1.130.47  -k nginx.Active</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a><a href="/tags/zabbix/">zabbix</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1、查看nginx安装HTTP-Stub-Status"><span class="toc-number">1.</span> <span class="toc-text">1、查看nginx安装HTTP Stub Status</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2、nginx服务器添加配置"><span class="toc-number">2.</span> <span class="toc-text">2、nginx服务器添加配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3、配置zabbix"><span class="toc-number">3.</span> <span class="toc-text">3、配置zabbix</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Zabbix] zabbix3.4监控nginx性能'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>

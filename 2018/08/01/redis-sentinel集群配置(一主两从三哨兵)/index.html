@@ -1,0 +1,318 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Redis] redis-sentinel集群配置（一主两从三哨兵） | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、所有节点安装redis节点信息：主1：10.0.7.53从2：10.0.7.50从3：10.0.7.51除了在三个节点部署redis服务，再分别部署sentinel。
+2、配置主从，在主节点配置文件添加如下配置：主节点1配置：123456789101112131415161718pidfile ">
+  
+
+  
+  
+  <meta name="keywords" content="redis">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Redis] redis-sentinel集群配置（一主两从三哨兵）"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Redis] redis-sentinel集群配置（一主两从三哨兵）</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/01/redis-sentinel集群配置(一主两从三哨兵)/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-01T15:59:24.000Z">
+          2018-08-01
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h1 id="1、所有节点安装redis"><a href="#1、所有节点安装redis" class="headerlink" title="1、所有节点安装redis"></a>1、所有节点安装redis</h1><p>节点信息：<br>主1：10.0.7.53<br>从2：10.0.7.50<br>从3：10.0.7.51<br>除了在三个节点部署redis服务，再分别部署sentinel。</p>
+<h1 id="2、配置主从，在主节点配置文件添加如下配置："><a href="#2、配置主从，在主节点配置文件添加如下配置：" class="headerlink" title="2、配置主从，在主节点配置文件添加如下配置："></a>2、配置主从，在主节点配置文件添加如下配置：</h1><p>主节点1配置：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pidfile</span> <span class="string">/data/redis/log/redis.pid</span></span><br><span class="line"><span class="string">bind</span> <span class="number">10.0</span><span class="number">.7</span><span class="number">.53</span></span><br><span class="line"><span class="string">port</span> <span class="number">6379</span></span><br><span class="line"><span class="string">daemonize</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">logfile</span> <span class="string">"/data/redis/log/redis.log"</span></span><br><span class="line"><span class="string">databases</span> <span class="number">16</span></span><br><span class="line"><span class="string">maxmemory</span> <span class="number">1</span><span class="string">g</span></span><br><span class="line"><span class="string">requirepass</span> <span class="number">123456</span></span><br><span class="line"><span class="string">masterauth</span> <span class="number">123456</span></span><br><span class="line"><span class="string">slave-serve-stale-data</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">slave-read-only</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">repl-diskless-sync</span> <span class="literal">no</span></span><br><span class="line"><span class="string">repl-diskless-sync-delay</span> <span class="number">5</span></span><br><span class="line"><span class="string">repl-ping-slave-period</span> <span class="number">10</span></span><br><span class="line"><span class="string">repl-timeout</span> <span class="number">60</span></span><br><span class="line"><span class="string">repl-disable-tcp-nodelay</span> <span class="literal">no</span></span><br><span class="line"><span class="string">repl-backlog-size</span> <span class="number">5</span><span class="string">mb</span></span><br><span class="line"><span class="string">repl-backlog-ttl</span> <span class="number">3600</span></span><br></pre></td></tr></table></figure></p>
+<p>从节点2配置：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pidfile</span> <span class="string">/data/redis/log/redis.pid</span></span><br><span class="line"><span class="string">bind</span> <span class="number">10.0</span><span class="number">.7</span><span class="number">.50</span></span><br><span class="line"><span class="string">port</span> <span class="number">6379</span></span><br><span class="line"><span class="string">daemonize</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">logfile</span> <span class="string">"/data/redis/log/redis.log"</span></span><br><span class="line"><span class="string">databases</span> <span class="number">16</span></span><br><span class="line"><span class="string">maxmemory</span> <span class="number">1</span><span class="string">g</span></span><br><span class="line"><span class="string">slaveof</span> <span class="number">10.0</span><span class="number">.7</span><span class="number">.53</span> <span class="number">6379</span></span><br><span class="line"><span class="string">masterauth</span> <span class="number">123456</span></span><br><span class="line"><span class="string">requirepass</span> <span class="number">123456</span></span><br><span class="line"><span class="string">slave-serve-stale-data</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">slave-read-only</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">repl-diskless-sync</span> <span class="literal">no</span></span><br><span class="line"><span class="string">repl-diskless-sync-delay</span> <span class="number">5</span></span><br><span class="line"><span class="string">repl-ping-slave-period</span> <span class="number">10</span></span><br><span class="line"><span class="string">repl-timeout</span> <span class="number">60</span></span><br><span class="line"><span class="string">repl-disable-tcp-nodelay</span> <span class="literal">no</span></span><br><span class="line"><span class="string">repl-backlog-size</span> <span class="number">5</span><span class="string">mb</span></span><br><span class="line"><span class="string">repl-backlog-ttl</span> <span class="number">3600</span></span><br></pre></td></tr></table></figure></p>
+<p>从节点3配置：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pidfile</span> <span class="string">/data/redis/log/redis.pid</span></span><br><span class="line"><span class="string">bind</span> <span class="number">10.0</span><span class="number">.7</span><span class="number">.50</span></span><br><span class="line"><span class="string">port</span> <span class="number">6379</span></span><br><span class="line"><span class="string">daemonize</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">logfile</span> <span class="string">"/data/redis/log/redis.log"</span></span><br><span class="line"><span class="string">databases</span> <span class="number">16</span></span><br><span class="line"><span class="string">maxmemory</span> <span class="number">1</span><span class="string">g</span></span><br><span class="line"><span class="string">slaveof</span> <span class="number">10.0</span><span class="number">.7</span><span class="number">.53</span> <span class="number">6379</span></span><br><span class="line"><span class="string">masterauth</span> <span class="number">123456</span></span><br><span class="line"><span class="string">requirepass</span> <span class="number">123456</span></span><br><span class="line"><span class="string">slave-serve-stale-data</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">slave-read-only</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">repl-diskless-sync</span> <span class="literal">no</span></span><br><span class="line"><span class="string">repl-diskless-sync-delay</span> <span class="number">5</span></span><br><span class="line"><span class="string">repl-ping-slave-period</span> <span class="number">10</span></span><br><span class="line"><span class="string">repl-timeout</span> <span class="number">60</span></span><br><span class="line"><span class="string">repl-disable-tcp-nodelay</span> <span class="literal">no</span></span><br><span class="line"><span class="string">repl-backlog-size</span> <span class="number">5</span><span class="string">mb</span></span><br><span class="line"><span class="string">repl-backlog-ttl</span> <span class="number">3600</span></span><br></pre></td></tr></table></figure></p>
+<p>上面配置相关参数详解：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#复制选项，slave复制对应的master。</span></span><br><span class="line"><span class="string">slaveof</span> <span class="string">&lt;masterip&gt;</span> <span class="string">&lt;masterport&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#如果master设置了requirepass，那么slave要连上master，需要有master的密码才行。masterauth就是用来配置master的密码，这样可以在连上master后进行认证。</span></span><br><span class="line"><span class="string">masterauth</span> <span class="string">&lt;master-password&gt;</span></span><br><span class="line"><span class="bullet">   -</span><span class="bullet">------------------------------------</span></span><br><span class="line">   <span class="string">如果主库配置了密码，从库没有添加这行数据，会报一下错误：</span></span><br><span class="line">   <span class="comment"># Unexpected reply to PSYNC from master: -NOAUTH Authentication required.</span></span><br><span class="line">   <span class="string">*</span> <span class="string">Retrying</span> <span class="string">with</span> <span class="string">SYNC...</span></span><br><span class="line">   <span class="comment"># MASTER aborted replication with an error: NOAUTH Authentication required.</span></span><br><span class="line"><span class="bullet">   -</span><span class="bullet">------------------------------------</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#当从库同主机失去连接或者复制正在进行，从机库有两种运行方式：1) 如果slave-serve-stale-data设置为yes(默认设置)，从库会继续响应客户端的请求。2) 如果slave-serve-stale-data设置为no，除去INFO和SLAVOF命令之外的任何请求都会返回一个错误”SYNC with master in progress”。</span></span><br><span class="line"><span class="string">slave-serve-stale-data</span> <span class="literal">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#作为从服务器，默认情况下是只读的（yes），可以修改成NO，用于写（不建议）。</span></span><br><span class="line"><span class="string">slave-read-only</span> <span class="literal">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#是否使用socket方式复制数据。目前redis复制提供两种方式，disk和socket。如果新的slave连上来或者重连的slave无法部分同步，就会执行全量同步，master会生成rdb文件。有2种方式：disk方式是master创建一个新的进程把rdb文件保存到磁盘，再把磁盘上的rdb文件传递给slave。socket是master创建一个新的进程，直接把rdb文件以socket的方式发给slave。disk方式的时候，当一个rdb保存的过程中，多个slave都能共享这个rdb文件。socket的方式就的一个个slave顺序复制。在磁盘速度缓慢，网速快的情况下推荐用socket方式。</span></span><br><span class="line"><span class="string">repl-diskless-sync</span> <span class="literal">no</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#diskless复制的延迟时间，防止设置为0。一旦复制开始，节点不会再接收新slave的复制请求直到下一个rdb传输。所以最好等待一段时间，等更多的slave连上来。</span></span><br><span class="line"><span class="string">repl-diskless-sync-delay</span> <span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#slave根据指定的时间间隔向服务器发送ping请求。时间间隔可以通过 repl_ping_slave_period 来设置，默认10秒。</span></span><br><span class="line"><span class="comment"># repl-ping-slave-period 10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#复制连接超时时间。master和slave都有超时时间的设置。master检测到slave上次发送的时间超过repl-timeout，即认为slave离线，清除该slave信息。slave检测到上次和master交互的时间超过repl-timeout，则认为master离线。需要注意的是repl-timeout需要设置一个比repl-ping-slave-period更大的值，不然会经常检测到超时。</span></span><br><span class="line"><span class="comment"># repl-timeout 60</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#是否禁止复制tcp链接的tcp nodelay参数，可传递yes或者no。默认是no，即使用tcp nodelay。如果master设置了yes来禁止tcp nodelay设置，在把数据复制给slave的时候，会减少包的数量和更小的网络带宽。但是这也可能带来数据的延迟。默认我们推荐更小的延迟，但是在数据量传输很大的场景下，建议选择yes。</span></span><br><span class="line"><span class="string">repl-disable-tcp-nodelay</span> <span class="literal">no</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#复制缓冲区大小，这是一个环形复制缓冲区，用来保存最新复制的命令。这样在slave离线的时候，不需要完全复制master的数据，如果可以执行部分同步，只需要把缓冲区的部分数据复制给slave，就能恢复正常复制状态。缓冲区的大小越大，slave离线的时间可以更长，复制缓冲区只有在有slave连接的时候才分配内存。没有slave的一段时间，内存会被释放出来，默认1m。</span></span><br><span class="line"><span class="comment"># repl-backlog-size 5mb</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#master没有slave一段时间会释放复制缓冲区的内存，repl-backlog-ttl用来设置该时间长度。单位为秒。</span></span><br><span class="line"><span class="comment"># repl-backlog-ttl 3600</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#当master不可用，Sentinel会根据slave的优先级选举一个master。最低的优先级的slave，当选master。而配置成0，永远不会被选举。</span></span><br><span class="line"><span class="string">slave-priority</span> <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#redis提供了可以让master停止写入的方式，如果配置了min-slaves-to-write，健康的slave的个数小于N，mater就禁止写入。master最少得有多少个健康的slave存活才能执行写命令。这个配置虽然不能保证N个slave都一定能接收到master的写操作，但是能避免没有足够健康的slave的时候，master不能写入来避免数据丢失。设置为0是关闭该功能。</span></span><br><span class="line"><span class="comment"># min-slaves-to-write 3</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#延迟小于min-slaves-max-lag秒的slave才认为是健康的slave。</span></span><br><span class="line"><span class="comment"># min-slaves-max-lag 10</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="3、修改哨兵配置文件"><a href="#3、修改哨兵配置文件" class="headerlink" title="3、修改哨兵配置文件"></a>3、修改哨兵配置文件</h1><p>cat sentinel.conf<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">port 26379</span><br><span class="line">dir <span class="string">"/tmp/sentinel"</span></span><br><span class="line">logfile <span class="string">"/tmp/sentinel.log"</span></span><br><span class="line">daemonize yes</span><br><span class="line">sentinel monitor mymaster 10.0.7.53 6379 2</span><br><span class="line">sentinel down-after-milliseconds mymaster 5000</span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br><span class="line">sentinel auth-pass mymaster 123456</span><br><span class="line">sentinel failover-timeout mymaster 180000</span><br><span class="line">sentinel config-epoch mymaster 2</span><br><span class="line">sentinel leader-epoch mymaster 2</span><br><span class="line">sentinel known-slave mymaster 10.0.7.51 6379</span><br><span class="line">sentinel known-slave mymaster 10.0.7.50 6379</span><br><span class="line">sentinel current-epoch 2</span><br><span class="line">protected-mode no</span><br></pre></td></tr></table></figure></p>
+<p>指定的dir路径若不存在需要手动创建：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /tmp/sentinel</span><br></pre></td></tr></table></figure></p>
+<p>sentinel相关配置参数详解：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#sentinel monitor mymaster 10.0.7.53 6379 2</span></span><br><span class="line"><span class="string">//</span> <span class="string">当前Sentinel节点监控</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:6379</span> <span class="string">这个主节点</span></span><br><span class="line"><span class="string">//</span> <span class="number">2</span><span class="string">代表判断主节点失败至少需要2个Sentinel节点节点同意</span></span><br><span class="line"><span class="string">//</span> <span class="string">mymaster是主节点的别名</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#sentinel down-after-milliseconds mymaster 30000</span></span><br><span class="line"><span class="string">//每个Sentinel节点都要定期PING命令来判断Redis数据节点和其余Sentinel节点是否可达，如果超过30000毫秒且没有回复，则判定不可达</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#sentinel parallel-syncs mymaster 1</span></span><br><span class="line"><span class="string">//当Sentinel节点集合对主节点故障判定达成一致时，Sentinel领导者节点会做故障转移操作，选出新的主节点，原来的从节点会向新的主节点发起复制操作，限制每次向新的主节点发起复制操作的从节点个数为1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#sentinel failover-timeout mymaster 180000</span></span><br><span class="line"><span class="string">//故障转移超时时间为180000毫秒</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="4、启动服务"><a href="#4、启动服务" class="headerlink" title="4、启动服务"></a>4、启动服务</h1><p>各服务器启动redis服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/redis/src/redis-server /data/redis/etc/redis.conf</span><br></pre></td></tr></table></figure></p>
+<p>各服务器启动sentinel服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/redis/src/redis-sentinel /data/redis/sentinel.conf</span><br></pre></td></tr></table></figure></p>
+<p>查看集群信息<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/redis/src/redis-cli -h 127.0.0.1 -p 26379 INFO Sentinel</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/redis/">redis</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1、所有节点安装redis"><span class="toc-number">1.</span> <span class="toc-text">1、所有节点安装redis</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2、配置主从，在主节点配置文件添加如下配置："><span class="toc-number">2.</span> <span class="toc-text">2、配置主从，在主节点配置文件添加如下配置：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3、修改哨兵配置文件"><span class="toc-number">3.</span> <span class="toc-text">3、修改哨兵配置文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4、启动服务"><span class="toc-number">4.</span> <span class="toc-text">4、启动服务</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Redis] redis-sentinel集群配置（一主两从三哨兵）'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
