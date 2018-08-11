@@ -150,7 +150,7 @@ var _hmt = _hmt || [];
 <p>title:指定发送文件的标题，可自行定义</p>
 <h2 id="3、修改备份脚本权限"><a href="#3、修改备份脚本权限" class="headerlink" title="3、修改备份脚本权限"></a>3、修改备份脚本权限</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /data/soft/mysql_backup.sh</span><br></pre></td></tr></table></figure>
 <h2 id="4、将脚本添加到定时任务"><a href="#4、将脚本添加到定时任务" class="headerlink" title="4、将脚本添加到定时任务"></a>4、将脚本添加到定时任务</h2><p>如：每天凌晨一点备份<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; crontab -e</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 * * * /data/soft/mysql_backup.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 * * * sh /data/soft/mysql_backup.sh</span><br></pre></td></tr></table></figure>
       
     </div>
     
