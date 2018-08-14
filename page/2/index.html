@@ -112,6 +112,77 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/07/5.7.22-log版本mysql,mha主从环境，从库报错信息/"><span>[Mysql] mysql-mha主从环境，从库报错Error_code: 1062</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/07/5.7.22-log版本mysql,mha主从环境，从库报错信息/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-07T13:15:24.000Z">
+          2018-08-07
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="0、数据库版本信息："><a href="#0、数据库版本信息：" class="headerlink" title="0、数据库版本信息："></a>0、数据库版本信息：</h2><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">5.7</span><span class="number">.22</span></span><br></pre></td></tr></table></figure>
+<h2 id="1、从库报错信息"><a href="#1、从库报错信息" class="headerlink" title="1、从库报错信息"></a>1、从库报错信息</h2><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Last_SQL_Error:</span> <span class="string">Could</span> <span class="string">not</span> <span class="string">execute</span> <span class="string">Write_rows</span> <span class="string">event</span> <span class="string">on</span> <span class="string">table</span> <span class="string">test.tb1;</span></span><br><span class="line"><span class="string">Duplicate</span> <span class="string">entry</span> <span class="string">'4'</span> <span class="string">for</span> <span class="string">key</span> <span class="string">'PRIMARY'</span><span class="string">,</span></span><br><span class="line"><span class="attr">Error_code:</span> <span class="number">1062</span><span class="string">;</span></span><br><span class="line"><span class="string">handler</span> <span class="string">error</span> <span class="string">HA_ERR_FOUND_DUPP_KEY;</span> <span class="string">the</span> <span class="string">event's</span> <span class="string">master</span> <span class="string">log</span> <span class="string">mysql-binlog.000005,</span> <span class="string">end_log_pos</span> <span class="number">273273632</span></span><br></pre></td></tr></table></figure>
+<h2 id="2、解决方法"><a href="#2、解决方法" class="headerlink" title="2、解决方法"></a>2、解决方法</h2><p>2.1、在主库上查询二进制文件信息：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/mysql/bin/mysqlbinlog  -v --stop-position=273273632 /data/mysql/<span class="built_in">log</span>/mysql-binlog.000005 &gt; /tmp/f.log</span><br></pre></td></tr></table></figure></p>
+<p>2.2、过滤出报错的pos所对应的行数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /tmp/f.log | awk <span class="string">'/end_log_pos 273273632/ &#123;print NR&#125;'</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">22556452</span><br></pre></td></tr></table></figure>
+<p>2.3、根据查询到的行数，查看其上下文：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /tmp/f.log | awk <span class="string">'NR==22556442,NR==22556492'</span></span><br></pre></td></tr></table></figure></p>
+<p>2.4、查询到insert的插入语句<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### INSERT INTO `test`.`tb1`</span></span><br><span class="line"><span class="comment">### SET</span></span><br><span class="line"><span class="comment">###   @1=4</span></span><br><span class="line"><span class="comment">###   @2='ERC20'</span></span><br><span class="line"><span class="comment">###   @3='GTO'</span></span><br><span class="line"><span class="comment">###   @4=1533176390</span></span><br><span class="line"><span class="string">ROLLBACK</span> <span class="string">/*</span> <span class="string">added</span> <span class="string">by</span> <span class="string">mysqlbinlog</span> <span class="string">*/</span> <span class="string">/*!*/;</span></span><br></pre></td></tr></table></figure></p>
+<p>2.5、在从库上执行下面操作，停止主从同步<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure></p>
+<p>2.6、删除报错提示的对应的行：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="keyword">test</span>;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> tb1 <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">4</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tb1;</span><br></pre></td></tr></table></figure></p>
+<p>2.7、重新启动主从同步，查看节点信息正常：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>\G;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/07/5.7.22-log版本mysql,mha主从环境，从库报错信息/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/05/mongodb-集群/"><span>[Mongodb] mongodb集群配置一主一从一仲裁</span></a></h3>
     
   
