@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[[Mysql] 去掉查询结果中带的mysql: [Warning] Using a password on the command line interface can be insecure]]></title>
+    <url>%2F2018%2F08%2F14%2F%E5%8E%BB%E6%8E%89%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E4%B8%AD%E5%B8%A6%E7%9A%84mysql%20%5BWarning%5D%20Using%20a%20password%20on%20the%20command%20line%20interface%20can%20be%20insecure%2F</url>
+    <content type="text"><![CDATA[1、一般情况为了方便，在使用mysql命令查询的时候会在-p后面直接加上密码,输出结果如下：1mysql -u root -p12345678 -BNe "select count(*) from performance_schema.replication_group_members where MEMBER_STATE='ONLINE'" 结果如下：12mysql: [Warning] Using a password on the command line interface can be insecure.3 2、为了消除结果中的[Warning]信息，只显示查询结果，可使用环境变量存储密码的方法：1export MYSQL_PWD=12345678;mysql -u root -BNe "select count(*) from performance_schema.replication_group_members where MEMBER_STATE='ONLINE'" 结果如下：13]]></content>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[[Mysql] mysql-innodb buffer pool size调整]]></title>
     <url>%2F2018%2F08%2F14%2Fmysql-innodb%20buffer%20pool%20size%E8%B0%83%E6%95%B4%2F</url>
     <content type="text"><![CDATA[1、查看当前数据库innodb_buffer_pool参数1show global variables like 'innodb_buffer_pool_size'; ##2、查看page_size大小1show variables like 'innodb_page_size'; 官方文档参数详解123Innodb_page_sizeInnoDB page size (default 16KB). Many values are counted in pages; the page size enables them to beeasily converted to bytes 3、查看当前内存innodb页的总数量和包含数据的页的数量12show global status like 'Innodb_buffer_pool_pages_data';show global status like 'Innodb_buffer_pool_pages_total'; 官方文档参数详解：123456Innodb_buffer_pool_pages_dataThe number of pages in the InnoDB buffer pool containing data. The number includes both dirty andclean pages.Innodb_buffer_pool_pages_totalThe total size of the InnoDB buffer pool, in pages. 4、调优参考计算方法：123val = Innodb_buffer_pool_pages_data / Innodb_buffer_pool_pages_total * 100%val &gt; 95% 则考虑增大 innodb_buffer_pool_size， 建议使用物理内存的75%val &lt; 95% 则考虑减小 innodb_buffer_pool_size， 建议设置为：Innodb_buffer_pool_pages_data * Innodb_page_size * 1.05 / (1024*1024*1024) 5、设置innodb_buffer_pool_siz大小设置命令：1set global innodb_buffer_pool_size = 17179869184; 缓冲池字节大小，单位kb，如果不设置，默认为128M5.7版本以后可以动态修改参数，但是也要修改配置文件参数，防止重启之后，参数又变成配置文件内的参数,5.7以下的版本为静态参数，需要修改配置文件，并重新启动mysql1234cat /etc/my.cnf---------innodb_buffer_pool_size = 17179869184 #设置16G--------- 6、配置参数也可使用M、G等参数，内容如下：12345/etc/my.cnf：-------------------innodb_buffer_pool_size = 16G #设置16Ginnodb_buffer_pool_size = 500M #设置500M--------------------------]]></content>
