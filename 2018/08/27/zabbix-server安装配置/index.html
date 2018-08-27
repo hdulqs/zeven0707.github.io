@@ -1,0 +1,366 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="0、安装zabbix-server之前需要把server依赖环境lnmp安装完成，首先安装依赖包：12yum groupinstall &amp;quot;Development tools&amp;quot;  yum -y install gcc gcc-c++ cmake autoconf libjpeg l">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span></span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/27/zabbix-server安装配置/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-27T08:56:14.707Z">
+          2018-08-27
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="0、安装zabbix-server之前需要把server依赖环境lnmp安装完成，首先安装依赖包："><a href="#0、安装zabbix-server之前需要把server依赖环境lnmp安装完成，首先安装依赖包：" class="headerlink" title="0、安装zabbix-server之前需要把server依赖环境lnmp安装完成，首先安装依赖包："></a>0、安装zabbix-server之前需要把server依赖环境lnmp安装完成，首先安装依赖包：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum groupinstall &quot;Development tools&quot;  </span><br><span class="line">yum -y install gcc gcc-c++ cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel openldap openldap-devel nss_ldap openldap-clients openldap-servers pcre-devel libaio</span><br></pre></td></tr></table></figure>
+<h2 id="1、上传nginx软件包到服务器，如果没有可点击此处下载"><a href="#1、上传nginx软件包到服务器，如果没有可点击此处下载" class="headerlink" title="1、上传nginx软件包到服务器，如果没有可点击此处下载"></a>1、上传nginx软件包到服务器，如果没有可点击此处<a href="https://pan.baidu.com/s/1SH5TujhLgN9EkjjWI97gQQ" target="_blank" rel="noopener">下载</a></h2><p>创建nginx用户，创建nginx安装目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">useradd nginx -s /sbin/nologin -M   </span><br><span class="line">mkdir /application</span><br></pre></td></tr></table></figure></p>
+<p>解压安装包、编译安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.9.15.tar.gz</span><br><span class="line">cd nginx-1.9.15</span><br><span class="line">./configure --prefix=/application/nginx-1.9.15 --user=nginx --group=nginx --with-http_stub_status_module --with-http_ssl_module  </span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>创建软链接<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /application/nginx-1.9.15 /application/nginx</span><br></pre></td></tr></table></figure></p>
+<p>检查语法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/application/nginx/sbin/nginx -t</span><br></pre></td></tr></table></figure></p>
+<p>启动nginx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/application/nginx/sbin/nginx</span><br></pre></td></tr></table></figure></p>
+<p>查看进程是否正常启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -tunlp|grep nginx</span><br></pre></td></tr></table></figure></p>
+<p>关闭nginx服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/application/nginx/sbin/nginx -s stop</span><br></pre></td></tr></table></figure></p>
+<h2 id="2、Mysql数据库安装"><a href="#2、Mysql数据库安装" class="headerlink" title="2、Mysql数据库安装"></a>2、Mysql数据库安装</h2><p>下载mysql数据库(可自行下载自己喜欢的版本）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.18-linux-glibc2.5-x86_64.tar.gz</span><br></pre></td></tr></table></figure></p>
+<p>添加用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd mysql -s /sbin/nologin -M</span><br></pre></td></tr></table></figure></p>
+<p>解压、重命名<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf mysql-5.7.18-linux-glibc2.5-x86_64.tar.gz </span><br><span class="line">mv mysql-5.7.18-linux-glibc2.5-x86_64 /application/mysql</span><br></pre></td></tr></table></figure></p>
+<p>改变权限权限、初始化,初始化过程中会默认生成随机密码，记录以便后面更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chown -R mysql.mysql /application/mysql/ </span><br><span class="line">/application/mysql/bin/mysqld --initialize --user=mysql --basedir=/application/mysql/ --datadir=/application/mysql/data/</span><br><span class="line">/application/mysql/bin/mysql_ssl_rsa_setup --datadir=/application/mysql/data/</span><br></pre></td></tr></table></figure></p>
+<p>修改配置文件<br>cat /application/mysql/support-files/my_default.cnf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">user = mysql</span><br><span class="line">port = 3306</span><br><span class="line">server_id = 1</span><br><span class="line">socket=/tmp/mysql.sock</span><br><span class="line">basedir =/application/mysql/</span><br><span class="line">datadir =/application/mysql/data/</span><br><span class="line">character-set-server=utf8</span><br><span class="line">[client]</span><br><span class="line">socket=/tmp/mysql.sock</span><br></pre></td></tr></table></figure></p>
+<p>配合mysql启动命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cp my_default.cnf /etc/my.cnf</span><br><span class="line">cp mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod 755 /etc/init.d/mysqld</span><br></pre></td></tr></table></figure></p>
+<p>修改/etc/init.d/mysqld，文件数据和安装路径<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">basedir=/application/mysql/</span><br><span class="line">datadir=/application/mysql/data/</span><br></pre></td></tr></table></figure></p>
+<p>启动mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysqld start</span><br></pre></td></tr></table></figure></p>
+<p>修改mysql密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql -u  root -p</span><br><span class="line">set password=password(&apos;root&apos;);</span><br><span class="line">grant all privileges on *.* to &apos;root&apos;@&apos;%&apos; identified by &apos;root&apos;;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure></p>
+<h2 id="3、安装php服务"><a href="#3、安装php服务" class="headerlink" title="3、安装php服务"></a>3、安装php服务</h2><p>安装依赖包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y zlib libxml2 libjpeg freetype libpng gd curl libiconv  zlib-devel libxml2-devel libjpeg-devel freetype-devel libpng-devel gd-devel curl-devel openssl-devel libxslt-devel libxslt*</span><br></pre></td></tr></table></figure></p>
+<p>安装libiconv,下载<a href="https://pan.baidu.com/s/1SH5TujhLgN9EkjjWI97gQQ" target="_blank" rel="noopener">链接</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf libiconv-1.14.tar.gz </span><br><span class="line">cd libiconv-1.14</span><br><span class="line">./configure --prefix=/usr/local/libiconv   </span><br><span class="line">make &amp;&amp; make install</span><br><span class="line">```   </span><br><span class="line">安装Libmcrypt,下载[链接](https://pan.baidu.com/s/1SH5TujhLgN9EkjjWI97gQQ)</span><br></pre></td></tr></table></figure></p>
+<p>tar -zxvf libmcrypt-2.5.8.tar.gz<br>cd libmcrypt-2.5.8<br>./configure<br>make &amp;&amp; make install   </p>
+<p>/sbin/ldconfig<br>cd libltdl/<br>./configure –enable-ltdl-install<br>make &amp;&amp; make install<br>cd ../../<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">安装mhash,下载[链接](https://pan.baidu.com/s/1SH5TujhLgN9EkjjWI97gQQ)</span><br></pre></td></tr></table></figure></p>
+<p>tar -zxvf mhash-0.9.9.9.tar.gz<br>cd mhash-0.9.9.9<br>./configure<br>make &amp;&amp; make install<br>cd ../<br>rm -f /usr/lib64/libmcrypt.<em><br>rm -f /usr/lib64/libmhash</em><br>ln -s /usr/local/lib/libmcrypt.la /usr/lib64/libmcrypt.la<br>ln -s /usr/local/lib/libmcrypt.so /usr/lib64/libmcrypt.so<br>ln -s /usr/local/lib/libmcrypt.so.4 /usr/lib64/libmcrypt.so.4<br>ln -s /usr/local/lib/libmcrypt.so.4.4.8 /usr/lib64/libmcrypt.so.4.4.8<br>ln -s /usr/local/lib/libmhash.a /usr/lib64/libmhash.a<br>ln -s /usr/local/lib/libmhash.la /usr/lib64/libmhash.la<br>ln -s /usr/local/lib/libmhash.so /usr/lib64/libmhash.so<br>ln -s /usr/local/lib/libmhash.so.2 /usr/lib64/libmhash.so.2<br>ln -s /usr/local/lib/libmhash.so.2.0.1 /usr/lib64/libmhash.so.2.0.1<br>ln -s /usr/local/lib/libmcrypt-config /usr/lib/libmcrypt-config<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">安装mcrypt,下载[链接](https://pan.baidu.com/s/1SH5TujhLgN9EkjjWI97gQQ)</span><br></pre></td></tr></table></figure></p>
+<p>tar -xf mcrypt-2.6.8.tar.gz<br>cd mcrypt-2.6.8/<br>/sbin/ldconfig<br>./configure LD_LIBRARY=/usr/local/lib &amp;&amp; make &amp;&amp;make install<br>cd ..<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">安装php,下载[链接](https://pan.baidu.com/s/1SH5TujhLgN9EkjjWI97gQQ)</span><br></pre></td></tr></table></figure></p>
+<p>tar -zxvf php-5.6.11.tar.gz<br>cd php-5.6.11<br>./configure –prefix=/application/php-5.6.11 –with-mysql=/application/mysql –with-iconv-dir=/usr/local/libiconv –with-freetype-dir –with-jpeg-dir –with-png-dir –with-zlib –with-libxml-dir=/usr –enable-xml –disable-rpath –enable-safe-mode –enable-bcmath –enable-shmop –enable-sysvsem –enable-inline-optimization–with-curl–with-curlwrappers –enable-mbregex –enable-fpm –enable-mbstring –with-mcrypt –with-gd –enable-gd-native-ttf –with-openssl –with-mhash –enable-pcntl –enable-sockets –with-xmlrpc–enable-zip –enable-soap –enable-short-tags –enable-zend-multibyte –enable-static –with-xsl –with-fpm-user=nginx –with-fpm-group=nginx –enable-ftp –enable-pdo–with-pdo-mysql<br>make &amp;&amp; make install<br>cd ..<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">安装过程提示缺少lib包的问题，根据版本差异执行以下命令：</span><br></pre></td></tr></table></figure></p>
+<p>ln -s /application/mysql/lib/libmysqlclient.so.18 /usr/lib64/<br>或者<br>ln -s /application/mysql/lib/libmysqlclient.so.20 /usr/lib64/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">配置文件（php.ini和php-fpm）</span><br></pre></td></tr></table></figure></p>
+<p>ln -s /application/php-5.6.11 /application/php<br>cp ./php-5.6.11/php.ini-production /application/php/lib/php.ini<br>cat /application/php/etc/php-fpm.conf.default&gt;/application/php/etc/php-fpm.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">检查语法、启动</span><br></pre></td></tr></table></figure></p>
+<p>/application/php/sbin/php-fpm -t<br>/application/php/sbin/php-fpm<br>cp /root/php-5.6.11/sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm<br>chmod a+x /etc/init.d/php-fpm</p>
+<h1 id="加入开机启动"><a href="#加入开机启动" class="headerlink" title="加入开机启动"></a>加入开机启动</h1><p>chkconfig –add php-fpm<br>chkconfig –level 35 php-fpm on</p>
+<h1 id="启动-php-fpm"><a href="#启动-php-fpm" class="headerlink" title="启动 php-fpm"></a>启动 php-fpm</h1><p>service php-fpm start<br>netstat -anpt | grep php-fpm</p>
+<h1 id="停止-php-fpm"><a href="#停止-php-fpm" class="headerlink" title="停止 php-fpm"></a>停止 php-fpm</h1><p>service php-fpm stop<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">## 4、配置nginx使其支持php</span><br><span class="line">cat /application/nginx/conf/nginx.conf</span><br></pre></td></tr></table></figure></p>
+<p>server {<br>listen 80;<br>server_name localhost;</p>
+<p>location / {<br>root html;<br>index index.php index.html index.htm;                               # 加入 index.php<br>}</p>
+<p>error_page 500 502 503 504 /50x.html;<br>location = /50x.html {<br>root html;<br>}</p>
+<p>location ~ .php$ { # 整段注释去掉<br>root html;<br>fastcgi_pass 127.0.0.1:9000;<br>fastcgi_index index.php;<br>fastcgi_param SCRIPT_FILENAME /application/nginx/html$fastcgi_script_name;                          # 修改为自己的根目录<br>include fastcgi_params;<br>}<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">创建测试页面</span><br><span class="line">```bash</span><br><span class="line">echo &quot;&lt;?php phpinfo(); ?&gt;&quot; &gt; /application/nginx/html/info.php</span><br></pre></td></tr></table></figure></p>
+<p>重启 Nginx 、php-fpm<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">service php-fpm stop</span><br><span class="line">service php-fpm start</span><br><span class="line">/application/nginx/sbin/nginx -s stop</span><br><span class="line">/application/nginx/sbin/nginx</span><br></pre></td></tr></table></figure></p>
+<p>浏览器访问测试页面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost/info.php</span><br></pre></td></tr></table></figure></p>
+<h2 id="5、安装zabbix-server，下载链接"><a href="#5、安装zabbix-server，下载链接" class="headerlink" title="5、安装zabbix-server，下载链接"></a>5、安装zabbix-server，下载<a href="https://pan.baidu.com/s/1SH5TujhLgN9EkjjWI97gQQ" target="_blank" rel="noopener">链接</a></h2><p>安装依赖包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install ntpdate net-snmp net-snmp-devel libcurl-devel libevent-devel</span><br></pre></td></tr></table></figure></p>
+<p>设置zabbix用户，编译安装zabbix<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">useradd -r -s /sbin/nologin zabbix</span><br><span class="line">tar -zxvf zabbix-3.4.2.tar.gz</span><br><span class="line">cd zabbix-3.4.2</span><br><span class="line">./configure --prefix=/usr/local/zabbix --enable-server --enable-agent --with-mysql --with-net-snmp --with-libcurl --with-libxml2 --with-openssl  </span><br><span class="line"># --prefix  指定安装路径</span><br><span class="line"># --enable-server  安装 Server 端</span><br><span class="line"># --enable-agent  安装 Agent 端</span><br><span class="line"># --with-mysql  使用 Mysql 数据库</span><br><span class="line"># --with-net-snmp  支持 SNMP 协议</span><br><span class="line"># --with-libcurl  支持 libcurl URL 监控</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>mysql数据库添加zabbix初始化数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; mysql -uroot -proot</span><br><span class="line">mysql&gt; create database zabbixDB character set utf8;                                    # 创建 zabbixDB 并设置编码为 utf8</span><br><span class="line">mysql&gt; grant all on zabbixDB.* to &apos;zabbix&apos;@&apos;%&apos; identified by &apos;zabbix&apos;;                 # 建立授权用户</span><br><span class="line">mysql&gt; flush privileges;                                                               # 刷新授权表 ( 虽然 grant 操作是不需要刷新授权表的，但那又如何 ? )</span><br><span class="line">mysql&gt; use zabbixDB;</span><br><span class="line">mysql&gt; source /root/zabbix-3.4.2/database/mysql/schema.sql                             # 导入数据</span><br><span class="line">mysql&gt; source /root/zabbix-3.4.2/database/mysql/images.sql</span><br><span class="line">mysql&gt; source /root/zabbix-3.4.2/database/mysql/data.sql</span><br><span class="line">mysql&gt; quit</span><br></pre></td></tr></table></figure></p>
+<p>配置 Zabbix 服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 服务端启动脚本</span><br><span class="line">shell &gt; cp /root/zabbix-3.4.2/misc/init.d/fedora/core/zabbix_server /etc/init.d/</span><br><span class="line"># 客户端启动脚本</span><br><span class="line">shell &gt; cp /root/zabbix-3.4.2/misc/init.d/fedora/core/zabbix_agentd /etc/init.d/</span><br><span class="line"># 网页文件</span><br><span class="line">shell &gt; cp -R /root/zabbix-3.4.2/frontends/php/ /data/nginx/html/zabbix </span><br><span class="line">```            </span><br><span class="line">服务端配置文件</span><br><span class="line">vim /usr/local/zabbix/etc/zabbix_server.conf</span><br></pre></td></tr></table></figure></p>
+<p>LogFile=/tmp/zabbix_server.log  # 日志文件存放位置<br>DBName=zabbixDB                  # 数据库名<br>DBUser=zabbix                    # 连接用户<br>DBPassword=zabbix               # 连接密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">服务端启动脚本</span><br></pre></td></tr></table></figure></p>
+<p>shell &gt; vim /etc/init.d/zabbix_server<br>BASEDIR=/usr/local/zabbix # 修改后的位置 ( 原：/usr/local )<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">客户端启动脚本</span><br></pre></td></tr></table></figure></p>
+<p>shell &gt;vim /etc/init.d/zabbix_agentd<br>BASEDIR=/usr/local/zabbix # 修改后的位置 ( 原：/usr/local )<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">配置zabbix开机启动，并启动Zabbix服务</span><br></pre></td></tr></table></figure></p>
+<p>shell &gt; chkconfig –add zabbix_server<br>shell &gt; chkconfig –add zabbix_agentd<br>shell &gt; chkconfig –level 35 zabbix_server on<br>shell &gt; chkconfig –level 35 zabbix_agentd on<br>shell &gt; service zabbix_server start<br>Starting zabbix_server: [确定]<br>shell &gt; service zabbix_agentd start<br>Starting zabbix_agentd: [确定]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">查看进程启动是否正常</span><br></pre></td></tr></table></figure></p>
+<p>shell &gt; netstat -anpt | grep zabbix ( 注意：要来确认一下到底有没有启动成功，因为当授权用户无法连接数据库时，zabbix_server 是无法启动的，但是启动过程显示成功 )<br>tcp        0      0 0.0.0.0:10050               0.0.0.0:<em>                   LISTEN      75399/zabbix_agentd<br>tcp        0      0 0.0.0.0:10051               0.0.0.0:</em>                   LISTEN      75321/zabbix_server </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 6、登陆网页进行配置 Zabbix ( http://your-domain/zabbix )（初始用户名密码为admin/zabbix）</span><br><span class="line"></span><br><span class="line">&gt; 第一个页面是欢迎页面，直接 Next</span><br><span class="line">&gt; 第二个页面大多会有多处检测失败，也是出问题最多的位置,修改php文件一下参数：</span><br><span class="line">vim /data/php-5.6.11/lib/php.ini</span><br></pre></td></tr></table></figure>
+<p>post_max_size = 16M<br>max_execution_time = 300<br>max_input_time = 300<br>date.timezone = Asia/Shanghai<br>always_populate_raw_post_data = -1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">根据页面提示报错还需要修改以下配置：</span><br></pre></td></tr></table></figure></p>
+<p>cd /root/php-5.6.11/ext/openssl/<br>cp  ./config0.m4 ./config.m4</p>
+<p>#重新编译php，添加mysqli模块<br>cd /root/php-5.6.11/ext/mysqli<br>/data/php/bin/phpize<br>./configure –prefix=/data/mysqli –with-php-config=/data/php-5.6.11/bin/php-config –with-mysqli=/data/mysql/bin/mysql_config<br>make<br>make test<br>make install<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">配置完成后在php.ini下加入下来一行</span><br><span class="line">vim /data/php-5.6.11/lib/php.ini</span><br></pre></td></tr></table></figure></p>
+<p>extension=mysqli.so<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">安装过程中的其他报错：</span><br></pre></td></tr></table></figure></p>
+<p>fatal error: ext/mysqlnd/mysql_float_to_double.h: No such file or directory<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /root/php-5.6.11/ext/mysqli/mysqli_api.c</span><br></pre></td></tr></table></figure></p>
+<p>把第36行的</p>
+<p>#include “ext/mysqlnd/mysql_float_to_double.h”<br>修改为</p>
+<p>#include “/root/php-5.6.11/ext/mysqlnd/mysql_float_to_double.h”<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 7、zabbix-proxy代理端安装</span><br><span class="line">依赖包安装</span><br></pre></td></tr></table></figure></p>
+<p>yum -y install ntpdate net-snmp net-snmp-devel libcurl-devel libevent-devel pcre-devel<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">添加zabbix用户，并编译安装zabbix-proxy</span><br></pre></td></tr></table></figure></p>
+<p>useradd -r -s /sbin/nologin zabbix<br>tar -zxvf zabbix-3.4.2.tar.gz<br>cd zabbix-3.4.2<br>yum install pcre-devel<br>./configure –prefix=/usr/local/zabbix –enable-agent –enable-proxy –with-mysql   # –enable-agent 不是必须的 ( 如果不想监控 Proxy 的话 )<br>make &amp;&amp; make install<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">复制 Agent 启动脚本</span><br></pre></td></tr></table></figure></p>
+<p>cp /usr/local/src/zabbix-2.4.5/misc/init.d/fedora/core/zabbix_agentd /etc/init.d/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">修改 Zabbix 安装路径</span><br></pre></td></tr></table></figure></p>
+<p>sed -i ‘s#BASEDIR=/usr/local#BASEDIR=/usr/local/zabbix#’ /etc/init.d/zabbix_agentd<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">将proxy代理所需要的初始化数据导入到mysql数据库：</span><br></pre></td></tr></table></figure></p>
+<p>mysql -u root -p<br>mysql&gt; create database proxydb character set utf8;                                            # 创建数据库<br>mysql&gt; grant all on proxydb.* to ‘proxy‘@’%’ identified by ‘proxydb’;                         # 创建授权用户<br>mysql&gt; flush privileges;                                                                      # 刷新授权表，虽然不需要~<br>mysql&gt; use proxydb;<br>mysql&gt; source /root/zabbix-3.4.2/database/mysql/schema.sql                                    # 导入数据，只导入这一个就可以了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">修改zabbix_proxy.conf配置文件</span><br></pre></td></tr></table></figure></p>
+<p>[root@node1 ~]# grep -vP ‘^$|#’ /usr/local/zabbix/etc/zabbix_proxy.conf<br>ProxyMode=0<br>Server=192.168.197.135<br>ServerPort=10051<br>Hostname=node1<br>LogFile=/tmp/zabbix_proxy.log<br>DBHost=localhost<br>DBName=proxydb<br>DBUser=proxy<br>DBPassword=proxydb<br>ConfigFrequency=60<br>DataSenderFrequency=60<br>Timeout=4<br>LogSlowQueries=3000<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">参数详解：</span><br></pre></td></tr></table></figure></p>
+<p>ProxyMode=0                    # 0 代表 Proxy 处于主动模式，即：Proxy 主动去请求 Zabbix Server 获取监控项；1 代表被动模式<br>Server=192.168.214.40          # Zabbix Server 地址，当 Proxy 处于被动模式时，不需要设置该项 ( 想想也能明白 )<br>ServerPort=10051              # Zabbix Server 监听端口，同上只在 Proxy 为主动模式时生效<br>Hostname=my_proxy              # 这个很重要啦，跟 Agent 的 Hostname 一样重要，待会要用<br>LogFile=/tmp/zabbix_proxy.log  # Proxy 日志文件位置<br>DBHost=localhost              # 连接哪里的数据库<br>DBName=proxydb                # 数据库名<br>DBUser=proxy                  # 连接用户<br>DBPassword=proxypass          # 用户密码<br>ConfigFrequency=60            # Proxy 向 Zabbix Server 请求监控项间隔，单位为 秒<br>DataSenderFrequency=60        # Proxy 向 Zabbix Server 发送监控数据间隔，单位为 秒<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">启动 zabbix_proxy</span><br></pre></td></tr></table></figure></p>
+<p> /usr/local/zabbix/sbin/zabbix_proxy<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">启动报错如下</span><br></pre></td></tr></table></figure></p>
+<p>/usr/local/zabbix/sbin/zabbix_proxy: error while loading shared libraries: libmysqlclient.so.20: cannot open shared object file: No such file or directory<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">解决方法</span><br></pre></td></tr></table></figure></p>
+<p>ln -s /application/mysql/lib/libmysqlclient.so.20 /usr/lib64/</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">查看是否启动成功：</span><br></pre></td></tr></table></figure>
+<p>netstat -lnpt | grep zabbix_proxy<br>tcp        0      0 0.0.0.0:10051               0.0.0.0:*                   LISTEN      80154/zabbix_proxy<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">加入开机启动</span><br></pre></td></tr></table></figure></p>
+<p>echo “/usr/local/zabbix/sbin/zabbix_proxy” &gt;&gt; /etc/rc.local<br><code>`</code></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0、安装zabbix-server之前需要把server依赖环境lnmp安装完成，首先安装依赖包："><span class="toc-number">1.</span> <span class="toc-text">0、安装zabbix-server之前需要把server依赖环境lnmp安装完成，首先安装依赖包：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1、上传nginx软件包到服务器，如果没有可点击此处下载"><span class="toc-number">2.</span> <span class="toc-text">1、上传nginx软件包到服务器，如果没有可点击此处下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2、Mysql数据库安装"><span class="toc-number">3.</span> <span class="toc-text">2、Mysql数据库安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3、安装php服务"><span class="toc-number">4.</span> <span class="toc-text">3、安装php服务</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#加入开机启动"><span class="toc-number"></span> <span class="toc-text">加入开机启动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#启动-php-fpm"><span class="toc-number"></span> <span class="toc-text">启动 php-fpm</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#停止-php-fpm"><span class="toc-number"></span> <span class="toc-text">停止 php-fpm</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5、安装zabbix-server，下载链接"><span class="toc-number">1.</span> <span class="toc-text">5、安装zabbix-server，下载链接</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = ''
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
