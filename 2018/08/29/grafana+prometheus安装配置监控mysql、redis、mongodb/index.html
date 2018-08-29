@@ -1,0 +1,362 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Grafana] grafana监控redis、mongodb、mysql数据库 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="0、参考链接https://mp.weixin.qq.com/s/Qz87UE1aXFZbAdFlx7Zeow
+1、grafana下载安装wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.2-1.">
+  
+
+  
+  
+  <meta name="keywords" content="mysql,mongodb,redis,grafana,prometheus">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Grafana] grafana监控redis、mongodb、mysql数据库"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Grafana] grafana监控redis、mongodb、mysql数据库</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/29/grafana+prometheus安装配置监控mysql、redis、mongodb/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-29T13:35:24.000Z">
+          2018-08-29
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="0、参考链接"><a href="#0、参考链接" class="headerlink" title="0、参考链接"></a>0、参考链接</h3><p><a href="https://mp.weixin.qq.com/s/Qz87UE1aXFZbAdFlx7Zeow" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Qz87UE1aXFZbAdFlx7Zeow</a></p>
+<h3 id="1、grafana下载安装"><a href="#1、grafana下载安装" class="headerlink" title="1、grafana下载安装"></a>1、grafana下载安装</h3><p>wget <a href="https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.2-1.x86_64.rpm" target="_blank" rel="noopener">https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.2-1.x86_64.rpm</a><br>sudo yum localinstall grafana-5.2.2-1.x86_64.rpm</p>
+<p>启动grafana<br>service grafana-server start<br>service grafana-server status<br>加入开机启动<br>chkconfig –add grafana-server<br>查看grafana端口<br>netstat -plntu | grep grafana-serv<br>tcp6       0      0 :::3000                 :::*                    LISTEN      2539/grafana-server</p>
+<p>用户：admin<br>密码：admin（默认）<br>登录之后提示修改密码：<br>登录界面如下图所示<br><img src="https://i.imgur.com/drKlMKC.png" alt=""></p>
+<h3 id="2、安装Prometheus"><a href="#2、安装Prometheus" class="headerlink" title="2、安装Prometheus"></a>2、安装Prometheus</h3><p>下载Prometheus<br>wget <a href="https://github.com/prometheus/prometheus/releases/download/v2.3.2/prometheus-2.3.2.linux-amd64.tar.gz">https://github.com/prometheus/prometheus/releases/download/v2.3.2/prometheus-2.3.2.linux-amd64.tar.gz</a><br>解压安装<br>tar -zxvf prometheus-2.3.2.linux-amd64.tar.gz<br>配置 Prometheus<br>cd prometheus-2.3.2.linux-amd64/<br>cat prometheus.yml </p>
+<h1 id="my-global-config"><a href="#my-global-config" class="headerlink" title="my global config"></a>my global config</h1><p>global:<br>  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.<br>  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.</p>
+<h1 id="scrape-timeout-is-set-to-the-global-default-10s"><a href="#scrape-timeout-is-set-to-the-global-default-10s" class="headerlink" title="scrape_timeout is set to the global default (10s)."></a>scrape_timeout is set to the global default (10s).</h1><h1 id="Alertmanager-configuration"><a href="#Alertmanager-configuration" class="headerlink" title="Alertmanager configuration"></a>Alertmanager configuration</h1><p>alerting:<br>  alertmanagers:</p>
+<ul>
+<li>static_configs:<ul>
+<li>targets:<h1 id="alertmanager-9093"><a href="#alertmanager-9093" class="headerlink" title="- alertmanager:9093"></a>- alertmanager:9093</h1></li>
+</ul>
+</li>
+</ul>
+<h1 id="Load-rules-once-and-periodically-evaluate-them-according-to-the-global-‘evaluation-interval’"><a href="#Load-rules-once-and-periodically-evaluate-them-according-to-the-global-‘evaluation-interval’" class="headerlink" title="Load rules once and periodically evaluate them according to the global ‘evaluation_interval’."></a>Load rules once and periodically evaluate them according to the global ‘evaluation_interval’.</h1><p>rule_files:</p>
+<h1 id="“first-rules-yml”"><a href="#“first-rules-yml”" class="headerlink" title="- “first_rules.yml”"></a>- “first_rules.yml”</h1><h1 id="“second-rules-yml”"><a href="#“second-rules-yml”" class="headerlink" title="- “second_rules.yml”"></a>- “second_rules.yml”</h1><h1 id="A-scrape-configuration-containing-exactly-one-endpoint-to-scrape"><a href="#A-scrape-configuration-containing-exactly-one-endpoint-to-scrape" class="headerlink" title="A scrape configuration containing exactly one endpoint to scrape:"></a>A scrape configuration containing exactly one endpoint to scrape:</h1><h1 id="Here-it’s-Prometheus-itself"><a href="#Here-it’s-Prometheus-itself" class="headerlink" title="Here it’s Prometheus itself."></a>Here it’s Prometheus itself.</h1><p>scrape_configs:</p>
+<h1 id="The-job-name-is-added-as-a-label-job-lt-job-name-gt-to-any-timeseries-scraped-from-this-config"><a href="#The-job-name-is-added-as-a-label-job-lt-job-name-gt-to-any-timeseries-scraped-from-this-config" class="headerlink" title="The job name is added as a label job=&lt;job_name&gt; to any timeseries scraped from this config."></a>The job name is added as a label <code>job=&lt;job_name&gt;</code> to any timeseries scraped from this config.</h1><ul>
+<li><p>job_name: ‘prometheus’</p>
+<h1 id="metrics-path-defaults-to-‘-metrics’"><a href="#metrics-path-defaults-to-‘-metrics’" class="headerlink" title="metrics_path defaults to ‘/metrics’"></a>metrics_path defaults to ‘/metrics’</h1><h1 id="scheme-defaults-to-‘http’"><a href="#scheme-defaults-to-‘http’" class="headerlink" title="scheme defaults to ‘http’."></a>scheme defaults to ‘http’.</h1><p>static_configs:</p>
+<ul>
+<li>targets: [‘0.0.0.0:9090’]</li>
+</ul>
+</li>
+</ul>
+<h2 id="prometheus-–config-file-prometheus-yml"><a href="#prometheus-–config-file-prometheus-yml" class="headerlink" title="./prometheus –config.file=prometheus.yml"></a>./prometheus –config.file=prometheus.yml</h2><p>level=info ts=2018-08-28T03:42:08.966212621Z caller=main.go:222 msg=”Starting Prometheus” version=”(version=2.3.2, branch=HEAD, revision=71af5e29e815795e9dd14742ee7725682fa14b7b)”<br>level=info ts=2018-08-28T03:42:08.966876421Z caller=main.go:223 build_context=”(go=go1.10.3, user=root@5258e0bd9cc1, date=20180712-14:02:52)”<br>level=info ts=2018-08-28T03:42:08.966953021Z caller=main.go:224 host_details=”(Linux 3.10.0-693.21.1.el7.x86_64 #1 SMP Wed Mar 7 19:03:37 UTC 2018 x86_64 dax-mysql-mha (none))”<br>level=info ts=2018-08-28T03:42:08.966990021Z caller=main.go:225 fd_limits=”(soft=1024, hard=4096)”<br>level=info ts=2018-08-28T03:42:08.968101421Z caller=main.go:533 msg=”Starting TSDB …”<br>level=info ts=2018-08-28T03:42:08.970314221Z caller=web.go:415 component=web msg=”Start listening for connections” address=0.0.0.0:9090<br>level=info ts=2018-08-28T03:42:08.977918922Z caller=main.go:543 msg=”TSDB started”<br>level=info ts=2018-08-28T03:42:08.977966022Z caller=main.go:603 msg=”Loading configuration file” filename=prometheus.yml<br>level=info ts=2018-08-28T03:42:08.979126022Z caller=main.go:629 msg=”Completed loading of configuration file” filename=prometheus.yml<br>level=info ts=2018-08-28T03:42:08.979171222Z caller=main.go:502 msg=”Server is ready to receive web requests.”<br>level=info ts=2018-08-28T05:00:04.558075427Z caller=compact.go:398 component=tsdb msg=”write block” mint=1535421600000 maxt=1535428800000 ulid=01CNZEEBGJ237RVH965D3VWT57<br>level=info ts=2018-08-28T05:00:04.566214242Z caller=head.go:348 component=tsdb msg=”head GC completed” duration=1.539902ms</p>
+<h2 id="level-info-ts-2018-08-28T05-00-04-575381958Z-caller-head-go-357-component-tsdb-msg-”WAL-truncation-completed”-duration-9-095816ms"><a href="#level-info-ts-2018-08-28T05-00-04-575381958Z-caller-head-go-357-component-tsdb-msg-”WAL-truncation-completed”-duration-9-095816ms" class="headerlink" title="level=info ts=2018-08-28T05:00:04.575381958Z caller=head.go:357 component=tsdb msg=”WAL truncation completed” duration=9.095816ms"></a>level=info ts=2018-08-28T05:00:04.575381958Z caller=head.go:357 component=tsdb msg=”WAL truncation completed” duration=9.095816ms</h2><p>登录控制台<br><img src="https://i.imgur.com/xMfoPTq.png" alt=""></p>
+<h3 id="3、mysql-exporter部署"><a href="#3、mysql-exporter部署" class="headerlink" title="3、mysql_exporter部署"></a>3、mysql_exporter部署</h3><p>wget <a href="https://github.com/prometheus/mysqld_exporter/releases/download/v0.11.0/mysqld_exporter-0.11.0.linux-amd64.tar.gz">https://github.com/prometheus/mysqld_exporter/releases/download/v0.11.0/mysqld_exporter-0.11.0.linux-amd64.tar.gz</a><br>tar -zxvf mysqld_exporter-0.11.0.linux-amd64.tar.gz<br>cd mysqld_exporter-0.11.0.linux-amd64/</p>
+<p>cat .my.cnf<br>[client]<br>host = 127.0.0.1<br>user=root<br>password=12345678</p>
+<p>启动mysqld_exporter</p>
+<h2 id="mysqld-exporter-–config-my-cnf-”-data-soft-mysqld-exporter-0-11-0-linux-amd64-my-cnf”"><a href="#mysqld-exporter-–config-my-cnf-”-data-soft-mysqld-exporter-0-11-0-linux-amd64-my-cnf”" class="headerlink" title="./mysqld_exporter –config.my-cnf=”/data/soft/mysqld_exporter-0.11.0.linux-amd64/.my.cnf”  "></a>./mysqld_exporter –config.my-cnf=”/data/soft/mysqld_exporter-0.11.0.linux-amd64/.my.cnf”  </h2><p>INFO[0000] Starting mysqld_exporter (version=0.11.0, branch=HEAD, revision=5d7179615695a61ecc3b5bf90a2a7c76a9592cdd)  source=”mysqld_exporter.go:206”<br>INFO[0000] Build context (go=go1.10.3, user=root@3d3ff666b0e4, date=20180629-15:00:35)  source=”mysqld_exporter.go:207”<br>INFO[0000] Enabled scrapers:                             source=”mysqld_exporter.go:218”<br>INFO[0000]  –collect.global_status                      source=”mysqld_exporter.go:222”<br>INFO[0000]  –collect.global_variables                   source=”mysqld_exporter.go:222”<br>INFO[0000]  –collect.slave_status                       source=”mysqld_exporter.go:222”<br>INFO[0000]  –collect.info_schema.tables                 source=”mysqld_exporter.go:222”</p>
+<h2 id="INFO-0000-Listening-on-9104-source-”mysqld-exporter-go-232”"><a href="#INFO-0000-Listening-on-9104-source-”mysqld-exporter-go-232”" class="headerlink" title="INFO[0000] Listening on :9104                            source=”mysqld_exporter.go:232”"></a>INFO[0000] Listening on :9104                            source=”mysqld_exporter.go:232”</h2><p>netstat -tunlp|grep 9104</p>
+<p><a href="http://23.101.2.223:9104/" target="_blank" rel="noopener">http://23.101.2.223:9104/</a><br><img src="https://i.imgur.com/aqDGY1B.png" alt=""><br>修改vim prometheus.yml配置文件</p>
+<ul>
+<li>job_name: mysql<br>  static_configs:<pre><code>- targets: [&apos;127.0.0.1:9104&apos;]
+  labels:
+    instance: test
+</code></pre></li>
+</ul>
+<p>备注:<br>job_name,当前执行job的名字<br>targets，连接的主机<br>instance，数据库实例的标签明</p>
+<p>重新启动prometheus，进入prometheus控制台，status-target<br><img src="https://i.imgur.com/ecV2em3.png" alt=""></p>
+<h3 id="4、添加数据源"><a href="#4、添加数据源" class="headerlink" title="4、添加数据源"></a>4、添加数据源</h3><p><img src="https://i.imgur.com/MDVSTgs.png" alt=""><br><img src="https://i.imgur.com/NCJXDQj.png" alt=""><br>保存测试</p>
+<h3 id="5、下载仪表盘"><a href="#5、下载仪表盘" class="headerlink" title="5、下载仪表盘"></a>5、下载仪表盘</h3><p><a href="https://github.com/percona/grafana-dashboards/tree/master/dashboards">https://github.com/percona/grafana-dashboards/tree/master/dashboards</a><br>选择仪表盘类型，导入到grafana<br><img src="https://i.imgur.com/L0zhbuM.png" alt=""><br><img src="https://i.imgur.com/PkzRe5Y.png" alt=""><br><img src="https://i.imgur.com/1eYa7uN.png" alt=""><br>点击仪表盘查看<br><img src="https://i.imgur.com/i5qvt2u.png" alt=""></p>
+<h3 id="6、mongodb-exporter部署用于监控mongodb"><a href="#6、mongodb-exporter部署用于监控mongodb" class="headerlink" title="6、mongodb_exporter部署用于监控mongodb"></a>6、mongodb_exporter部署用于监控mongodb</h3><p>prometheus监控mongodb数据库，安装之前需要配置go环境下载配置go环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://dl.google.com/go/go1.11.linux-amd64.tar.gz</span><br><span class="line">tar -C /usr/local -xzf go1.11.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure></p>
+<p>添加环境变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;</span><br><span class="line">GOPATH=$HOME/go</span><br><span class="line">export PATH=$PATH:$GOPATH/bin&quot; &gt;&gt; ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<p>使配置的环境变量生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<p>创建配置mognodb所需要的目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p $HOME/go/&#123;dir,src,pkg&#125;</span><br></pre></td></tr></table></figure></p>
+<p>安装glide<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://glide.sh/get | sh</span><br></pre></td></tr></table></figure></p>
+<p>安装mongodb-exporter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:dcu/mongodb_exporter.git $GOPATH/src/github.com/dcu/mongodb_exporter</span><br><span class="line">cd $GOPATH/src/github.com/dcu/mongodb_exporter</span><br><span class="line">make build</span><br></pre></td></tr></table></figure></p>
+<p>查看mongdob_exporter使用的参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./mongodb_exporter -h</span><br></pre></td></tr></table></figure></p>
+<p>启动mongodb_exporter,获取数据库的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./mongodb_exporter -mongodb.uri mongodb://localhost:30000</span><br></pre></td></tr></table></figure></p>
+<p>启动端口默认为9001,登录<a href="http://localhost:9001，查看是否正常" target="_blank" rel="noopener">http://localhost:9001，查看是否正常</a><br><img src="https://i.imgur.com/1pnvKo4.png" alt=""><br>修改prometheus.yml，添加mongodb参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- job_name: mongodb</span><br><span class="line">  static_configs:</span><br><span class="line">    - targets: [&apos;127.0.0.1:9001&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>重启premetheus,登录premetheus控制台查看获取mognodb是否正常<br><img src="https://i.imgur.com/UK4EwiK.png" alt=""><br>登录grafana添加模板，可以添加模板id或者导入代码<br><img src="https://i.imgur.com/24JBVvP.png" alt=""><br>点击<a href="https://grafana.com/dashboards/2583" target="_blank" rel="noopener">链接</a>，跳转到mongodb_exporter模板<br>添加完成模板如下图所示：<br><img src="https://i.imgur.com/O0lRt1R.png" alt=""></p>
+<h3 id="7、redis-exporter部署用于监控redis-安装redis-exporter模板"><a href="#7、redis-exporter部署用于监控redis-安装redis-exporter模板" class="headerlink" title="7、redis_exporter部署用于监控redis,安装redis-exporter模板"></a>7、redis_exporter部署用于监控redis,安装redis-exporter模板</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/oliver006/redis_exporter</span><br><span class="line">cd $GOPATH/src/github.com/oliver006/redis_exporter</span><br><span class="line">go build</span><br></pre></td></tr></table></figure>
+<p>启动redis_exporter进程获取redis数据(默认进程端口号位9121)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./redis_exporter -redis.addr redis://127.0.0.1:6379 -redis.password test</span><br></pre></td></tr></table></figure></p>
+<p>启动端口默认为9001,登录<a href="http://localhost:9121，查看是否正常" target="_blank" rel="noopener">http://localhost:9121，查看是否正常</a><br><img src="https://i.imgur.com/Xaokb9P.png" alt=""><br>修改prometheus.yml，添加redis参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- job_name: redis</span><br><span class="line">  static_configs:</span><br><span class="line">     - targets: [&apos;127.0.0.1:9121&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>重启premetheus,登录premetheus控制台查看获取redis是否正常<br><img src="https://i.imgur.com/FzmeelO.png" alt=""><br>登录grafana添加模板，可以添加模板id或者导入代码,点击<a href="https://github.com/oliver006/redis_exporter/blob/master/contrib/grafana_prometheus_redis_dashboard_alias.json">此处</a>跳转到redis_exporter链接<br>，导入完成之后界面如下图所示：<br><img src="https://i.imgur.com/4M5y84Y.png" alt=""></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a><a href="/tags/mongodb/">mongodb</a><a href="/tags/redis/">redis</a><a href="/tags/grafana/">grafana</a><a href="/tags/prometheus/">prometheus</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#0、参考链接"><span class="toc-number">1.</span> <span class="toc-text">0、参考链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1、grafana下载安装"><span class="toc-number">2.</span> <span class="toc-text">1、grafana下载安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、安装Prometheus"><span class="toc-number">3.</span> <span class="toc-text">2、安装Prometheus</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#my-global-config"><span class="toc-number"></span> <span class="toc-text">my global config</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#scrape-timeout-is-set-to-the-global-default-10s"><span class="toc-number"></span> <span class="toc-text">scrape_timeout is set to the global default (10s).</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Alertmanager-configuration"><span class="toc-number"></span> <span class="toc-text">Alertmanager configuration</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#alertmanager-9093"><span class="toc-number"></span> <span class="toc-text">- alertmanager:9093</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Load-rules-once-and-periodically-evaluate-them-according-to-the-global-‘evaluation-interval’"><span class="toc-number"></span> <span class="toc-text">Load rules once and periodically evaluate them according to the global ‘evaluation_interval’.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#“first-rules-yml”"><span class="toc-number"></span> <span class="toc-text">- “first_rules.yml”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#“second-rules-yml”"><span class="toc-number"></span> <span class="toc-text">- “second_rules.yml”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#A-scrape-configuration-containing-exactly-one-endpoint-to-scrape"><span class="toc-number"></span> <span class="toc-text">A scrape configuration containing exactly one endpoint to scrape:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Here-it’s-Prometheus-itself"><span class="toc-number"></span> <span class="toc-text">Here it’s Prometheus itself.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#The-job-name-is-added-as-a-label-job-lt-job-name-gt-to-any-timeseries-scraped-from-this-config"><span class="toc-number"></span> <span class="toc-text">The job name is added as a label job=&lt;job_name&gt; to any timeseries scraped from this config.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#metrics-path-defaults-to-‘-metrics’"><span class="toc-number"></span> <span class="toc-text">metrics_path defaults to ‘/metrics’</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#scheme-defaults-to-‘http’"><span class="toc-number"></span> <span class="toc-text">scheme defaults to ‘http’.</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#prometheus-–config-file-prometheus-yml"><span class="toc-number"></span> <span class="toc-text">./prometheus –config.file=prometheus.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#level-info-ts-2018-08-28T05-00-04-575381958Z-caller-head-go-357-component-tsdb-msg-”WAL-truncation-completed”-duration-9-095816ms"><span class="toc-number"></span> <span class="toc-text">level=info ts=2018-08-28T05:00:04.575381958Z caller=head.go:357 component=tsdb msg=”WAL truncation completed” duration=9.095816ms</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3、mysql-exporter部署"><span class="toc-number">1.</span> <span class="toc-text">3、mysql_exporter部署</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mysqld-exporter-–config-my-cnf-”-data-soft-mysqld-exporter-0-11-0-linux-amd64-my-cnf”"><span class="toc-number"></span> <span class="toc-text">./mysqld_exporter –config.my-cnf=”/data/soft/mysqld_exporter-0.11.0.linux-amd64/.my.cnf”  </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#INFO-0000-Listening-on-9104-source-”mysqld-exporter-go-232”"><span class="toc-number"></span> <span class="toc-text">INFO[0000] Listening on :9104                            source=”mysqld_exporter.go:232”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4、添加数据源"><span class="toc-number">1.</span> <span class="toc-text">4、添加数据源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5、下载仪表盘"><span class="toc-number">2.</span> <span class="toc-text">5、下载仪表盘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6、mongodb-exporter部署用于监控mongodb"><span class="toc-number">3.</span> <span class="toc-text">6、mongodb_exporter部署用于监控mongodb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7、redis-exporter部署用于监控redis-安装redis-exporter模板"><span class="toc-number">4.</span> <span class="toc-text">7、redis_exporter部署用于监控redis,安装redis-exporter模板</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Grafana] grafana监控redis、mongodb、mysql数据库'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
