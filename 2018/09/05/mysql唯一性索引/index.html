@@ -1,0 +1,316 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Mysql] mysql唯一性索引详解 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、唯一性索引创建条件：唯一性索引创建一个约束条件要求索引列上的所有值必须是不同的，如果你尝试添加一行新数据，但该行的键值与已经存在的其他行的键值相同将会报错。如果为唯一性索引指定前缀值，前缀长度的列值要保证唯一。唯一性索引允许null值。
+2、唯一非空索引_rowid的使用：如果一个表有主键索引或">
+  
+
+  
+  
+  <meta name="keywords" content="mysql">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Mysql] mysql唯一性索引详解"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Mysql] mysql唯一性索引详解</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/05/mysql唯一性索引/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-05T07:14:03.000Z">
+          2018-09-05
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、唯一性索引创建条件："><a href="#1、唯一性索引创建条件：" class="headerlink" title="1、唯一性索引创建条件："></a>1、唯一性索引创建条件：</h3><p>唯一性索引创建一个约束条件要求索引列上的所有值必须是不同的，如果你尝试添加一行新数据，但该行的键值与已经存在的其他行的键值相同将会报错。如果为唯一性索引指定前缀值，前缀长度的列值要保证唯一。唯一性索引允许null值。</p>
+<h3 id="2、唯一非空索引-rowid的使用："><a href="#2、唯一非空索引-rowid的使用：" class="headerlink" title="2、唯一非空索引_rowid的使用："></a>2、唯一非空索引_rowid的使用：</h3><p>如果一个表有主键索引或者唯一非空索引，且索引由一个单独整型列类型组成，你可以在select语句使用_rowid来引用索引列，具体如下：<br>_rowid引用主键列如果主键列由单个整型列组成，如果存在主键列但是他不是由一个单独整型列组成，_rowid不能被使用。<br>另外，_rowid引用第一个有单个整型列组成的唯一非空索引列，如果不是，_rowid不能被使用。</p>
+<h3 id="3、创建测试表，并将列修改为唯一非空进行试验："><a href="#3、创建测试表，并将列修改为唯一非空进行试验：" class="headerlink" title="3、创建测试表，并将列修改为唯一非空进行试验："></a>3、创建测试表，并将列修改为唯一非空进行试验：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">create table unique_t(id int,name varchar(10));</span><br><span class="line">alter table unique_t add unique index id_unique_ind(id);</span><br><span class="line">alter table unique_t modify id int not null;</span><br><span class="line">show create table unique_t;</span><br><span class="line">+----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Table    | Create Table                                                                                                                                                      |</span><br><span class="line">+----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| unique_t | CREATE TABLE `unique_t` (</span><br><span class="line">  `id` int(11) NOT NULL,</span><br><span class="line">  `name` varchar(10) DEFAULT NULL,</span><br><span class="line">  UNIQUE KEY `id_unique_ind` (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 |</span><br><span class="line">+----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<p>插入测试数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">insert into unique_t values(1,&apos;a&apos;),(2,&apos;b&apos;),(3,&apos;c&apos;),(4,&apos;d&apos;),(6,&apos;e&apos;);</span><br><span class="line">select *,_rowid from unique_t;</span><br><span class="line">+----+------+--------+</span><br><span class="line">| id | name | _rowid |</span><br><span class="line">+----+------+--------+</span><br><span class="line">|  1 | a    |      1 |</span><br><span class="line">|  2 | b    |      2 |</span><br><span class="line">|  3 | c    |      3 |</span><br><span class="line">|  4 | d    |      4 |</span><br><span class="line">|  6 | e    |      6 |</span><br><span class="line">+----+------+--------+</span><br></pre></td></tr></table></figure></p>
+<h3 id="4、"><a href="#4、" class="headerlink" title="4、"></a>4、</h3><p>删除唯一性索引，修改id默认列可以为空：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">alter table unique_t drop index id_unique_ind;</span><br><span class="line">alter table unique_t modify id int null;</span><br><span class="line">show create table unique_t;</span><br><span class="line">+----------+----------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Table    | Create Table                                                                                                                     |</span><br><span class="line">+----------+----------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| unique_t | CREATE TABLE `unique_t` (</span><br><span class="line">  `id` int(11) DEFAULT NULL,</span><br><span class="line">  `name` varchar(10) DEFAULT NULL</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 |</span><br><span class="line">+----------+----------------------------------------------------------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure></p>
+<p>为id列创建主键索引<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">alter table unique_t add primary key(id);</span><br><span class="line">show create table unique_t;</span><br><span class="line">+----------+----------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Table    | Create Table                                                                                                                                       |</span><br><span class="line">+----------+----------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| unique_t | CREATE TABLE `unique_t` (</span><br><span class="line">  `id` int(11) NOT NULL,</span><br><span class="line">  `name` varchar(10) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 |</span><br><span class="line">+----------+----------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">select *,_rowid from unique_t;</span><br><span class="line">+----+------+--------+</span><br><span class="line">| id | name | _rowid |</span><br><span class="line">+----+------+--------+</span><br><span class="line">|  1 | a    |      1 |</span><br><span class="line">|  2 | b    |      2 |</span><br><span class="line">|  3 | c    |      3 |</span><br><span class="line">|  4 | d    |      4 |</span><br><span class="line">|  6 | e    |      6 |</span><br><span class="line">+----+------+--------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<p>给id添加主键约束和唯一非空约束，_rowid都可以引用对应列。</p>
+<h3 id="5、删除id主键，将name列设置为主键测试"><a href="#5、删除id主键，将name列设置为主键测试" class="headerlink" title="5、删除id主键，将name列设置为主键测试"></a>5、删除id主键，将name列设置为主键测试</h3><p>alter table unique_t drop primary key;<br>alter table unique_t add primary key(name);<br>show index from unique_t;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">+----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| unique_t |          0 | PRIMARY  |            1 | name        | A         |           5 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">+----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line"></span><br><span class="line"> show create table unique_t;</span><br><span class="line">+----------+--------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Table    | Create Table                                                                                                                                     |</span><br><span class="line">+----------+--------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| unique_t | CREATE TABLE `unique_t` (</span><br><span class="line">  `id` int(11) NOT NULL,</span><br><span class="line">  `name` varchar(10) NOT NULL,</span><br><span class="line">  PRIMARY KEY (`name`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 |</span><br><span class="line">+----------+--------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line"></span><br><span class="line">root@db 07:11:  [exchange_market]&gt; select *,_rowid from unique_t;</span><br><span class="line">ERROR 1054 (42S22): Unknown column &apos;_rowid&apos; in &apos;field list&apos;</span><br></pre></td></tr></table></figure></p>
+<p>非单个整型列的主键，_rowid无法使用。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、唯一性索引创建条件："><span class="toc-number">1.</span> <span class="toc-text">1、唯一性索引创建条件：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、唯一非空索引-rowid的使用："><span class="toc-number">2.</span> <span class="toc-text">2、唯一非空索引_rowid的使用：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、创建测试表，并将列修改为唯一非空进行试验："><span class="toc-number">3.</span> <span class="toc-text">3、创建测试表，并将列修改为唯一非空进行试验：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、"><span class="toc-number">4.</span> <span class="toc-text">4、</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5、删除id主键，将name列设置为主键测试"><span class="toc-number">5.</span> <span class="toc-text">5、删除id主键，将name列设置为主键测试</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Mysql] mysql唯一性索引详解'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
