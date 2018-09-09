@@ -1,0 +1,313 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Mysql] mysql show processlist详解 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="0、show processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。有管理员权限的用户，如下图所示：没有管理权限的用户，如下图所示：：如果不加full关键字，每条语句的info信息栏只能显示前100个字符。如果看到“too many">
+  
+
+  
+  
+  <meta name="keywords" content="mysql">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Mysql] mysql show processlist详解"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Mysql] mysql show processlist详解</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/09/mysql show processlist详解/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-09T14:50:03.000Z">
+          2018-09-09
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="0、show-processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。"><a href="#0、show-processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。" class="headerlink" title="0、show processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。"></a>0、show processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。</h3><p>有管理员权限的用户，如下图所示：<br><img src="https://i.imgur.com/CwMY5kv.png" alt=""><br>没有管理权限的用户，如下图所示：：<br><img src="https://i.imgur.com/iJ8OO2x.png" alt=""><br>如果不加full关键字，每条语句的info信息栏只能显示前100个字符。<br>如果看到“too many connections”的错误信息，想要看看什么线程正在运行，使用show processlist语句是很有用的。mysql数据库会额外保持一个连接，供具有connection_admin或者super权限用户的使用，用以确保管理员能随时连接进来检查系统状况（假设你没有将此权限授予所有用户）。<br>show processlist输出列详解：</p>
+<h3 id="1、id：连接标识符，与INFORMATION-SCHEMA-PROCESSLIST表的id列显示的是同类型的值，如下图所示："><a href="#1、id：连接标识符，与INFORMATION-SCHEMA-PROCESSLIST表的id列显示的是同类型的值，如下图所示：" class="headerlink" title="1、id：连接标识符，与INFORMATION_SCHEMA PROCESSLIST表的id列显示的是同类型的值，如下图所示："></a>1、id：连接标识符，与INFORMATION_SCHEMA PROCESSLIST表的id列显示的是同类型的值，如下图所示：</h3><p><img src="https://i.imgur.com/Hl57tcb.png" alt=""><br>Performance_Schema threads表的processlist_id列也是相同值，由connection_id())函数返回值。<br><img src="https://i.imgur.com/CwS1fUD.png" alt=""><br>通过kill 语句可以杀掉查询到的线程，执行命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill id号</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、user-代表数据库用户，如果是system-user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system-user，host列没有任何信息。-unauthenticated-user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event-scheduler-是监控调度事件的线程。"><a href="#2、user-代表数据库用户，如果是system-user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system-user，host列没有任何信息。-unauthenticated-user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event-scheduler-是监控调度事件的线程。" class="headerlink" title="2、user: 代表数据库用户，如果是system user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system user，host列没有任何信息。 unauthenticated user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event_scheduler 是监控调度事件的线程。"></a>2、user: 代表数据库用户，如果是system user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system user，host列没有任何信息。 unauthenticated user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event_scheduler 是监控调度事件的线程。</h3><h3 id="3、host：发起线程的客户的主机名（对于system-user，host这一列为空）。tcp-ip连接的主机名是：hostname：client-port格式，用这种格式来更方面查看客户端在做什么操作。"><a href="#3、host：发起线程的客户的主机名（对于system-user，host这一列为空）。tcp-ip连接的主机名是：hostname：client-port格式，用这种格式来更方面查看客户端在做什么操作。" class="headerlink" title="3、host：发起线程的客户的主机名（对于system user，host这一列为空）。tcp/ip连接的主机名是：hostname：client_port格式，用这种格式来更方面查看客户端在做什么操作。"></a>3、host：发起线程的客户的主机名（对于system user，host这一列为空）。tcp/ip连接的主机名是：hostname：client_port格式，用这种格式来更方面查看客户端在做什么操作。</h3><h3 id="4、db：如果指定了库名，会使用当前的库名；如果没有则为空。"><a href="#4、db：如果指定了库名，会使用当前的库名；如果没有则为空。" class="headerlink" title="4、db：如果指定了库名，会使用当前的库名；如果没有则为空。"></a>4、db：如果指定了库名，会使用当前的库名；如果没有则为空。</h3><h3 id="5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处"><a href="#5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处" class="headerlink" title="5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处"></a>5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击<a href="https://dev.mysql.com/doc/refman/8.0/en/thread-commands.html" target="_blank" rel="noopener">此处</a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">connect：从复制已经连接到主库</span><br><span class="line">connect out：从复制正在连接到主库</span><br><span class="line">create db：正在执行一个创建库的操作。</span><br><span class="line">execute：正在执行一个准备好的语句。</span><br><span class="line">field list：提取表列信息线程</span><br><span class="line">kill：当前线程被其他线程杀掉。</span><br><span class="line">query：正在整型一条语句。</span><br><span class="line">quit：线程被终止。</span><br><span class="line">refresh：刷新表、日志、缓存、重置状态变量值或从服务信息线程。</span><br><span class="line">shutdown：关闭服务线程</span><br><span class="line">sleep：等待客户端发送一条新语句线程。</span><br><span class="line">table dump：发送表内容到从服务器</span><br><span class="line">statics：获取当前服务状态信息。</span><br><span class="line">如果一个线程耗时比较久，需要重点关注造成该线程。</span><br></pre></td></tr></table></figure>
+<h3 id="6、time：当前线程耗时。对于slave-sql-线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。"><a href="#6、time：当前线程耗时。对于slave-sql-线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。" class="headerlink" title="6、time：当前线程耗时。对于slave sql 线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。"></a>6、time：当前线程耗时。对于slave sql 线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。</h3><h3 id="7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处"><a href="#7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处" class="headerlink" title="7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处"></a>7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击<a href="https://dev.mysql.com/doc/refman/8.0/en/general-thread-states.html" target="_blank" rel="noopener">此处</a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">after create：执行完create table函数之后，创建表的线程（包括内部临时表），即使因为某些错误创建表失败，该状态也会显示。</span><br><span class="line">analyzing：统计myisam表键分布（例如执行analyze table）</span><br><span class="line">checking permissions：检查是否有权限执行该语句。</span><br><span class="line">check tables：执行表检查操作。</span><br><span class="line">cleaning up：线程正在处理一条命名，准备释放内存重置某些状态变量。</span><br><span class="line">closing tables:刷新更改的表到磁盘，关闭使用的表。该操作应该快速完成，如果没有，请确保是否有足够的磁盘空间或者磁盘io是否太高。</span><br><span class="line">copy to tmp table:处理alter table语句。该状态发生在表新结构被创建之后，行数据被拷贝到表之前。</span><br><span class="line">copying to group table：该执行语句中order by和group by有不同的关键字，行被组处理拷贝到临时表。</span><br><span class="line">copying to tmp table：正在复制内存中的临时表。</span><br><span class="line">altering table：正在执行alter table</span><br><span class="line">Copying to tmp table on disk:正在拷贝临时表到磁盘。临时结果变得太大，因此，线程将临时表从内存转到磁盘来节省内存。</span><br><span class="line">creating index：对myisam表进行alter table ... enable keys操作</span><br><span class="line">creating sort index:使用内部临时表处理一个select语句。</span><br><span class="line">creating table：正在创建表（包括创建临时表）</span><br><span class="line">creating tmp table：在内存或磁盘创建一个临时表。如果一个表刚开始再内存创建，之后转到磁盘，该状态会变为：Copying to tmp table on disk。</span><br><span class="line">committing alter table to storage engine：alter table已经执行完成，正在提交 结果。</span><br><span class="line">executing：已经开始执行一个语句</span><br><span class="line">freeing items：已经执行了一个命令，该状态通常在cleaning up之后。</span><br><span class="line">query end：，在freeing items状态之前，处理一个查询之后</span><br><span class="line">logging slow query：写语句到slow-query日志</span><br><span class="line">sending data：正在读取和处理一个select语句的行，并发送数据到客户端，因为可能会发生物理读，该状态可能是给定生命周期时间最长的。</span><br><span class="line">update：准备更新表</span><br><span class="line">updating：正在搜索更新的行，并更新他们</span><br><span class="line">system lock：调用了mysql_lock_tables()函数，线程状态一直没有更新。产生该问题原因很多：</span><br><span class="line">比如：请求或等待一个表的内部或者外部系统锁。当innodb等待一个表锁等级为lock tables时会发生。如果这个问题是由请求外部锁，并且你没有用多个mysqld服务访问相同的myisam引擎表，你可以通过参数 --skip-external-locking禁用外部系统锁。但是外部锁默认情况下是禁用的，因此该参数可能没有影响。对于show profile命令，该状态代表正在请求锁（不是在等待锁）</span><br><span class="line">对于系统表锁状态是Locking system tables。</span><br><span class="line">waiting for commit lock：flush tables with read lock正在等待一个commit 锁</span><br><span class="line">waiting for tables：线程收到通知，表的底层架构已经更改，需要重新打开表后去一个新的结构。但是重新打开一个表，需要等待其他正在访问该表的线程。</span><br><span class="line">通常在其他线程使用flush tables或者执行下面语句: FLUSH TABLES tbl_name, ALTER TABLE, RENAME TABLE, REPAIR TABLE, ANALYZE TABLE, or OPTIMIZE TABLE. 时会发生此通知。</span><br></pre></td></tr></table></figure>
+<h3 id="8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。"><a href="#8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。" class="headerlink" title="8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。"></a>8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。</h3><h3 id="9、另外使用mysqladmin-processlist也可以查看进程信息，如下图所示："><a href="#9、另外使用mysqladmin-processlist也可以查看进程信息，如下图所示：" class="headerlink" title="9、另外使用mysqladmin processlist也可以查看进程信息，如下图所示："></a>9、另外使用mysqladmin processlist也可以查看进程信息，如下图所示：</h3><p><img src="https://i.imgur.com/72IPvk1.png" alt=""></p>
+<h3 id="10、如果想通过sql命令去获取自己设定的行，可按以下方法设置："><a href="#10、如果想通过sql命令去获取自己设定的行，可按以下方法设置：" class="headerlink" title="10、如果想通过sql命令去获取自己设定的行，可按以下方法设置："></a>10、如果想通过sql命令去获取自己设定的行，可按以下方法设置：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select * from information_schema.processlist where state !=&apos; &apos;;</span><br><span class="line">![](https://i.imgur.com/pGGuMER.png)</span><br></pre></td></tr></table></figure>
+<p>可根据自己需求添加条件。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#0、show-processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。"><span class="toc-number">1.</span> <span class="toc-text">0、show processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1、id：连接标识符，与INFORMATION-SCHEMA-PROCESSLIST表的id列显示的是同类型的值，如下图所示："><span class="toc-number">2.</span> <span class="toc-text">1、id：连接标识符，与INFORMATION_SCHEMA PROCESSLIST表的id列显示的是同类型的值，如下图所示：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、user-代表数据库用户，如果是system-user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system-user，host列没有任何信息。-unauthenticated-user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event-scheduler-是监控调度事件的线程。"><span class="toc-number">3.</span> <span class="toc-text">2、user: 代表数据库用户，如果是system user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system user，host列没有任何信息。 unauthenticated user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event_scheduler 是监控调度事件的线程。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、host：发起线程的客户的主机名（对于system-user，host这一列为空）。tcp-ip连接的主机名是：hostname：client-port格式，用这种格式来更方面查看客户端在做什么操作。"><span class="toc-number">4.</span> <span class="toc-text">3、host：发起线程的客户的主机名（对于system user，host这一列为空）。tcp/ip连接的主机名是：hostname：client_port格式，用这种格式来更方面查看客户端在做什么操作。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、db：如果指定了库名，会使用当前的库名；如果没有则为空。"><span class="toc-number">5.</span> <span class="toc-text">4、db：如果指定了库名，会使用当前的库名；如果没有则为空。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处"><span class="toc-number">6.</span> <span class="toc-text">5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6、time：当前线程耗时。对于slave-sql-线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。"><span class="toc-number">7.</span> <span class="toc-text">6、time：当前线程耗时。对于slave sql 线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处"><span class="toc-number">8.</span> <span class="toc-text">7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。"><span class="toc-number">9.</span> <span class="toc-text">8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9、另外使用mysqladmin-processlist也可以查看进程信息，如下图所示："><span class="toc-number">10.</span> <span class="toc-text">9、另外使用mysqladmin processlist也可以查看进程信息，如下图所示：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10、如果想通过sql命令去获取自己设定的行，可按以下方法设置："><span class="toc-number">11.</span> <span class="toc-text">10、如果想通过sql命令去获取自己设定的行，可按以下方法设置：</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Mysql] mysql show processlist详解'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
