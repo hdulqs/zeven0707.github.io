@@ -1,0 +1,328 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="mysql 切割慢日志脚本：title: “[Mysql] mysql切割慢日志”catalog: truedate: 2018-09-12 19:04:10tags:
+
+mysql
+linuxcatagories:
+mysql
+
+
+0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span></span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/12/mysql 切割慢日志另附定期切割日志脚本/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-12T11:04:58.283Z">
+          2018-09-12
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="mysql-切割慢日志脚本："><a href="#mysql-切割慢日志脚本：" class="headerlink" title="mysql 切割慢日志脚本："></a>mysql 切割慢日志脚本：</h2><p>title: “[Mysql] mysql切割慢日志”<br>catalog: true<br>date: 2018-09-12 19:04:10<br>tags:</p>
+<ul>
+<li>mysql</li>
+<li>linux<br>catagories:</li>
+<li>mysql</li>
+</ul>
+<hr>
+<h3 id="0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割："><a href="#0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割：" class="headerlink" title="0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割："></a>0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">split几个主要参数：</span><br><span class="line">-b 	分割后的文档大小，单位是byte</span><br><span class="line">-C 	分割后的文档，单行最大byte数</span><br><span class="line">-d 	使用数字作为后缀，同时使用-a length指定后缀长度</span><br><span class="line">-l 	分割后文档的行数</span><br></pre></td></tr></table></figure>
+<h3 id="1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test-log，不指定后缀会使用默认后缀名aa-ab-ac…-等"><a href="#1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test-log，不指定后缀会使用默认后缀名aa-ab-ac…-等" class="headerlink" title="1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test.log，不指定后缀会使用默认后缀名aa,ab,ac….等"></a>1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test.log，不指定后缀会使用默认后缀名aa,ab,ac….等</h3><p>split slow.log -b 1G test.log<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ls -ltrh test.log*</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:08 test.logaa</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:09 test.logab</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:10 test.logac</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:11 test.logad</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:12 test.logae</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:13 test.logaf</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:14 test.logag</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:15 test.logah</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:16 test.logai</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:17 test.logaj</span><br><span class="line">-rw-r--r-- 1 root  root  270M Sep 12 03:17 test.logak</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、如果需要指定后缀可使用-d-a-参数（n）代表指定附加后缀的个数，比如切割test-logaa日志文件："><a href="#2、如果需要指定后缀可使用-d-a-参数（n）代表指定附加后缀的个数，比如切割test-logaa日志文件：" class="headerlink" title="2、如果需要指定后缀可使用-d -a  参数（n）代表指定附加后缀的个数，比如切割test.logaa日志文件："></a>2、如果需要指定后缀可使用-d -a <n> 参数（n）代表指定附加后缀的个数，比如切割test.logaa日志文件：</n></h3><p>split test.logaa -b 100M -d -a 2 logaa<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> ll logaa*</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa00</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa01</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa02</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa03</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa04</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa05</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa06</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa07</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa08</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:04 logaa09</span><br><span class="line">-rw-r--r-- 1 root root  24M Sep 12 09:04 logaa10</span><br></pre></td></tr></table></figure></p>
+<p>split test.logab -b 100M -d -a 4 logab<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ls -ltrh logab*</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0000</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0001</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0002</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0003</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0004</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0005</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0006</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0007</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:06 logab0008</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:06 logab0009</span><br><span class="line">-rw-r--r-- 1 root root  24M Sep 12 09:06 logab0010</span><br></pre></td></tr></table></figure></p>
+<h3 id="4、按行切割日志文件，查看准备切割的文件有多少行："><a href="#4、按行切割日志文件，查看准备切割的文件有多少行：" class="headerlink" title="4、按行切割日志文件，查看准备切割的文件有多少行："></a>4、按行切割日志文件，查看准备切割的文件有多少行：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat logab0001 |wc -l</span><br><span class="line">505</span><br></pre></td></tr></table></figure>
+<p>按每个文件60行切割<br>split logab0001 -l 60 logab0001<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ll logab0001*</span><br><span class="line">-rw-r--r-- 1 root root 104857600 Sep 12 09:05 logab0001</span><br><span class="line">-rw-r--r-- 1 root root  11922880 Sep 12 09:10 logab0001aa</span><br><span class="line">-rw-r--r-- 1 root root  12506422 Sep 12 09:10 logab0001ab</span><br><span class="line">-rw-r--r-- 1 root root  12506026 Sep 12 09:10 logab0001ac</span><br><span class="line">-rw-r--r-- 1 root root  12506635 Sep 12 09:10 logab0001ad</span><br><span class="line">-rw-r--r-- 1 root root  12506065 Sep 12 09:10 logab0001ae</span><br><span class="line">-rw-r--r-- 1 root root  12506313 Sep 12 09:10 logab0001af</span><br><span class="line">-rw-r--r-- 1 root root  12506206 Sep 12 09:10 logab0001ag</span><br><span class="line">-rw-r--r-- 1 root root  12506325 Sep 12 09:10 logab0001ah</span><br><span class="line">-rw-r--r-- 1 root root   5390728 Sep 12 09:10 logab0001ai</span><br></pre></td></tr></table></figure></p>
+<p>查看每个文件的行数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">for i in `ls logab0001*`;do echo &quot;$i文件行数&quot;`cat $i|wc -l` ;done </span><br><span class="line">logab0001文件行数505</span><br><span class="line">logab0001aa文件行数60</span><br><span class="line">logab0001ab文件行数60</span><br><span class="line">logab0001ac文件行数60</span><br><span class="line">logab0001ad文件行数60</span><br><span class="line">logab0001ae文件行数60</span><br><span class="line">logab0001af文件行数60</span><br><span class="line">logab0001ag文件行数60</span><br><span class="line">logab0001ah文件行数60</span><br><span class="line">logab0001ai文件行数25</span><br></pre></td></tr></table></figure></p>
+<h3 id="5、按每行字节数切割"><a href="#5、按每行字节数切割" class="headerlink" title="5、按每行字节数切割"></a>5、按每行字节数切割</h3><p>指定每行字节数最多不超过2000000个字节<br>split logab0001aa -C 2000000 testlog<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ls -lthr testlog*</span><br><span class="line">-rw-r--r-- 1 root root  1.5M Sep 12 10:19 testlogaa</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogab</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogac</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogad</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogae</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogaf</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogag</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogah</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogai</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogaj</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogak</span><br></pre></td></tr></table></figure></p>
+<p>查看某一行的字节数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-slave log]# sed &apos;1p&apos; testlogaa|wc -c</span><br><span class="line">1960374</span><br></pre></td></tr></table></figure></p>
+<p>字节数小于2000000<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf testlog*</span><br></pre></td></tr></table></figure></p>
+<p>删除生成的日志文件，生成每行字节最大不超过1500000的日志文件：<br>split logab0001aa -C 1500000 testlog<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ls -lthr testlog*</span><br><span class="line">-rw-r--r-- 1 root root  449K Sep 12 10:22 testlogaa</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogab</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogac</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogad</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogae</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogaf</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogag</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogah</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogai</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogaj</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogak</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogal</span><br></pre></td></tr></table></figure></p>
+<p>查看某一行的字节数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-slave log]# sed &apos;1p&apos; testlogaa|wc -c</span><br><span class="line">918219</span><br></pre></td></tr></table></figure></p>
+<p>字节数小于1500000</p>
+<h3 id="6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割："><a href="#6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割：" class="headerlink" title="6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割："></a>6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#mysql慢日志所在路径</span><br><span class="line">slowlogpath=/data/mysql/log</span><br><span class="line">#mysql慢日志文件名</span><br><span class="line">slowlogname=slow.log</span><br><span class="line">#当前系统时间</span><br><span class="line">stamp=`date +&apos;%Y%m%d&apos;`</span><br><span class="line">#与当前系统时间对比，七天前的时间</span><br><span class="line">oldstamp=`date +&quot;%Y%m%d&quot; -d &quot;-7 day&quot;`</span><br><span class="line">#mysql用户名</span><br><span class="line">username=root</span><br><span class="line">#mysql用户名密码</span><br><span class="line">password=12345678</span><br><span class="line">#mysql安装路径</span><br><span class="line">dbpath=/data/mysql/bin</span><br><span class="line">#移动mysql慢日志</span><br><span class="line">mv $&#123;slowlogpath&#125;/$&#123;slowlogname&#125;  $&#123;slowlogpath&#125;/$&#123;stamp&#125;_$&#123;slowlogname&#125;</span><br><span class="line">#重新生成slow日志文件：</span><br><span class="line">$&#123;dbpath&#125;/mysqladmin -u $&#123;username&#125; -p$&#123;password&#125; flush-logs slow</span><br><span class="line">#删除7天前的日志文件</span><br><span class="line">if [ -e $&#123;slowlogpath&#125;/$&#123;oldstamp&#125;_$&#123;slowlogname&#125; ];then</span><br><span class="line">   sudo rm -rf $&#123;slowlogpath&#125;/$&#123;oldstamp&#125;_$&#123;slowlogname&#125;</span><br><span class="line">else</span><br><span class="line">   :</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<p>将脚本添加到定时任务：<br>crontab -l<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 * * * sh /data/script/split_mysqlslowlog.sh</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql-切割慢日志脚本："><span class="toc-number">1.</span> <span class="toc-text">mysql 切割慢日志脚本：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割："><span class="toc-number">1.1.</span> <span class="toc-text">0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test-log，不指定后缀会使用默认后缀名aa-ab-ac…-等"><span class="toc-number">1.2.</span> <span class="toc-text">1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test.log，不指定后缀会使用默认后缀名aa,ab,ac….等</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、如果需要指定后缀可使用-d-a-参数（n）代表指定附加后缀的个数，比如切割test-logaa日志文件："><span class="toc-number">1.3.</span> <span class="toc-text">2、如果需要指定后缀可使用-d -a  参数（n）代表指定附加后缀的个数，比如切割test.logaa日志文件：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、按行切割日志文件，查看准备切割的文件有多少行："><span class="toc-number">1.4.</span> <span class="toc-text">4、按行切割日志文件，查看准备切割的文件有多少行：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5、按每行字节数切割"><span class="toc-number">1.5.</span> <span class="toc-text">5、按每行字节数切割</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割："><span class="toc-number">1.6.</span> <span class="toc-text">6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割：</span></a></li></ol></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = ''
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
