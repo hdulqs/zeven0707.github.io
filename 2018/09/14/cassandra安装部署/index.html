@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Cassandra] cassandra安装部署及日常使用命令 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、添加yum源vim /etc/yum.repos.d/cassandra.repo123456[cassandra]name=Apache Cassandrabaseurl=https://www.apache.org/dist/cassandra/redhat/311x/gpgcheck=1r">
+  
+
+  
+  
+  <meta name="keywords" content="Cassandra">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Cassandra] cassandra安装部署及日常使用命令"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Cassandra] cassandra安装部署及日常使用命令</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/14/cassandra安装部署/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-14T09:31:00.000Z">
+          2018-09-14
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、添加yum源"><a href="#1、添加yum源" class="headerlink" title="1、添加yum源"></a>1、添加yum源</h3><p>vim /etc/yum.repos.d/cassandra.repo<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[cassandra]</span><br><span class="line">name=Apache Cassandra</span><br><span class="line">baseurl=https://www.apache.org/dist/cassandra/redhat/311x/</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://www.apache.org/dist/cassandra/KEYS</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、安装cassandra数据库"><a href="#2、安装cassandra数据库" class="headerlink" title="2、安装cassandra数据库"></a>2、安装cassandra数据库</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install cassandra -y</span><br></pre></td></tr></table></figure>
+<h3 id="3、修改配置文件-etc-cassandra-conf-cassandra-yaml"><a href="#3、修改配置文件-etc-cassandra-conf-cassandra-yaml" class="headerlink" title="3、修改配置文件/etc/cassandra/conf/cassandra.yaml"></a>3、修改配置文件/etc/cassandra/conf/cassandra.yaml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cluster_name: &apos;My Cluster&apos;</span><br><span class="line">hints_directory: /data/cassandra/hints</span><br><span class="line">data_file_directories:     </span><br><span class="line">        - /data/cassandra/dbdata</span><br><span class="line">commitlog_directory: /data/cassandra/commitlog</span><br><span class="line">saved_caches_directory: /data/cassandra/caches</span><br><span class="line"></span><br><span class="line">         - seeds: &quot;10.10.8.3,10.10.8.4,10.10.8.5&quot;</span><br><span class="line">listen_address: dax-mysql-mha</span><br><span class="line">rpc_address: dax-mysql-mha</span><br></pre></td></tr></table></figure>
+<p>每个节点需要修改的基本参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cluster_name:修改集群名称</span><br><span class="line">修改存放目录hint、data、log</span><br><span class="line">seeds:添加节点ip</span><br><span class="line">listen_address：修改为本地ip地址</span><br><span class="line">rpc_address：修改为本地ip地址</span><br></pre></td></tr></table></figure></p>
+<p>配置文件部分参数解释：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">cluster_name: &apos;Test Cluster&apos;</span><br><span class="line">storage_port: 7000</span><br><span class="line">listen_address: dax-mysql-mha</span><br><span class="line">start_native_transport: true              #开启native协议 </span><br><span class="line">native_transport_port: 9042              #客户端的交互端口 </span><br><span class="line">data_file_directories:</span><br><span class="line">    - /data/cassandra/dbdata              # 数据位置，多盘的话可以写多个目录 </span><br><span class="line">commitlog_directory:</span><br><span class="line">    - /data/cassandra/commitlog          #commitlog的路径，与data目录分开磁盘，提高性能</span><br><span class="line">saved_caches_directory:</span><br><span class="line">    - /data/cassandra/caches              #缓存数据目录 </span><br><span class="line">commitlog_sync: batch                    #批量记录commitlog，每隔一段时间将数据commitlog</span><br><span class="line">commitlog_sync_batch_window_in_ms: 2      #batch模式下，批量操作缓存的时间间隔</span><br><span class="line">#commitlog_sync: periodic                #周期记录commitlog，每一次有数据更新都commitlog</span><br><span class="line">#commitlog_sync_period_in_ms: 10000      #periodic模式，刷新commitlog的时间间隔</span><br><span class="line"> rpc_address: dax-mysql-mha</span><br></pre></td></tr></table></figure></p>
+<h3 id="4、创建配置文件内指定的相关目录："><a href="#4、创建配置文件内指定的相关目录：" class="headerlink" title="4、创建配置文件内指定的相关目录："></a>4、创建配置文件内指定的相关目录：</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/cassandra/hints</span><br><span class="line">mkdir -p /data/cassandra/dbdata</span><br><span class="line">mkdir -p /data/cassandra/commitlog</span><br><span class="line">mkdir -p /data/cassandra/caches</span><br><span class="line">chmod 777 -R /data/cassandra</span><br></pre></td></tr></table></figure>
+<h3 id="5、启动数据库，并添加到开机启动："><a href="#5、启动数据库，并添加到开机启动：" class="headerlink" title="5、启动数据库，并添加到开机启动："></a>5、启动数据库，并添加到开机启动：</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service cassandra start</span><br><span class="line">chkconfig cassandra on</span><br></pre></td></tr></table></figure>
+<p>查看运行状态<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nodetool status</span><br></pre></td></tr></table></figure></p>
+<p>进入控制台,9042端口为默认控制台端口，可自行修改配置文件设置：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cqlsh ip 9042</span><br></pre></td></tr></table></figure></p>
+<h3 id="6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改："><a href="#6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改：" class="headerlink" title="6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改："></a>6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">进入控制台：</span><br><span class="line">UPDATE system.local SET cluster_name = &apos;daxcluster&apos; where key=&apos;local&apos;;</span><br><span class="line">bash $ ./nodetool flush</span><br><span class="line">修改cassandra.yaml配置文件cluster配置参数</span><br><span class="line">cluster_name: &apos;daxcluster&apos;</span><br><span class="line">重启cassandra</span><br><span class="line">/etc/init.d/cassandra restart</span><br></pre></td></tr></table></figure>
+<h3 id="7、给数据库设置用户名密码"><a href="#7、给数据库设置用户名密码" class="headerlink" title="7、给数据库设置用户名密码"></a>7、给数据库设置用户名密码</h3><p>1）、首先修改配置文件 cassandra.yaml<br>把默认的authenticator: AllowAllAuthenticator运行所有人登录设置为用密码登录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">authenticator: PasswordAuthenticator</span><br></pre></td></tr></table></figure></p>
+<p>2）、登录cassandra创建用户<br>使用默认账户登录cassandra<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cqlsh -ucassandra -pcassandra ip 9042</span><br></pre></td></tr></table></figure></p>
+<p>创建用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE USER test WITH PASSWORD &apos;test&apos; SUPERUSER;</span><br></pre></td></tr></table></figure></p>
+<p>3）、使用新用户登录<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cqlsh -utest -ptest ip 9042</span><br></pre></td></tr></table></figure></p>
+<p>删除默认帐号：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DROP USER cassandra;</span><br></pre></td></tr></table></figure></p>
+<p>4）、java使用用户名密码访问cassandra<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Cluster cluster = Cluster.builder()</span><br><span class="line">.addContactPoint(<span class="string">"192.168.22.161"</span>)</span><br><span class="line">.withCredentials(<span class="string">"myusername"</span>, <span class="string">"mypassword"</span>)</span><br><span class="line">.build();</span><br></pre></td></tr></table></figure></p>
+<h3 id="8、账号权限分配命令"><a href="#8、账号权限分配命令" class="headerlink" title="8、账号权限分配命令"></a>8、账号权限分配命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">授权：</span><br><span class="line">GRANT permission_name PERMISSION ON resource TO user_name;</span><br><span class="line">GRANT ALL PERMISSIONS ON resource TO user_name;</span><br><span class="line">收回权限：</span><br><span class="line">REVOKE permission_name PERMISSION ON resource FROM user_name;</span><br><span class="line">REVOKE ALL PERMISSIONS ON resource FROM user_name;</span><br><span class="line">查看权限：</span><br><span class="line">LIST permission_name PERMISSION ON resource OF user_name NORECURSIVE;</span><br><span class="line">LIST ALL PERMISSIONS ON resource OF user_name NORECURSIVE;</span><br><span class="line">其中，</span><br><span class="line">permission_name为：  ALL/ALTER/AUTHORIZE/CREATE/DROP/MODIFY/SELECT</span><br><span class="line">resource为：ALL KEYSPACES/KEYSPACE keyspace_name/TABLE keyspace_name.table_name</span><br></pre></td></tr></table></figure>
+<h3 id="9、其他使用命令："><a href="#9、其他使用命令：" class="headerlink" title="9、其他使用命令："></a>9、其他使用命令：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">desc KEYSPACEs</span><br><span class="line">枚举所有数据库</span><br><span class="line">list users;</span><br><span class="line">查看所有用户</span><br><span class="line">show version;</span><br><span class="line">显示当前cqlsh,cassandra，cql spec,native protocol 版本信息</span><br><span class="line">show host;</span><br><span class="line">显示当前集群节点的ip地址和端口</span><br><span class="line">SHOW SESSION &lt;session id&gt;</span><br><span class="line">跟踪一个会话信息</span><br><span class="line">SOURCE &apos;/home/thobbs/commands.cql&apos;</span><br><span class="line">读取文件内容，执行cql语句</span><br><span class="line">CAPTURE &apos;&lt;file&gt;&apos;;</span><br><span class="line">将会话查询内容指定到一个文件内</span><br><span class="line">CAPTURE OFF;</span><br><span class="line">停止将查询结果指定到文件内，使其正常输出到屏幕上</span><br><span class="line">CAPTURE;</span><br><span class="line">查看当前抓取信息是否指定到什么目录下</span><br></pre></td></tr></table></figure>
+<h3 id="10、如果nodetool-decommission命令将某节点提出-执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。"><a href="#10、如果nodetool-decommission命令将某节点提出-执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。" class="headerlink" title="10、如果nodetool decommission命令将某节点提出,执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。"></a>10、如果nodetool decommission命令将某节点提出,执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。</h3>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Cassandra/">Cassandra</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、添加yum源"><span class="toc-number">1.</span> <span class="toc-text">1、添加yum源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、安装cassandra数据库"><span class="toc-number">2.</span> <span class="toc-text">2、安装cassandra数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、修改配置文件-etc-cassandra-conf-cassandra-yaml"><span class="toc-number">3.</span> <span class="toc-text">3、修改配置文件/etc/cassandra/conf/cassandra.yaml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、创建配置文件内指定的相关目录："><span class="toc-number">4.</span> <span class="toc-text">4、创建配置文件内指定的相关目录：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5、启动数据库，并添加到开机启动："><span class="toc-number">5.</span> <span class="toc-text">5、启动数据库，并添加到开机启动：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改："><span class="toc-number">6.</span> <span class="toc-text">6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7、给数据库设置用户名密码"><span class="toc-number">7.</span> <span class="toc-text">7、给数据库设置用户名密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8、账号权限分配命令"><span class="toc-number">8.</span> <span class="toc-text">8、账号权限分配命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9、其他使用命令："><span class="toc-number">9.</span> <span class="toc-text">9、其他使用命令：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10、如果nodetool-decommission命令将某节点提出-执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。"><span class="toc-number">10.</span> <span class="toc-text">10、如果nodetool decommission命令将某节点提出,执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Cassandra] cassandra安装部署及日常使用命令'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
