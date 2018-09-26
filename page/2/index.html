@@ -112,6 +112,74 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/09/09/mysql show processlist详解/"><span>[Mysql] mysql show processlist详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/09/mysql show processlist详解/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-09T14:50:03.000Z">
+          2018-09-09
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="0、show-processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。"><a href="#0、show-processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。" class="headerlink" title="0、show processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。"></a>0、show processlist查看正在运行的线程，如果你有process权限，能够看到所有的线程，如果没有权限只能看到自己的线程。</h3><p>有管理员权限的用户，如下图所示：<br><img src="https://i.imgur.com/CwMY5kv.png" alt=""><br>没有管理权限的用户，如下图所示：：<br><img src="https://i.imgur.com/iJ8OO2x.png" alt=""><br>如果不加full关键字，每条语句的info信息栏只能显示前100个字符。<br>如果看到“too many connections”的错误信息，想要看看什么线程正在运行，使用show processlist语句是很有用的。mysql数据库会额外保持一个连接，供具有connection_admin或者super权限用户的使用，用以确保管理员能随时连接进来检查系统状况（假设你没有将此权限授予所有用户）。<br>show processlist输出列详解：</p>
+<h3 id="1、id：连接标识符，与INFORMATION-SCHEMA-PROCESSLIST表的id列显示的是同类型的值，如下图所示："><a href="#1、id：连接标识符，与INFORMATION-SCHEMA-PROCESSLIST表的id列显示的是同类型的值，如下图所示：" class="headerlink" title="1、id：连接标识符，与INFORMATION_SCHEMA PROCESSLIST表的id列显示的是同类型的值，如下图所示："></a>1、id：连接标识符，与INFORMATION_SCHEMA PROCESSLIST表的id列显示的是同类型的值，如下图所示：</h3><p><img src="https://i.imgur.com/Hl57tcb.png" alt=""><br>Performance_Schema threads表的processlist_id列也是相同值，由connection_id())函数返回值。<br><img src="https://i.imgur.com/CwS1fUD.png" alt=""><br>通过kill 语句可以杀掉查询到的线程，执行命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill id号</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、user-代表数据库用户，如果是system-user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system-user，host列没有任何信息。-unauthenticated-user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event-scheduler-是监控调度事件的线程。"><a href="#2、user-代表数据库用户，如果是system-user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system-user，host列没有任何信息。-unauthenticated-user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event-scheduler-是监控调度事件的线程。" class="headerlink" title="2、user: 代表数据库用户，如果是system user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system user，host列没有任何信息。 unauthenticated user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event_scheduler 是监控调度事件的线程。"></a>2、user: 代表数据库用户，如果是system user代表非客户端线程，是服务器发起的处理内部事务的线程。这些线程可能是io线程、复制从库的sql线程、延迟行处理线程。对于system user，host列没有任何信息。 unauthenticated user是有客户端发起的，但是尚未对客户端用户进行验证的线程。event_scheduler 是监控调度事件的线程。</h3><h3 id="3、host：发起线程的客户的主机名（对于system-user，host这一列为空）。tcp-ip连接的主机名是：hostname：client-port格式，用这种格式来更方面查看客户端在做什么操作。"><a href="#3、host：发起线程的客户的主机名（对于system-user，host这一列为空）。tcp-ip连接的主机名是：hostname：client-port格式，用这种格式来更方面查看客户端在做什么操作。" class="headerlink" title="3、host：发起线程的客户的主机名（对于system user，host这一列为空）。tcp/ip连接的主机名是：hostname：client_port格式，用这种格式来更方面查看客户端在做什么操作。"></a>3、host：发起线程的客户的主机名（对于system user，host这一列为空）。tcp/ip连接的主机名是：hostname：client_port格式，用这种格式来更方面查看客户端在做什么操作。</h3><h3 id="4、db：如果指定了库名，会使用当前的库名；如果没有则为空。"><a href="#4、db：如果指定了库名，会使用当前的库名；如果没有则为空。" class="headerlink" title="4、db：如果指定了库名，会使用当前的库名；如果没有则为空。"></a>4、db：如果指定了库名，会使用当前的库名；如果没有则为空。</h3><h3 id="5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处"><a href="#5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处" class="headerlink" title="5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击此处"></a>5、command：线程的命令类型。下面列举几种常见的线程命令，如果想查看详细信息点击<a href="https://dev.mysql.com/doc/refman/8.0/en/thread-commands.html" target="_blank" rel="noopener">此处</a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">connect：从复制已经连接到主库</span><br><span class="line">connect out：从复制正在连接到主库</span><br><span class="line">create db：正在执行一个创建库的操作。</span><br><span class="line">execute：正在执行一个准备好的语句。</span><br><span class="line">field list：提取表列信息线程</span><br><span class="line">kill：当前线程被其他线程杀掉。</span><br><span class="line">query：正在整型一条语句。</span><br><span class="line">quit：线程被终止。</span><br><span class="line">refresh：刷新表、日志、缓存、重置状态变量值或从服务信息线程。</span><br><span class="line">shutdown：关闭服务线程</span><br><span class="line">sleep：等待客户端发送一条新语句线程。</span><br><span class="line">table dump：发送表内容到从服务器</span><br><span class="line">statics：获取当前服务状态信息。</span><br><span class="line">如果一个线程耗时比较久，需要重点关注造成该线程。</span><br></pre></td></tr></table></figure>
+<h3 id="6、time：当前线程耗时。对于slave-sql-线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。"><a href="#6、time：当前线程耗时。对于slave-sql-线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。" class="headerlink" title="6、time：当前线程耗时。对于slave sql 线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。"></a>6、time：当前线程耗时。对于slave sql 线程，该值代表最后一次复制时间的时间戳和从服务器的真正时间的秒数。</h3><h3 id="7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处"><a href="#7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处" class="headerlink" title="7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击此处"></a>7、state：行为，事件，状态指明当前线程在做什么。下面列举几种常见状态值，查看详细信息点击<a href="https://dev.mysql.com/doc/refman/8.0/en/general-thread-states.html" target="_blank" rel="noopener">此处</a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">after create：执行完create table函数之后，创建表的线程（包括内部临时表），即使因为某些错误创建表失败，该状态也会显示。</span><br><span class="line">analyzing：统计myisam表键分布（例如执行analyze table）</span><br><span class="line">checking permissions：检查是否有权限执行该语句。</span><br><span class="line">check tables：执行表检查操作。</span><br><span class="line">cleaning up：线程正在处理一条命名，准备释放内存重置某些状态变量。</span><br><span class="line">closing tables:刷新更改的表到磁盘，关闭使用的表。该操作应该快速完成，如果没有，请确保是否有足够的磁盘空间或者磁盘io是否太高。</span><br><span class="line">copy to tmp table:处理alter table语句。该状态发生在表新结构被创建之后，行数据被拷贝到表之前。</span><br><span class="line">copying to group table：该执行语句中order by和group by有不同的关键字，行被组处理拷贝到临时表。</span><br><span class="line">copying to tmp table：正在复制内存中的临时表。</span><br><span class="line">altering table：正在执行alter table</span><br><span class="line">Copying to tmp table on disk:正在拷贝临时表到磁盘。临时结果变得太大，因此，线程将临时表从内存转到磁盘来节省内存。</span><br><span class="line">creating index：对myisam表进行alter table ... enable keys操作</span><br><span class="line">creating sort index:使用内部临时表处理一个select语句。</span><br><span class="line">creating table：正在创建表（包括创建临时表）</span><br><span class="line">creating tmp table：在内存或磁盘创建一个临时表。如果一个表刚开始再内存创建，之后转到磁盘，该状态会变为：Copying to tmp table on disk。</span><br><span class="line">committing alter table to storage engine：alter table已经执行完成，正在提交 结果。</span><br><span class="line">executing：已经开始执行一个语句</span><br><span class="line">freeing items：已经执行了一个命令，该状态通常在cleaning up之后。</span><br><span class="line">query end：，在freeing items状态之前，处理一个查询之后</span><br><span class="line">logging slow query：写语句到slow-query日志</span><br><span class="line">sending data：正在读取和处理一个select语句的行，并发送数据到客户端，因为可能会发生物理读，该状态可能是给定生命周期时间最长的。</span><br><span class="line">update：准备更新表</span><br><span class="line">updating：正在搜索更新的行，并更新他们</span><br><span class="line">system lock：调用了mysql_lock_tables()函数，线程状态一直没有更新。产生该问题原因很多：</span><br><span class="line">比如：请求或等待一个表的内部或者外部系统锁。当innodb等待一个表锁等级为lock tables时会发生。如果这个问题是由请求外部锁，并且你没有用多个mysqld服务访问相同的myisam引擎表，你可以通过参数 --skip-external-locking禁用外部系统锁。但是外部锁默认情况下是禁用的，因此该参数可能没有影响。对于show profile命令，该状态代表正在请求锁（不是在等待锁）</span><br><span class="line">对于系统表锁状态是Locking system tables。</span><br><span class="line">waiting for commit lock：flush tables with read lock正在等待一个commit 锁</span><br><span class="line">waiting for tables：线程收到通知，表的底层架构已经更改，需要重新打开表后去一个新的结构。但是重新打开一个表，需要等待其他正在访问该表的线程。</span><br><span class="line">通常在其他线程使用flush tables或者执行下面语句: FLUSH TABLES tbl_name, ALTER TABLE, RENAME TABLE, REPAIR TABLE, ANALYZE TABLE, or OPTIMIZE TABLE. 时会发生此通知。</span><br></pre></td></tr></table></figure>
+<h3 id="8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。"><a href="#8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。" class="headerlink" title="8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。"></a>8、info：正在执行的语句，如果没有语句则为空。语句可能是发送的服务端的，或一个内部语句（如果一个语句执行其他语句）例如：call调用一个（select语句）存储过程，info值会显示select语句。</h3><h3 id="9、另外使用mysqladmin-processlist也可以查看进程信息，如下图所示："><a href="#9、另外使用mysqladmin-processlist也可以查看进程信息，如下图所示：" class="headerlink" title="9、另外使用mysqladmin processlist也可以查看进程信息，如下图所示："></a>9、另外使用mysqladmin processlist也可以查看进程信息，如下图所示：</h3><p><img src="https://i.imgur.com/72IPvk1.png" alt=""></p>
+<h3 id="10、如果想通过sql命令去获取自己设定的行，可按以下方法设置："><a href="#10、如果想通过sql命令去获取自己设定的行，可按以下方法设置：" class="headerlink" title="10、如果想通过sql命令去获取自己设定的行，可按以下方法设置："></a>10、如果想通过sql命令去获取自己设定的行，可按以下方法设置：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select * from information_schema.processlist where state !=&apos; &apos;;</span><br><span class="line">![](https://i.imgur.com/pGGuMER.png)</span><br></pre></td></tr></table></figure>
+<p>可根据自己需求添加条件。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/09/09/mysql show processlist详解/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/09/09/mysql update一条语句过程遇到的问题/"><span>[Mysql] mysql update一条语句过程遇到的问题</span></a></h3>
     
   
@@ -754,70 +822,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/08/29/grafana+prometheus安装配置监控mysql、redis、mongodb/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/28/解决zabbix中文乱码/"><span>[Zabbix] 解决zabbix中文乱码问题</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/28/解决zabbix中文乱码/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-28T02:23:10.000Z">
-          2018-08-28
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、在windows机器上查找simkai-ttf文件，在windows下拷贝simkai字体到zabbix-server端，并拷贝到相应目录"><a href="#1、在windows机器上查找simkai-ttf文件，在windows下拷贝simkai字体到zabbix-server端，并拷贝到相应目录" class="headerlink" title="1、在windows机器上查找simkai.ttf文件，在windows下拷贝simkai字体到zabbix server端，并拷贝到相应目录"></a>1、在windows机器上查找simkai.ttf文件，在windows下拷贝simkai字体到zabbix server端，并拷贝到相应目录</h3><p>可在c盘路径下搜索simkai.ttf，本地机器的路径为‘C:\Windows\WinSxS\amd64_microsoft-windows-font-truetype-simkai_31bf3856ad364e35_10.0.17134.1_none_d7e1e1a5de638405’，每台机器对应的目录会有差异，但‘C:\Windows\WinSxS’路径一致。</p>
-<h3 id="2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下"><a href="#2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下" class="headerlink" title="2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下"></a>2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv simkai.ttf /data/nginx-1.9.15/html/zabbix/fonts/</span><br></pre></td></tr></table></figure>
-<h3 id="3、修改nginx配置文件"><a href="#3、修改nginx配置文件" class="headerlink" title="3、修改nginx配置文件"></a>3、修改nginx配置文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;s/DejaVuSans/simkai/g&apos; /data/nginx-1.9.15/html/zabbix/include/defines.inc.php</span><br></pre></td></tr></table></figure>
-<h3 id="4、重启php-fpm、nginx"><a href="#4、重启php-fpm、nginx" class="headerlink" title="4、重启php-fpm、nginx"></a>4、重启php-fpm、nginx</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop</span><br><span class="line">service php-fpm stop</span><br><span class="line">service php-fpm start</span><br><span class="line">nginx</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/zabbix/">zabbix</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/28/解决zabbix中文乱码/"><span>点击阅读</span></a></h3>
     
   
 </article>
