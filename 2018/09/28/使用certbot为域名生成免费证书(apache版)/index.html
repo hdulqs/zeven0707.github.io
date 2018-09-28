@@ -1,0 +1,326 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Linux] 使用certbot为域名生成免费证书(apache版) | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、下载certbot123cd /data/softwget https://dl.eff.org/certbot-autochmod a+x certbot-auto
+2、生成证书/data/soft/certbot-auto –apache certonly12345Saving debug ">
+  
+
+  
+  
+  <meta name="keywords" content="linux">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Linux] 使用certbot为域名生成免费证书(apache版)"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Linux] 使用certbot为域名生成免费证书(apache版)</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/28/使用certbot为域名生成免费证书(apache版)/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-28T08:41:30.000Z">
+          2018-09-28
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、下载certbot"><a href="#1、下载certbot" class="headerlink" title="1、下载certbot"></a>1、下载certbot</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /data/soft</span><br><span class="line">wget https://dl.eff.org/certbot-auto</span><br><span class="line">chmod a+x certbot-auto</span><br></pre></td></tr></table></figure>
+<h4 id="2、生成证书"><a href="#2、生成证书" class="headerlink" title="2、生成证书"></a>2、生成证书</h4><p>/data/soft/certbot-auto –apache certonly<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line">Could not choose appropriate plugin: The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Cannot find Apache executable apachectl&apos;,)</span><br><span class="line">The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Cannot find Apache executable apachectl&apos;,)</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、上面报错提示找不到执行路径，需要指定apache的路径"><a href="#3、上面报错提示找不到执行路径，需要指定apache的路径" class="headerlink" title="3、上面报错提示找不到执行路径，需要指定apache的路径"></a>3、上面报错提示找不到执行路径，需要指定apache的路径</h4><p>sudo env PATH=$PATH:/usr/local/apache2/bin ./certbot-auto –apache certonly<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line">Could not choose appropriate plugin: The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Could not find configuration root&apos;,)</span><br><span class="line">The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Could not find configuration root&apos;,)</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、上面报错提示找不到配置目录，需要指定–apache-server-root"><a href="#4、上面报错提示找不到配置目录，需要指定–apache-server-root" class="headerlink" title="4、上面报错提示找不到配置目录，需要指定–apache-server-root"></a>4、上面报错提示找不到配置目录，需要指定–apache-server-root</h4><p> sudo env PATH=$PATH:/usr/local/apache2/bin ./certbot-auto –apache –apache-server-root /usr/local/apache2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line">Plugins selected: Authenticator apache, Installer apache</span><br><span class="line">No names were found in your configuration files. Please enter in your domain</span><br><span class="line">name(s) (comma and/or space separated)  (Enter &apos;c&apos; to cancel): www.test.com</span><br><span class="line">Obtaining a new certificate</span><br><span class="line">Performing the following challenges:</span><br><span class="line">http-01 challenge for www.test.com</span><br><span class="line">Cleaning up challenges</span><br><span class="line">Unable to find a virtual host listening on port 80 which is currently needed for Certbot to prove to the CA that you control your domain. Please add a virtual host for port 80.</span><br></pre></td></tr></table></figure></p>
+<h4 id="5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd-conf配置文件，添加上80端口，并重启apache"><a href="#5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd-conf配置文件，添加上80端口，并重启apache" class="headerlink" title="5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd.conf配置文件，添加上80端口，并重启apache"></a>5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd.conf配置文件，添加上80端口，并重启apache</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Listen 80</span><br><span class="line"></span><br><span class="line">&lt;VirtualHost *:80&gt;  </span><br><span class="line">    ServerAdmin test@test.example.com</span><br><span class="line">    ServerName  www.test.com</span><br><span class="line">    ServerAlias test</span><br><span class="line">    DocumentRoot /var/www/html </span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="6、重新生成证书，成功之后会在-etc-letsencrypt-live-ebank-cbibank-com目录下生成四个文件-pem文件和一个README文件"><a href="#6、重新生成证书，成功之后会在-etc-letsencrypt-live-ebank-cbibank-com目录下生成四个文件-pem文件和一个README文件" class="headerlink" title="6、重新生成证书，成功之后会在/etc/letsencrypt/live/ebank.cbibank.com目录下生成四个文件.pem文件和一个README文件"></a>6、重新生成证书，成功之后会在/etc/letsencrypt/live/ebank.cbibank.com目录下生成四个文件.pem文件和一个README文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cert.pem  chain.pem  fullchain.pem  privkey.pem  README</span><br></pre></td></tr></table></figure>
+<h4 id="7、修改conf-httpd-conf文件"><a href="#7、修改conf-httpd-conf文件" class="headerlink" title="7、修改conf/httpd.conf文件"></a>7、修改conf/httpd.conf文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#Include conf/extra/httpd-ssl.conf</span><br><span class="line">#LoadModule ssl_module modules/mod_ssl.so</span><br></pre></td></tr></table></figure>
+<p>将这两行的#去掉</p>
+<h4 id="8、配置conf-extra-httpd-ssl-conf文件，修改对应的域名和证书路径："><a href="#8、配置conf-extra-httpd-ssl-conf文件，修改对应的域名和证书路径：" class="headerlink" title="8、配置conf/extra/httpd-ssl.conf文件，修改对应的域名和证书路径："></a>8、配置conf/extra/httpd-ssl.conf文件，修改对应的域名和证书路径：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">DocumentRoot &quot;/var/www/html&quot;</span><br><span class="line">ServerName ebank.cbibank.com</span><br><span class="line">SSLEngine on</span><br><span class="line">SSLCertificateFile /etc/letsencrypt/live/ebank.cbibank.com/cert.pem</span><br><span class="line">SSLCertificateKeyFile /etc/letsencrypt/live/ebank.cbibank.com/privkey.pem</span><br><span class="line">SSLCertificateChainFile /etc/letsencrypt/live/ebank.cbibank.com/chain.pem</span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="9、修改完成后重启apache："><a href="#9、修改完成后重启apache：" class="headerlink" title="9、修改完成后重启apache："></a>9、修改完成后重启apache：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/apache2/bin/apachectl restart</span><br></pre></td></tr></table></figure>
+<p>重启过程报错，无法关闭apache提示以下错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so: cannot open shared object file: No such file or directory</span><br></pre></td></tr></table></figure></p>
+<p>在/usr/lib64/下面没有httpd的模块，yum安装mod_ssl：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install mod_ssl</span><br></pre></td></tr></table></figure></p>
+<p>安装完成之后在/usr/lib64/httpd/modules/下面会有mod_ssl.so<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib64/httpd/modules/mod_ssl.so</span><br><span class="line">ln -s /usr/lib64/httpd/modules/mod_ssl.so /usr/local/apache2/modules/mod_ssl.so</span><br></pre></td></tr></table></figure></p>
+<p>再次尝试重启apache，报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so:undefined symbol: ap_global_mutex_create</span><br></pre></td></tr></table></figure></p>
+<p>google了一下，有说yum安装的mod_ssl与apache的安装版本不兼容的问题，因此尝试使用对应版本的tar包将模块文件拷过去:<br>拷贝modules目录下的ssl目录和loggers的内容到/usr/local/apache2/modules/ssl目录下、拷贝include目录下的内容到/usr/local/apache2/modules/ssl目录下，拷贝完之后，在/usr/local/apache2/modules/ssl目录下执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/apache2/bin/apxs -a -i -c mod_ssl.c</span><br></pre></td></tr></table></figure></p>
+<p>执行完成之后再次重启apache，依旧报错:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so: undefined symbol: ssl_cmd_SSLPassPhraseDialog</span><br></pre></td></tr></table></figure></p>
+<p>需要指定openssl路径，执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/apache2/bin/apxs -a -i -c -L/usr/lib/openssl/engines/lib -c *.c -lcrypto -lssl -ldl</span><br></pre></td></tr></table></figure></p>
+<p>再次重启apache<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so:undefined symbol: ap_global_mutex_create</span><br></pre></td></tr></table></figure></p>
+<p>重启apache依旧报错undefinedsymbol:ap_global_mutex_create，没找到任何解决办法，最后只能添加-enable-ssl参数，重新编译安装apache。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、下载certbot"><span class="toc-number">1.</span> <span class="toc-text">1、下载certbot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、生成证书"><span class="toc-number">2.</span> <span class="toc-text">2、生成证书</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、上面报错提示找不到执行路径，需要指定apache的路径"><span class="toc-number">3.</span> <span class="toc-text">3、上面报错提示找不到执行路径，需要指定apache的路径</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、上面报错提示找不到配置目录，需要指定–apache-server-root"><span class="toc-number">4.</span> <span class="toc-text">4、上面报错提示找不到配置目录，需要指定–apache-server-root</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd-conf配置文件，添加上80端口，并重启apache"><span class="toc-number">5.</span> <span class="toc-text">5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd.conf配置文件，添加上80端口，并重启apache</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、重新生成证书，成功之后会在-etc-letsencrypt-live-ebank-cbibank-com目录下生成四个文件-pem文件和一个README文件"><span class="toc-number">6.</span> <span class="toc-text">6、重新生成证书，成功之后会在/etc/letsencrypt/live/ebank.cbibank.com目录下生成四个文件.pem文件和一个README文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7、修改conf-httpd-conf文件"><span class="toc-number">7.</span> <span class="toc-text">7、修改conf/httpd.conf文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8、配置conf-extra-httpd-ssl-conf文件，修改对应的域名和证书路径："><span class="toc-number">8.</span> <span class="toc-text">8、配置conf/extra/httpd-ssl.conf文件，修改对应的域名和证书路径：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9、修改完成后重启apache："><span class="toc-number">9.</span> <span class="toc-text">9、修改完成后重启apache：</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Linux] 使用certbot为域名生成免费证书(apache版)'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
