@@ -112,6 +112,80 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/20/mysql-mgr集群节点主节点与两个从节点网络异常，造成的集群异常问题/"><span>[Mysql] mysql-mgr集群节点主节点与两个从节点网络异常，造成的集群异常问题</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/20/mysql-mgr集群节点主节点与两个从节点网络异常，造成的集群异常问题/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-20T09:14:20.000Z">
+          2018-08-20
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="1、mysql-mgr集群节点主节点（A）与两个从节点网络异常，主节点（A）发生切换，从节点（B-切换为主，报错如下："><a href="#1、mysql-mgr集群节点主节点（A）与两个从节点网络异常，主节点（A）发生切换，从节点（B-切换为主，报错如下：" class="headerlink" title="1、mysql-mgr集群节点主节点（A）与两个从节点网络异常，主节点（A）发生切换，从节点（B)切换为主，报错如下："></a>1、mysql-mgr集群节点主节点（A）与两个从节点网络异常，主节点（A）发生切换，从节点（B)切换为主，报错如下：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2018-08-20T05:38:16.071653Z 0 [Warning] Plugin group_replication reported: &apos;Member with address wallet-mysql-2:3306 has become unreachable.&apos;</span><br><span class="line">2018-08-20T05:38:16.071730Z 0 [Warning] Plugin group_replication reported: &apos;Member with address wallet-mysql-3:3306 has become unreachable.&apos;</span><br><span class="line">2018-08-20T05:38:16.071744Z 0 [ERROR] Plugin group_replication reported: &apos;This server is not able to reach a majority of members in the group. This server will now block all updates. The server will remain blocked until contact with the majority is restored. It is possible to use group_replication_force_members to force a new group membership.&apos;</span><br></pre></td></tr></table></figure>
+<h2 id="2、对故障节点A操作，使其重新加入集群"><a href="#2、对故障节点A操作，使其重新加入集群" class="headerlink" title="2、对故障节点A操作，使其重新加入集群"></a>2、对故障节点A操作，使其重新加入集群</h2><p>A节点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line">start group_replication;</span><br></pre></td></tr></table></figure></p>
+<p>查看报错日志：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">2018-08-20T07:29:40.796952Z 12 [Note] Plugin group_replication reported: &apos;Terminating existing group replication donor connection and purging the corresponding logs.&apos;</span><br><span class="line">2018-08-20T07:29:40.803975Z 26 [Note] Error reading relay log event for channel &apos;group_replication_recovery&apos;: slave SQL thread was killed</span><br><span class="line">2018-08-20T07:29:40.855935Z 12 [Note] &apos;CHANGE MASTER TO FOR CHANNEL &apos;group_replication_recovery&apos; executed&apos;. Previous state master_host=&apos;wallet-mysql-2&apos;, master_port= 3306, master_log_file=&apos;&apos;, master_log_pos= 4, master_bind=&apos;&apos;. New state master_host=&apos;&lt;NULL&gt;&apos;, master_port= 0, master_log_file=&apos;&apos;, master_log_pos= 4, master_bind=&apos;&apos;.</span><br><span class="line">2018-08-20T07:29:40.906041Z 12 [Note] Plugin group_replication reported: &apos;Retrying group recovery connection with another donor. Attempt 4/10&apos;</span><br><span class="line">2018-08-20T07:29:40.949597Z 12 [Note] &apos;CHANGE MASTER TO FOR CHANNEL &apos;group_replication_recovery&apos; executed&apos;. Previous state master_host=&apos;&lt;NULL&gt;&apos;, master_port= 0, master_log_file=&apos;&apos;, master_log_pos= 4, master_bind=&apos;&apos;. New state master_host=&apos;wallet-mysql-3&apos;, master_port= 3306, master_log_file=&apos;&apos;, master_log_pos= 4, master_bind=&apos;&apos;.</span><br><span class="line">2018-08-20T07:29:41.001446Z 12 [Note] Plugin group_replication reported: &apos;Establishing connection to a group replication recovery donor 7dd813bf-8e3d-11e8-8d92-000d3aa1c31e at wallet-mysql-3 port: 3306.&apos;</span><br><span class="line">2018-08-20T07:29:41.001738Z 29 [Warning] Storing MySQL user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the &apos;START SLAVE Syntax&apos; in the MySQL Manual for more information.</span><br><span class="line">2018-08-20T07:29:41.005538Z 29 [Note] Slave I/O thread for channel &apos;group_replication_recovery&apos;: connected to master &apos;repl@wallet-mysql-3:3306&apos;,replication started in log &apos;FIRST&apos; at position 4</span><br><span class="line">2018-08-20T07:29:41.016839Z 30 [Note] Slave SQL thread for channel &apos;group_replication_recovery&apos; initialized, starting replication in log &apos;FIRST&apos; at position 0, relay log &apos;./relay-log-group_replication_recovery.000001&apos; position: 4</span><br><span class="line">2018-08-20T07:29:41.028408Z 29 [ERROR] Error reading packet from server for channel &apos;group_replication_recovery&apos;: The slave is connecting using CHANGE MASTER TO MASTER_AUTO_POSITION = 1, but the master has purged binary logs containing GTIDs that the slave requires. (server_errno=1236)</span><br><span class="line">2018-08-20T07:29:41.028442Z 29 [ERROR] Slave I/O for channel &apos;group_replication_recovery&apos;: Got fatal error 1236 from master when reading data from binary log: &apos;The slave is connecting using CHANGE MASTER TO MASTER_AUTO_POSITION = 1, but the master has purged binary logs containing GTIDs that the slave requires.&apos;, Error_code: 1236</span><br><span class="line">2018-08-20T07:29:41.028449Z 29 [Note] Slave I/O thread exiting for channel &apos;group_replication_recovery&apos;, read up to log &apos;FIRST&apos;, position 4</span><br><span class="line">2018-08-20T07:29:41.028493Z 12 [Note] Plugin group_replication reported: &apos;Terminating existing group replication donor connection and purging the corresponding logs.&apos;</span><br><span class="line">2018-08-20T07:29:41.028790Z 30 [Note] Error reading relay log event for channel &apos;group_replication_recovery&apos;: slave SQL thread was killed</span><br><span class="line">2018-08-20T07:29:41.085012Z 12 [Note] &apos;CHANGE MASTER TO FOR CHANNEL &apos;group_replication_recovery&apos; executed&apos;. Previous state master_host=&apos;wallet-mysql-3&apos;, master_port= 3306, master_log_file=&apos;&apos;, master_log_pos= 4, master_bind=&apos;&apos;. New state master_host=&apos;&lt;NULL&gt;&apos;, master_port= 0, master_log_file=&apos;&apos;, master_log_pos= 4, master_bind=&apos;&apos;.</span><br></pre></td></tr></table></figure></p>
+<p>出现该问题的原因是现在的新的主节点B，已经清除了binglog,A节点需要恢复的日志已经找不到了，因此需要对A进行数据恢复。</p>
+<h2 id="3、在B节点mysqldump一份最新数据，命令如下："><a href="#3、在B节点mysqldump一份最新数据，命令如下：" class="headerlink" title="3、在B节点mysqldump一份最新数据，命令如下："></a>3、在B节点mysqldump一份最新数据，命令如下：</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/mysql/bin/mysqldump --all-databases --<span class="built_in">set</span>-gtid-purged=ON --single-transaction -uroot -p***** &gt; /data/backup/all.sql</span><br></pre></td></tr></table></figure>
+<h2 id="4、将dump的数据库拷贝到A节点，对节点A进行恢复："><a href="#4、将dump的数据库拷贝到A节点，对节点A进行恢复：" class="headerlink" title="4、将dump的数据库拷贝到A节点，对节点A进行恢复："></a>4、将dump的数据库拷贝到A节点，对节点A进行恢复：</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p******* &lt; /data/backup/all.sql</span><br></pre></td></tr></table></figure>
+<p>执行提示报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">ERROR 1840 (HY000) at line 24: @@GLOBAL.GTID_PURGED can only be set when @@GLOBAL.GTID_EXECUTED is empty.</span><br></pre></td></tr></table></figure></p>
+<p>解决方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">提示只有@@GLOBAL.GTID_EXECUTED为空是，才能设置@@GLOBAL.GTID_PURGED的值，清空GLOBAL.GTID_EXECUTED的值</span><br><span class="line">root@db 07:53:  [(none)]&gt; reset master;</span><br><span class="line">ERROR 3190 (HY000): RESET MASTER is not allowed because Group Replication is running.</span><br><span class="line">root@db 07:53:  [(none)]&gt; stop group_replication;</span><br><span class="line">Query OK, 0 rows affected (1.01 sec)</span><br><span class="line">root@db 07:53:  [(none)]&gt; reset master;</span><br><span class="line">Query OK, 0 rows affected (0.27 sec)</span><br><span class="line">如果数据库为只读的状态还需要将数据库改为读写模式：</span><br><span class="line">root@db 07:54:  [performance_schema]&gt; set global read_only=0;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<h2 id="5、重新恢复数据"><a href="#5、重新恢复数据" class="headerlink" title="5、重新恢复数据"></a>5、重新恢复数据</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p******* &lt; /data/backup/all.sql</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br></pre></td></tr></table></figure>
+<p>恢复完成</p>
+<h2 id="6、重新将该节点加入集群"><a href="#6、重新将该节点加入集群" class="headerlink" title="6、重新将该节点加入集群"></a>6、重新将该节点加入集群</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line">root@db 07:56:  [performance_schema]&gt; select * from replication_group_members;</span><br><span class="line">+<span class="comment">---------------------------+-----------+-------------+-------------+--------------+</span></span><br><span class="line">| CHANNEL_NAME              | MEMBER_ID | MEMBER_HOST | MEMBER_PORT | MEMBER_STATE |</span><br><span class="line">+<span class="comment">---------------------------+-----------+-------------+-------------+--------------+</span></span><br><span class="line">| group_replication_applier |           |             |        NULL | OFFLINE      |</span><br><span class="line">+<span class="comment">---------------------------+-----------+-------------+-------------+--------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">root@db <span class="number">07</span>:<span class="number">56</span>:  [performance_schema]&gt; <span class="keyword">start</span> group_replication;</span><br><span class="line">Query OK, 0 rows affected, 1 warning (3.03 sec)</span><br><span class="line">root@db 07:57:  [performance_schema]&gt; select * from replication_group_members;</span><br><span class="line">+<span class="comment">---------------------------+--------------------------------------+----------------+-------------+--------------+</span></span><br><span class="line">| CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST    | MEMBER_PORT | MEMBER_STATE |</span><br><span class="line">+<span class="comment">---------------------------+--------------------------------------+----------------+-------------+--------------+</span></span><br><span class="line">| group_replication_applier | *** | wallet-mysql-2 |        3306 | ONLINE       |</span><br><span class="line">| group_replication_applier | *** | wallet-mysql-1 |        3306 | RECOVERING   |</span><br><span class="line">| group_replication_applier | *** | wallet-mysql-3 |        3306 | ONLINE       |</span><br><span class="line">+<span class="comment">---------------------------+--------------------------------------+----------------+-------------+--------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+<p>此时节点A正在与主节点同步数据，待同步完成之后再查看及节点之间的信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root@db 07:57:  [performance_schema]&gt; select * from replication_group_members;</span><br><span class="line">+---------------------------+--------------------------------------+----------------+-------------+--------------+</span><br><span class="line">| CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST    | MEMBER_PORT | MEMBER_STATE |</span><br><span class="line">+---------------------------+--------------------------------------+----------------+-------------+--------------+</span><br><span class="line">| group_replication_applier | *** | wallet-mysql-2 |        3306 | ONLINE       |</span><br><span class="line">| group_replication_applier | *** | wallet-mysql-1 |        3306 | ONLINE       |</span><br><span class="line">| group_replication_applier | *** | wallet-mysql-3 |        3306 | ONLINE       |</span><br><span class="line">+---------------------------+--------------------------------------+----------------+-------------+--------------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<p>此时集群恢复完成。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/20/mysql-mgr集群节点主节点与两个从节点网络异常，造成的集群异常问题/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/17/zabbix监控redis/"><span>[Zabbix] zabbix监控redis数据库</span></a></h3>
     
   
@@ -157,7 +231,7 @@ var _hmt = _hmt || [];
 
     <span class="post-tags">
       <i class="icon-tags"></i>
-        <a href="/tags/zabbix/">zabbix</a><a href="/tags/redis/">redis</a>
+        <a href="/tags/redis/">redis</a><a href="/tags/zabbix/">zabbix</a>
     </span>
     
 
@@ -742,77 +816,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/08/12/mongdob4.0 备份与恢复/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/11/使用innodb trx和innodb lock信息表查看锁事物/"><span>[Mysql] 使用innodb trx和innodb lock信息表查看锁事物</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/11/使用innodb trx和innodb lock信息表查看锁事物/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-11T09:10:24.000Z">
-          2018-08-11
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h2 id="1、插入表测试数据"><a href="#1、插入表测试数据" class="headerlink" title="1、插入表测试数据"></a>1、插入表测试数据</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> aaa;</span><br><span class="line">+<span class="comment">----+------+-------------+</span></span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+<span class="comment">----+------+-------------+</span></span><br><span class="line">|  1 | a    | 11111111111 |</span><br><span class="line">|  2 | b    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">+<span class="comment">----+------+-------------+</span></span><br></pre></td></tr></table></figure>
-<h2 id="2、创建三个会话，造成锁事物"><a href="#2、创建三个会话，造成锁事物" class="headerlink" title="2、创建三个会话，造成锁事物"></a>2、创建三个会话，造成锁事物</h2><p>sessin 1:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">id</span> <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">SLEEP</span>(<span class="number">60</span>);</span><br></pre></td></tr></table></figure></p>
-<p>session 2:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure></p>
-<p>sesion 3:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> telephone <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure></p>
-<h2 id="3、使用以下查询来查看正在等待的事务以及阻止它们的事务："><a href="#3、使用以下查询来查看正在等待的事务以及阻止它们的事务：" class="headerlink" title="3、使用以下查询来查看正在等待的事务以及阻止它们的事务："></a>3、使用以下查询来查看正在等待的事务以及阻止它们的事务：</h2><p>session 4<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  r.trx_id waiting_trx_id,</span><br><span class="line">  r.trx_mysql_thread_id waiting_thread,</span><br><span class="line">  r.trx_query waiting_query,</span><br><span class="line">  b.trx_id blocking_trx_id,</span><br><span class="line">  b.trx_mysql_thread_id blocking_thread,</span><br><span class="line">  b.trx_query blocking_query</span><br><span class="line"><span class="keyword">FROM</span>       information_schema.innodb_lock_waits w</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> information_schema.innodb_trx b</span><br><span class="line">  <span class="keyword">ON</span> b.trx_id = w.blocking_trx_id</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> information_schema.innodb_trx r</span><br><span class="line">  <span class="keyword">ON</span> r.trx_id = w.requesting_trx_id;</span><br><span class="line">查询结果如下：</span><br><span class="line">+<span class="comment">----------------+----------------+--------------------------------------+-----------------+-----------------+---------------------------------+</span></span><br><span class="line">| waiting_trx_id | waiting_thread | waiting_query                        | blocking_trx_id | blocking_thread | blocking_query                  |</span><br><span class="line">+<span class="comment">----------------+----------------+--------------------------------------+-----------------+-----------------+---------------------------------+</span></span><br><span class="line">| 2488           |             58 | <span class="keyword">SELECT</span> telephone <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span> | <span class="number">2487</span>            |              <span class="number">57</span> | <span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span> |</span><br><span class="line">| <span class="number">2488</span>           |             <span class="number">58</span> | <span class="keyword">SELECT</span> telephone <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span> | <span class="number">2486</span>            |              <span class="number">53</span> | <span class="keyword">SELECT</span> <span class="keyword">SLEEP</span>(<span class="number">100</span>)               |</span><br><span class="line">| <span class="number">2487</span>           |             <span class="number">57</span> | <span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>      | <span class="number">2486</span>            |              <span class="number">53</span> | <span class="keyword">SELECT</span> <span class="keyword">SLEEP</span>(<span class="number">100</span>)               |</span><br><span class="line">+<span class="comment">----------------+----------------+--------------------------------------+-----------------+-----------------+---------------------------------+</span></span><br></pre></td></tr></table></figure></p>
-<p>上述sql语句可能太繁琐，也可使用下面语句查询<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  waiting_trx_id,</span><br><span class="line">  waiting_pid,</span><br><span class="line">  waiting_query,</span><br><span class="line">  blocking_trx_id,</span><br><span class="line">  blocking_pid,</span><br><span class="line">  blocking_query</span><br><span class="line"><span class="keyword">FROM</span> sys.innodb_lock_waits;</span><br></pre></td></tr></table></figure></p>
-<h2 id="4、如果查询造成锁事物的会话已经变成空闲，上面查询出来的数据会变为空，可以通过process-id-来查询琐事物"><a href="#4、如果查询造成锁事物的会话已经变成空闲，上面查询出来的数据会变为空，可以通过process-id-来查询琐事物" class="headerlink" title="4、如果查询造成锁事物的会话已经变成空闲，上面查询出来的数据会变为空，可以通过process_id,来查询琐事物"></a>4、如果查询造成锁事物的会话已经变成空闲，上面查询出来的数据会变为空，可以通过process_id,来查询琐事物</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">full</span> <span class="keyword">processlist</span>;</span><br><span class="line">| 57 | root        | localhost | aaaa | Sleep   |    566 |                                                        | NULL                  |</span><br></pre></td></tr></table></figure>
-<p>查询出process_id为57</p>
-<h2 id="5、通过processlist-id查询出thread-id"><a href="#5、通过processlist-id查询出thread-id" class="headerlink" title="5、通过processlist_id查询出thread_id"></a>5、通过processlist_id查询出thread_id</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> THREAD_ID <span class="keyword">FROM</span> performance_schema.threads <span class="keyword">WHERE</span> PROCESSLIST_ID = <span class="number">57</span>;</span><br><span class="line">+<span class="comment">-----------+</span></span><br><span class="line">| THREAD_ID |</span><br><span class="line">+<span class="comment">-----------+</span></span><br><span class="line">|        79 |</span><br><span class="line">+<span class="comment">-----------+</span></span><br></pre></td></tr></table></figure>
-<h2 id="6、根据thread-id查询出来造成锁事物的sql语句"><a href="#6、根据thread-id查询出来造成锁事物的sql语句" class="headerlink" title="6、根据thread_id查询出来造成锁事物的sql语句"></a>6、根据thread_id查询出来造成锁事物的sql语句</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> THREAD_ID, SQL_TEXT <span class="keyword">FROM</span> performance_schema.events_statements_current </span><br><span class="line"><span class="keyword">WHERE</span> THREAD_ID = <span class="number">79</span>\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">THREAD_ID: <span class="number">79</span></span><br><span class="line"> SQL_TEXT: <span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-<h2 id="7、如果线程执行的最后一个查询不足以确定锁定的原因，则可以查询Performance-Schema-events-statements-history-表以查看该线程执行的最后10个语句。"><a href="#7、如果线程执行的最后一个查询不足以确定锁定的原因，则可以查询Performance-Schema-events-statements-history-表以查看该线程执行的最后10个语句。" class="headerlink" title="7、如果线程执行的最后一个查询不足以确定锁定的原因，则可以查询Performance Schema events_statements_history 表以查看该线程执行的最后10个语句。"></a>7、如果线程执行的最后一个查询不足以确定锁定的原因，则可以查询Performance Schema events_statements_history 表以查看该线程执行的最后10个语句。</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> THREAD_ID, SQL_TEXT <span class="keyword">FROM</span> performance_schema.events_statements_history </span><br><span class="line"><span class="keyword">WHERE</span> THREAD_ID = <span class="number">79</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> EVENT_ID;</span><br><span class="line">+<span class="comment">-----------+---------------------------------+</span></span><br><span class="line">| THREAD_ID | SQL_TEXT                        |</span><br><span class="line">+<span class="comment">-----------+---------------------------------+</span></span><br><span class="line">|        79 | <span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> aaa <span class="keyword">FOR</span> <span class="keyword">UPDATE</span> |</span><br><span class="line">+<span class="comment">-----------+---------------------------------+</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/11/使用innodb trx和innodb lock信息表查看锁事物/"><span>点击阅读</span></a></h3>
     
   
 </article>
