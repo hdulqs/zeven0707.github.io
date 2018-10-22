@@ -112,6 +112,75 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/14/mysql-innodb buffer pool size调整/"><span>[Mysql] mysql-innodb buffer pool size调整</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/14/mysql-innodb buffer pool size调整/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-14T05:03:24.000Z">
+          2018-08-14
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="1、查看当前数据库innodb-buffer-pool参数"><a href="#1、查看当前数据库innodb-buffer-pool参数" class="headerlink" title="1、查看当前数据库innodb_buffer_pool参数"></a>1、查看当前数据库innodb_buffer_pool参数</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_buffer_pool_size'</span>;</span><br></pre></td></tr></table></figure>
+<p>##2、查看page_size大小<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_page_size'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>官方文档参数详解<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Innodb_page_size</span></span><br><span class="line"><span class="string">InnoDB</span> <span class="string">page</span> <span class="string">size</span> <span class="string">(default</span> <span class="number">16</span><span class="string">KB).</span> <span class="string">Many</span> <span class="string">values</span> <span class="string">are</span> <span class="string">counted</span> <span class="string">in</span> <span class="string">pages;</span> <span class="string">the</span> <span class="string">page</span> <span class="string">size</span> <span class="string">enables</span> <span class="string">them</span> <span class="string">to</span> <span class="string">be</span></span><br><span class="line"><span class="string">easily</span> <span class="string">converted</span> <span class="string">to</span> <span class="string">bytes</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="3、查看当前内存innodb页的总数量和包含数据的页的数量"><a href="#3、查看当前内存innodb页的总数量和包含数据的页的数量" class="headerlink" title="3、查看当前内存innodb页的总数量和包含数据的页的数量"></a>3、查看当前内存innodb页的总数量和包含数据的页的数量</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'Innodb_buffer_pool_pages_data'</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'Innodb_buffer_pool_pages_total'</span>;</span><br></pre></td></tr></table></figure>
+<p>官方文档参数详解：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Innodb_buffer_pool_pages_data</span></span><br><span class="line"><span class="string">The</span> <span class="string">number</span> <span class="string">of</span> <span class="string">pages</span> <span class="string">in</span> <span class="string">the</span> <span class="string">InnoDB</span> <span class="string">buffer</span> <span class="string">pool</span> <span class="string">containing</span> <span class="string">data.</span> <span class="string">The</span> <span class="string">number</span> <span class="string">includes</span> <span class="string">both</span> <span class="string">dirty</span> <span class="string">and</span></span><br><span class="line"><span class="string">clean</span> <span class="string">pages.</span></span><br><span class="line"></span><br><span class="line"><span class="string">Innodb_buffer_pool_pages_total</span></span><br><span class="line"><span class="string">The</span> <span class="string">total</span> <span class="string">size</span> <span class="string">of</span> <span class="string">the</span> <span class="string">InnoDB</span> <span class="string">buffer</span> <span class="string">pool,</span> <span class="string">in</span> <span class="string">pages.</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="4、调优参考计算方法："><a href="#4、调优参考计算方法：" class="headerlink" title="4、调优参考计算方法："></a>4、调优参考计算方法：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val = Innodb_buffer_pool_pages_data / Innodb_buffer_pool_pages_total * 100%</span><br><span class="line">val &gt; 95% 则考虑增大 innodb_buffer_pool_size， 建议使用物理内存的75%</span><br><span class="line">val &lt; 95% 则考虑减小 innodb_buffer_pool_size， 建议设置为：Innodb_buffer_pool_pages_data * Innodb_page_size * 1.05 / (1024*1024*1024)</span><br></pre></td></tr></table></figure>
+<h2 id="5、设置innodb-buffer-pool-siz大小"><a href="#5、设置innodb-buffer-pool-siz大小" class="headerlink" title="5、设置innodb_buffer_pool_siz大小"></a>5、设置innodb_buffer_pool_siz大小</h2><p>设置命令：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> innodb_buffer_pool_size = <span class="number">17179869184</span>;</span><br></pre></td></tr></table></figure></p>
+<p>缓冲池字节大小，单位kb，如果不设置，默认为128M<br>5.7版本以后可以动态修改参数，但是也要修改配置文件参数，防止重启之后，参数又变成配置文件内的参数,5.7以下的版本为静态参数，需要修改配置文件，并重新启动mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/my.cnf</span><br><span class="line">---------</span><br><span class="line">innodb_buffer_pool_size = 17179869184  #设置16G</span><br><span class="line">---------</span><br></pre></td></tr></table></figure></p>
+<h2 id="6、配置参数也可使用M、G等参数，内容如下："><a href="#6、配置参数也可使用M、G等参数，内容如下：" class="headerlink" title="6、配置参数也可使用M、G等参数，内容如下："></a>6、配置参数也可使用M、G等参数，内容如下：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/etc/my.cnf：</span><br><span class="line">-------------------</span><br><span class="line">innodb_buffer_pool_size = 16G  #设置16G</span><br><span class="line">innodb_buffer_pool_size = 500M  #设置500M</span><br><span class="line">--------------------------</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/14/mysql-innodb buffer pool size调整/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/12/mongodb4.0定时备份并邮件告知备份情况/"><span>[Mongodb] mongodb4.0定时备份并邮件告知备份情况</span></a></h3>
     
   
@@ -766,80 +835,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/08/05/mongodb-集群/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/03/mongdob4.0/"><span>[Mongodb] mongdob-enterprise-4.0安装</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/03/mongdob4.0/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-03T08:50:24.000Z">
-          2018-08-03
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、Yum方式安装"><a href="#1、Yum方式安装" class="headerlink" title="1、Yum方式安装"></a>1、Yum方式安装</h3><p>  1.1配置yum源<br> cat /etc/yum.repos.d/mongodb-enterprise.repo<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[mongodb-enterprise]</span></span><br><span class="line"><span class="string">name=MongoDB</span> <span class="string">Enterprise</span> <span class="string">Repository</span></span><br><span class="line"><span class="string">baseurl=https://repo.mongodb.com/yum/redhat/$releasever/mongodb-enterprise/4.0/$basearch/</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">enabled=1</span></span><br><span class="line"><span class="string">gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc</span></span><br></pre></td></tr></table></figure></p>
-<p>  1.2执行安装命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y mongodb-enterprise</span><br></pre></td></tr></table></figure></p>
-<p> 如果想要指定安装某一个版本的mongodb,需要指定每一个组件的安装版本,如下所示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y mongodb-enterprise-4.0.0 mongodb-enterprise-server-4.0.0 mongodb-enterprise-shell-4.0.0 mongodb-enterprise-mongos-4.0.0 mongodb-enterprise-tools-4.0.0</span><br></pre></td></tr></table></figure></p>
-<p>  1.3mongodb启动、关闭命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo service mongod start</span><br><span class="line">sudo service mongod stop</span><br><span class="line">sudo service mongod restart</span><br></pre></td></tr></table></figure></p>
-<p>  1.4通过yum方式安装完之后，配置文件所在为/etc/mongod.conf</p>
-<h3 id="2、tar包方式安装"><a href="#2、tar包方式安装" class="headerlink" title="2、tar包方式安装"></a>2、tar包方式安装</h3><p> 2.1安装之前需要，安装依赖包：<br> linux-6:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y cyrus-sasl cyrus-sasl-plain cyrus-sasl-gssapi krb5-libs libcurl libpcap net-snmp openldap openssl</span><br></pre></td></tr></table></figure></p>
-<p> linux-7<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y cyrus-sasl cyrus-sasl-gssapi cyrus-sasl-plain krb5-libs libcurl libpcap lm_sensors-libs net-snmp net-snmp-agent-libs openldap openssl rpm-libs tcp_wrappers-libs</span><br></pre></td></tr></table></figure></p>
-<p> 2.2下载mongodb-enterprise软件包<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://downloads.mongodb.com/linux/mongodb-linux-x86_64-enterprise-rhel70-4.0.0.tgz</span><br></pre></td></tr></table></figure></p>
-<p> 2.3解压软件包，修改目录名称，配置环境变量<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> tar -zxvf mongodb-linux-x86_64-enterprise-rhel70-4.0.0.tgz -C /data/</span><br><span class="line"> mv /data/mongodb-linux-x86_64-enterprise-rhel70-4.0.0 /data/mongodb</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"export PATH=/data/mongodb/bin:\$PATH"</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
-<p> 2.4修改配置文件<br> cat /data/mongodb/mongodb.conf<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mongod.conf</span></span><br><span class="line"><span class="comment"># for documentation of all options, see:</span></span><br><span class="line"><span class="comment">#   http://docs.mongodb.org/manual/reference/configuration-options/</span></span><br><span class="line"><span class="comment"># where to write logging data.</span></span><br><span class="line"><span class="attr">systemLog:</span></span><br><span class="line"><span class="attr">  destination:</span> <span class="string">file</span></span><br><span class="line"><span class="attr">  logAppend:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  path:</span> <span class="string">/data/mongodb/log/mongod.log</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Where and how to store data.</span></span><br><span class="line"><span class="attr">storage:</span></span><br><span class="line"><span class="attr">  dbPath:</span> <span class="string">/data/mongodb/data/</span></span><br><span class="line"><span class="attr">  journal:</span></span><br><span class="line"><span class="attr">    enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment">#  engine:</span></span><br><span class="line"><span class="comment">#  mmapv1:</span></span><br><span class="line"><span class="comment">#  wiredTiger:</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># how the process runs</span></span><br><span class="line"><span class="attr">processManagement:</span></span><br><span class="line"><span class="attr">  fork:</span> <span class="literal">true</span>  <span class="comment"># fork and run in background</span></span><br><span class="line"><span class="attr">  pidFilePath:</span> <span class="string">/data/mongodb/log/mongod.pid</span>  <span class="comment"># location of pidfile</span></span><br><span class="line"><span class="attr">  timeZoneInfo:</span> <span class="string">/usr/share/zoneinfo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># network interfaces</span></span><br><span class="line"><span class="attr">net:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">30000</span></span><br><span class="line"><span class="attr">  bindIp:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">,10.0.7.51</span>  <span class="comment"># Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting.</span></span><br><span class="line"><span class="comment">#security:</span></span><br><span class="line"><span class="comment">#operationProfiling:</span></span><br><span class="line"><span class="comment">#replication:</span></span><br><span class="line"><span class="comment">#sharding:</span></span><br><span class="line"><span class="comment">## Enterprise-Only Options</span></span><br><span class="line"><span class="comment">#auditLog:</span></span><br><span class="line"><span class="comment">#snmp:</span></span><br></pre></td></tr></table></figure></p>
-<p> 2.5修改的配置文件中，如果数据目录，日志目录不存在会报错，需要手动配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mongodb/&#123;log,data&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 2.6启动mongodb<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shell&gt;/data/mongodb/bin/mongod -f /data/mongodb/mongodb.conf</span><br><span class="line"> --------</span><br><span class="line"> 2018-08-03T08:42:19.873+0000 I CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols <span class="string">'none'</span></span><br><span class="line">about to fork child process, waiting until server is ready <span class="keyword">for</span> connections.</span><br><span class="line">forked process: 41022</span><br><span class="line">child process started successfully, parent exiting</span><br></pre></td></tr></table></figure></p>
-<p> 2.7查看mongodb进程：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> netstat -tunlp|grep 30000</span><br><span class="line">---------</span><br><span class="line">tcp        0      0 10.0.7.51:30000         0.0.0.0:*               LISTEN      41022/mongod        </span><br><span class="line">tcp        0      0 127.0.0.1:30000         0.0.0.0:*               LISTEN      41022/mongod</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mongodb/">mongodb</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/03/mongdob4.0/"><span>点击阅读</span></a></h3>
     
   
 </article>
