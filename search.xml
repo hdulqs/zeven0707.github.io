@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title></title>
+    <title><![CDATA[[Mysql] yum安装mysql-client客户端(centos7)]]></title>
     <url>%2F2018%2F10%2F27%2F%E5%AE%89%E8%A3%85mysqlclient%E5%AE%A2%E6%88%B7%E7%AB%AF%2F</url>
-    <content type="text"><![CDATA[yum安装mysql-client客户端(centos7)title: “[Mysql] yum安装mysql-client客户端(centos7)”catalog: truedate: 2018-10-27 11:48:00tags: mysqlcatagories: mysql 1、配置yum源123456echo &quot;[mysql80-community]name=MySQL 8.0 Community Serverbaseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/enabled=1gpgcheck=0gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo 2、查看配置文件是否正确:1more /etc/yum.repos.d/mysql-community.repo 3、安装mysql-client：12yum clean allyum install mysql-community-client]]></content>
+    <content type="text"><![CDATA[1、配置yum源123456echo &quot;[mysql80-community]name=MySQL 8.0 Community Serverbaseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/enabled=1gpgcheck=0gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo 2、查看配置文件是否正确:1more /etc/yum.repos.d/mysql-community.repo 3、安装mysql-client：12yum clean allyum install mysql-community-client]]></content>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[[Mysql] mysql数据库使用innobackupex和mysqldump备份恢复的对比]]></title>
@@ -467,8 +470,8 @@
     <url>%2F2018%2F08%2F03%2Fzabbix-nginx%2F</url>
     <content type="text"><![CDATA[1、查看nginx安装HTTP Stub Status1openresty -V 如果”–with-http_stub_status_module”参数，表示没有安装，要手动添加：12在编译nginx 的时候要加上参数 –with-http_stub_status_module，执行./configure &amp;&amp; make就可以了，不用make install。不过，一般情况下都是安装了的。 2、nginx服务器添加配置 2.1添加配置文件nginx_status.confcat /usr/local/openresty/nginx/conf/conf.d/nginx_status.conf12345678server &#123; listen 80; server_name 127.0.0.1; location /basic_status &#123; stub_status; &#125;&#125; 2.2重新加载配置文件1openresty -s reload 2.3获取nginx监控状态123456curl http://127.0.0.1/basic_status-------------Active connections: 1 server accepts handled requests 572 572 764 Reading: 0 Writing: 1 Waiting: 0 nginx监控参数详解123456## Active connections: 对后端发起的活动连接数## Server accepts handled requests: Nginx 总共处理了 572 个连接，成功创建了 572 次握手（没有失败次数），总共处理了 764 个请求## Reading: Nginx 读取到客户端的 Header 信息数## Writing: Nginx 返回给客户端的 Header 信息数## Waiting: 开启 keep-alive 的情况下，这个值等于 active - ( reading + writing ), 意思是 Nginx 已经处理完成，正在等待下一次请求指令的驻留连接## 在访问效率很高，请求很快被处理完毕的情况下，Waiting 数比较多是正常的。如果 reading + writing 数较多，则说明并发访问量很大，正在处理过程中 3、配置zabbix创建存放脚本目录，（我的zabbix安装路径为 /usr/local/zabbix）：12mkdir /usr/local/zabbix/scriptcd /usr/local/zabbix/script 创建存放数据文件（可自行定义）：1touch .status.txt 编辑脚本用于获取nginx监控状态参数：12345678910111213141516171819202122232425echo "#!/bin/bashserver_hostname=127.0.0.1data_file=/usr/local/zabbix/script/.status.txtstatus_data=\`curl -o \$data_file -s http://\$server_hostname/basic_status\`function Active() &#123; awk -F \"[: ]\" '/Active/&#123;print \$4&#125;' \$data_file&#125; function Reading() &#123; awk -F \"[: ]\" '/Reading/ &#123;print \$3&#125;' \$data_file&#125;function Writing() &#123; awk -F \"[: ]\" '/Writing/ &#123;print \$6&#125;' \$data_file&#125;function Waiting() &#123; awk -F \"[: ]\" '/Waiting/ &#123;print \$9&#125;' \$data_file&#125;\$1" &gt; /usr/local/zabbix/script/nginx_connection.sh 修改目录下所有文件的权限，否则脚本写入文件会有权限问题1chown -R zabbix.zabbix /usr/local/zabbix/script 添加zabbix参数到agent配置文件1234echo \"UserParameter=nginx.Active,sh /usr/local/zabbix/script/nginx_connection.sh ActiveUserParameter=nginx.Writing,sh /usr/local/zabbix/script/nginx_connection.sh WritingUserParameter=nginx.Reading,sh /usr/local/zabbix/script/nginx_connection.sh ReadingUserParameter=nginx.Waiting,sh /usr/local/zabbix/script/nginx_connection.sh Waiting\" &gt;&gt; /usr/local/zabbix/etc/zabbix_agentd.conf 重新启动agent客户端：1/etc/init.d/zabbix_agentd restart 在server端测试是否能获取到参数：1/usr/local/zabbix/bin/zabbix_get -s 10.1.130.47 -k nginx.Active]]></content>
       <tags>
-        <tag>linux</tag>
         <tag>zabbix</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
