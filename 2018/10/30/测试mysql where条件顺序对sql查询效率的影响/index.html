@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Mysql] 测试mysql where条件执行顺序对sql查询效率的影响 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、创建基表测试数据12345678CREATE TABLE `test1` (  `id` int(7) NOT NULL AUTO_INCREMENT,  `name` varchar(20) DEFAULT NULL,  `age` int(4) DEFAULT NULL,  PRIMARY ">
+  
+
+  
+  
+  <meta name="keywords" content="mysql">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Mysql] 测试mysql where条件执行顺序对sql查询效率的影响"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Mysql] 测试mysql where条件执行顺序对sql查询效率的影响</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/30/测试mysql where条件顺序对sql查询效率的影响/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-30T04:40:00.000Z">
+          2018-10-30
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、创建基表测试数据"><a href="#1、创建基表测试数据" class="headerlink" title="1、创建基表测试数据"></a>1、创建基表测试数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `test1` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into test1(name,age) values(&apos;lucy&apos;,10),(&apos;bobo&apos;,18),(&apos;david&apos;,20),(&apos;tom&apos;,21),(&apos;dobu&apos;,22),(&apos;dali&apos;,12);</span><br></pre></td></tr></table></figure>
+<h4 id="2、创建中间表"><a href="#2、创建中间表" class="headerlink" title="2、创建中间表"></a>2、创建中间表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `testfororder` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=14699990 DEFAULT CHARSET=utf8mb4;</span><br></pre></td></tr></table></figure>
+<p>创建存储过程对中间表插入数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">drop procedure if exists test;</span><br><span class="line">delimiter //</span><br><span class="line">create procedure test()</span><br><span class="line"> begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i=0;</span><br><span class="line">  while i&lt;300000 do</span><br><span class="line">   insert into testfororder(newid,name,age) select concat(i,name),FLOOR(18 + (RAND() * 12)) from test1;</span><br><span class="line">   set i=i+1;</span><br><span class="line">  end while;</span><br><span class="line"> end//</span><br><span class="line"> delimiter ;</span><br><span class="line">调用存储过程：</span><br><span class="line">call test();</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、创建测试表："><a href="#3、创建测试表：" class="headerlink" title="3、创建测试表："></a>3、创建测试表：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `sequence` (</span><br><span class="line">  `id` int(10) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `newid` int(10) NOT NULL,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=89179437 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into sequence(newid,name,age) select * from testfororder;</span><br></pre></td></tr></table></figure>
+<p>数据量根据自己需求可以多次导入</p>
+<h4 id="4、查看sequence测试表数据："><a href="#4、查看sequence测试表数据：" class="headerlink" title="4、查看sequence测试表数据："></a>4、查看sequence测试表数据：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">| 12600000 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (2.83 sec)</span><br></pre></td></tr></table></figure>
+<p>age条件筛选数据量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence where age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  7341992 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (3.82 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid条件筛选数量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence where newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|       56 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (3.28 sec)</span><br></pre></td></tr></table></figure></p>
+<h4 id="5、where条件-age-newid-在没有创建索引的情况下："><a href="#5、where条件-age-newid-在没有创建索引的情况下：" class="headerlink" title="5、where条件(age,newid)在没有创建索引的情况下："></a>5、where条件(age,newid)在没有创建索引的情况下：</h4><p>age在前，newid在后，查看执行计划：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 12292293 |    25.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (5.36 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 12292293 |    25.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (4.47 sec)</span><br></pre></td></tr></table></figure></p>
+<p>没有任何索引的情况下，where后面跟的条件从左到右，返回数据越小的条件在前面，效率会优于返回数据较大的条件在前面。</p>
+<h4 id="6、where条件-age-在没有创建索引，newid创建索引的情况下："><a href="#6、where条件-age-在没有创建索引，newid创建索引的情况下：" class="headerlink" title="6、where条件(age)在没有创建索引，newid创建索引的情况下："></a>6、where条件(age)在没有创建索引，newid创建索引的情况下：</h4><p>创建newid的索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create index newid_ind on sequence(newid);</span><br></pre></td></tr></table></figure></p>
+<p>age在前，newid在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key       | key_len | ref  | rows | filtered | Extra                              |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_ind     | newid_ind | 4       | NULL |   56 |    50.00 | Using index condition; Using where |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key       | key_len | ref  | rows | filtered | Extra                              |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_ind     | newid_ind | 4       | NULL |   56 |    50.00 | Using index condition; Using where |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<p>在newid创建索引的情况下，where后面的查询条件前后顺序对查询效率影响不大。</p>
+<h4 id="7、where条件-newid-在没有创建索引，age创建索引的情况下："><a href="#7、where条件-newid-在没有创建索引，age创建索引的情况下：" class="headerlink" title="7、where条件(newid)在没有创建索引，age创建索引的情况下："></a>7、where条件(newid)在没有创建索引，age创建索引的情况下：</h4><p>删除newid的索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop index newid_ind on sequence;</span><br></pre></td></tr></table></figure></p>
+<p>创建age的索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create index age_ind on sequence(age);</span><br></pre></td></tr></table></figure></p>
+<p>age在前，newid在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | age_ind       | NULL | NULL    | NULL | 12292293 |    50.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (4.97 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | age_ind       | NULL | NULL    | NULL | 12292293 |    50.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (4.82 sec)</span><br></pre></td></tr></table></figure></p>
+<p>创建age索引之后，执行计划会默认使用索引执行，但是因为age的筛选出来的数据量比较大，使用索引也不是特别理想。</p>
+<h4 id="8、where条件-newid-age-创建联合索引的情况下："><a href="#8、where条件-newid-age-创建联合索引的情况下：" class="headerlink" title="8、where条件(newid,age)创建联合索引的情况下："></a>8、where条件(newid,age)创建联合索引的情况下：</h4><p>删除age索引，创建newid，age的联合索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">drop index age_ind on sequence;</span><br><span class="line">create index newid_age_ind on sequence(newid,age);</span><br></pre></td></tr></table></figure></p>
+<p>age在前，newid在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_age_ind | newid_age_ind | 9       | NULL |   98 |   100.00 | Using index condition |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line"></span><br><span class="line"> select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_age_ind | newid_age_ind | 9       | NULL |   98 |   100.00 | Using index condition |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure></p>
+<p>联合索引存在的情况下，where后面的查询条件前后顺序对查询效率影响不大，但是创建了联合索引之后要注意查询条件问题，如果是以（newid，age）的顺序创建的联合索引，如果where查询条件后面有newid会使用联合索引，但是如果where查询条件后面之后age则不会引用联合索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_age_ind | newid_age_ind | 4       | NULL |   56 |   100.00 | Using index condition |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 12292293 |    50.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、创建基表测试数据"><span class="toc-number">1.</span> <span class="toc-text">1、创建基表测试数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、创建中间表"><span class="toc-number">2.</span> <span class="toc-text">2、创建中间表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、创建测试表："><span class="toc-number">3.</span> <span class="toc-text">3、创建测试表：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、查看sequence测试表数据："><span class="toc-number">4.</span> <span class="toc-text">4、查看sequence测试表数据：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、where条件-age-newid-在没有创建索引的情况下："><span class="toc-number">5.</span> <span class="toc-text">5、where条件(age,newid)在没有创建索引的情况下：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、where条件-age-在没有创建索引，newid创建索引的情况下："><span class="toc-number">6.</span> <span class="toc-text">6、where条件(age)在没有创建索引，newid创建索引的情况下：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7、where条件-newid-在没有创建索引，age创建索引的情况下："><span class="toc-number">7.</span> <span class="toc-text">7、where条件(newid)在没有创建索引，age创建索引的情况下：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8、where条件-newid-age-创建联合索引的情况下："><span class="toc-number">8.</span> <span class="toc-text">8、where条件(newid,age)创建联合索引的情况下：</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Mysql] 测试mysql where条件执行顺序对sql查询效率的影响'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
