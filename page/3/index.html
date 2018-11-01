@@ -112,6 +112,85 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/09/14/cassandra安装部署/"><span>[Cassandra] cassandra安装部署及日常使用命令</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/14/cassandra安装部署/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-14T09:31:00.000Z">
+          2018-09-14
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、添加yum源"><a href="#1、添加yum源" class="headerlink" title="1、添加yum源"></a>1、添加yum源</h3><p>vim /etc/yum.repos.d/cassandra.repo<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[cassandra]</span><br><span class="line">name=Apache Cassandra</span><br><span class="line">baseurl=https://www.apache.org/dist/cassandra/redhat/311x/</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://www.apache.org/dist/cassandra/KEYS</span><br></pre></td></tr></table></figure></p>
+<h3 id="2、安装cassandra数据库"><a href="#2、安装cassandra数据库" class="headerlink" title="2、安装cassandra数据库"></a>2、安装cassandra数据库</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install cassandra -y</span><br></pre></td></tr></table></figure>
+<h3 id="3、修改配置文件-etc-cassandra-conf-cassandra-yaml"><a href="#3、修改配置文件-etc-cassandra-conf-cassandra-yaml" class="headerlink" title="3、修改配置文件/etc/cassandra/conf/cassandra.yaml"></a>3、修改配置文件/etc/cassandra/conf/cassandra.yaml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cluster_name: &apos;My Cluster&apos;</span><br><span class="line">hints_directory: /data/cassandra/hints</span><br><span class="line">data_file_directories:     </span><br><span class="line">        - /data/cassandra/dbdata</span><br><span class="line">commitlog_directory: /data/cassandra/commitlog</span><br><span class="line">saved_caches_directory: /data/cassandra/caches</span><br><span class="line"></span><br><span class="line">         - seeds: &quot;10.10.8.3,10.10.8.4,10.10.8.5&quot;</span><br><span class="line">listen_address: dax-mysql-mha</span><br><span class="line">rpc_address: dax-mysql-mha</span><br></pre></td></tr></table></figure>
+<p>每个节点需要修改的基本参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cluster_name:修改集群名称</span><br><span class="line">修改存放目录hint、data、log</span><br><span class="line">seeds:添加节点ip</span><br><span class="line">listen_address：修改为本地ip地址</span><br><span class="line">rpc_address：修改为本地ip地址</span><br></pre></td></tr></table></figure></p>
+<p>配置文件部分参数解释：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">cluster_name: &apos;Test Cluster&apos;</span><br><span class="line">storage_port: 7000</span><br><span class="line">listen_address: dax-mysql-mha</span><br><span class="line">start_native_transport: true              #开启native协议 </span><br><span class="line">native_transport_port: 9042              #客户端的交互端口 </span><br><span class="line">data_file_directories:</span><br><span class="line">    - /data/cassandra/dbdata              # 数据位置，多盘的话可以写多个目录 </span><br><span class="line">commitlog_directory:</span><br><span class="line">    - /data/cassandra/commitlog          #commitlog的路径，与data目录分开磁盘，提高性能</span><br><span class="line">saved_caches_directory:</span><br><span class="line">    - /data/cassandra/caches              #缓存数据目录 </span><br><span class="line">commitlog_sync: batch                    #批量记录commitlog，每隔一段时间将数据commitlog</span><br><span class="line">commitlog_sync_batch_window_in_ms: 2      #batch模式下，批量操作缓存的时间间隔</span><br><span class="line">#commitlog_sync: periodic                #周期记录commitlog，每一次有数据更新都commitlog</span><br><span class="line">#commitlog_sync_period_in_ms: 10000      #periodic模式，刷新commitlog的时间间隔</span><br><span class="line"> rpc_address: dax-mysql-mha</span><br></pre></td></tr></table></figure></p>
+<h3 id="4、创建配置文件内指定的相关目录："><a href="#4、创建配置文件内指定的相关目录：" class="headerlink" title="4、创建配置文件内指定的相关目录："></a>4、创建配置文件内指定的相关目录：</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/cassandra/hints</span><br><span class="line">mkdir -p /data/cassandra/dbdata</span><br><span class="line">mkdir -p /data/cassandra/commitlog</span><br><span class="line">mkdir -p /data/cassandra/caches</span><br><span class="line">chmod 777 -R /data/cassandra</span><br></pre></td></tr></table></figure>
+<h3 id="5、启动数据库，并添加到开机启动："><a href="#5、启动数据库，并添加到开机启动：" class="headerlink" title="5、启动数据库，并添加到开机启动："></a>5、启动数据库，并添加到开机启动：</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service cassandra start</span><br><span class="line">chkconfig cassandra on</span><br></pre></td></tr></table></figure>
+<p>查看运行状态<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nodetool status</span><br></pre></td></tr></table></figure></p>
+<p>进入控制台,9042端口为默认控制台端口，可自行修改配置文件设置：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cqlsh ip 9042</span><br></pre></td></tr></table></figure></p>
+<h3 id="6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改："><a href="#6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改：" class="headerlink" title="6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改："></a>6、如果没有修改cluster-name启动该数据库，之后想要修改cluster-name需要使用下面方法去修改：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">进入控制台：</span><br><span class="line">UPDATE system.local SET cluster_name = &apos;daxcluster&apos; where key=&apos;local&apos;;</span><br><span class="line">bash $ ./nodetool flush</span><br><span class="line">修改cassandra.yaml配置文件cluster配置参数</span><br><span class="line">cluster_name: &apos;daxcluster&apos;</span><br><span class="line">重启cassandra</span><br><span class="line">/etc/init.d/cassandra restart</span><br></pre></td></tr></table></figure>
+<h3 id="7、给数据库设置用户名密码"><a href="#7、给数据库设置用户名密码" class="headerlink" title="7、给数据库设置用户名密码"></a>7、给数据库设置用户名密码</h3><p>1）、首先修改配置文件 cassandra.yaml<br>把默认的authenticator: AllowAllAuthenticator运行所有人登录设置为用密码登录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">authenticator: PasswordAuthenticator</span><br></pre></td></tr></table></figure></p>
+<p>2）、登录cassandra创建用户<br>使用默认账户登录cassandra<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cqlsh -ucassandra -pcassandra ip 9042</span><br></pre></td></tr></table></figure></p>
+<p>创建用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE USER test WITH PASSWORD &apos;test&apos; SUPERUSER;</span><br></pre></td></tr></table></figure></p>
+<p>3）、使用新用户登录<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cqlsh -utest -ptest ip 9042</span><br></pre></td></tr></table></figure></p>
+<p>删除默认帐号：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DROP USER cassandra;</span><br></pre></td></tr></table></figure></p>
+<p>4）、java使用用户名密码访问cassandra<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Cluster cluster = Cluster.builder()</span><br><span class="line">.addContactPoint(<span class="string">"192.168.22.161"</span>)</span><br><span class="line">.withCredentials(<span class="string">"myusername"</span>, <span class="string">"mypassword"</span>)</span><br><span class="line">.build();</span><br></pre></td></tr></table></figure></p>
+<h3 id="8、账号权限分配命令"><a href="#8、账号权限分配命令" class="headerlink" title="8、账号权限分配命令"></a>8、账号权限分配命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">授权：</span><br><span class="line">GRANT permission_name PERMISSION ON resource TO user_name;</span><br><span class="line">GRANT ALL PERMISSIONS ON resource TO user_name;</span><br><span class="line">收回权限：</span><br><span class="line">REVOKE permission_name PERMISSION ON resource FROM user_name;</span><br><span class="line">REVOKE ALL PERMISSIONS ON resource FROM user_name;</span><br><span class="line">查看权限：</span><br><span class="line">LIST permission_name PERMISSION ON resource OF user_name NORECURSIVE;</span><br><span class="line">LIST ALL PERMISSIONS ON resource OF user_name NORECURSIVE;</span><br><span class="line">其中，</span><br><span class="line">permission_name为：  ALL/ALTER/AUTHORIZE/CREATE/DROP/MODIFY/SELECT</span><br><span class="line">resource为：ALL KEYSPACES/KEYSPACE keyspace_name/TABLE keyspace_name.table_name</span><br></pre></td></tr></table></figure>
+<h3 id="9、其他使用命令："><a href="#9、其他使用命令：" class="headerlink" title="9、其他使用命令："></a>9、其他使用命令：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">desc KEYSPACEs</span><br><span class="line">枚举所有数据库</span><br><span class="line">list users;</span><br><span class="line">查看所有用户</span><br><span class="line">show version;</span><br><span class="line">显示当前cqlsh,cassandra，cql spec,native protocol 版本信息</span><br><span class="line">show host;</span><br><span class="line">显示当前集群节点的ip地址和端口</span><br><span class="line">SHOW SESSION &lt;session id&gt;</span><br><span class="line">跟踪一个会话信息</span><br><span class="line">SOURCE &apos;/home/thobbs/commands.cql&apos;</span><br><span class="line">读取文件内容，执行cql语句</span><br><span class="line">CAPTURE &apos;&lt;file&gt;&apos;;</span><br><span class="line">将会话查询内容指定到一个文件内</span><br><span class="line">CAPTURE OFF;</span><br><span class="line">停止将查询结果指定到文件内，使其正常输出到屏幕上</span><br><span class="line">CAPTURE;</span><br><span class="line">查看当前抓取信息是否指定到什么目录下</span><br></pre></td></tr></table></figure>
+<h3 id="10、如果nodetool-decommission命令将某节点提出-执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。"><a href="#10、如果nodetool-decommission命令将某节点提出-执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。" class="headerlink" title="10、如果nodetool decommission命令将某节点提出,执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。"></a>10、如果nodetool decommission命令将某节点提出,执行结束之后，如果需要把节点再重新加入集群，需要把数据目录下数据删除掉，重启cassandra服务。</h3>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Cassandra/">Cassandra</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/09/14/cassandra安装部署/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/09/14/mysql mgr从节点down恢复过程遇到的问题/"><span>[Mysql] mgr从节点down恢复过程遇到的问题</span></a></h3>
     
   
@@ -724,74 +803,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/09/09/mysql show processlist详解/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/09/09/mysql update一条语句过程遇到的问题/"><span>[Mysql] mysql update一条语句过程遇到的问题</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/09/09/mysql update一条语句过程遇到的问题/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-09-09T08:55:03.000Z">
-          2018-09-09
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、因为业务已停掉不担心会出现大量的锁等待事件，因此也没有考虑批量去更新（数据量有1700万左右），直接尝试去跑这一条update语句，第一次跑出现以下问题："><a href="#1、因为业务已停掉不担心会出现大量的锁等待事件，因此也没有考虑批量去更新（数据量有1700万左右），直接尝试去跑这一条update语句，第一次跑出现以下问题：" class="headerlink" title="1、因为业务已停掉不担心会出现大量的锁等待事件，因此也没有考虑批量去更新（数据量有1700万左右），直接尝试去跑这一条update语句，第一次跑出现以下问题："></a>1、因为业务已停掉不担心会出现大量的锁等待事件，因此也没有考虑批量去更新（数据量有1700万左右），直接尝试去跑这一条update语句，第一次跑出现以下问题：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UPDATE trade_order SET state = &apos;CANCELLED&apos; where state=&apos;CANCEL&apos;;</span><br><span class="line">error：Multi-statement TRANSACTION required more THAN &apos;max_binlog_cache_size&apos; bytes of STORAGE; increase this mysqld variable AND try again</span><br></pre></td></tr></table></figure>
-<h3 id="2、查看binlog-cache-size，最大值为1G："><a href="#2、查看binlog-cache-size，最大值为1G：" class="headerlink" title="2、查看binlog_cache_size，最大值为1G："></a>2、查看binlog_cache_size，最大值为1G：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;%binlog_cache_size%&apos;;</span><br><span class="line">+-----------------------+------------+</span><br><span class="line">| Variable_name         | Value      |</span><br><span class="line">+-----------------------+------------+</span><br><span class="line">| binlog_cache_size     | 4194304    |</span><br><span class="line">| max_binlog_cache_size | 1073741824 |</span><br><span class="line">+-----------------------+------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<h3 id="3、尝试去调高max-binlog-cache-size，在此执行update语句："><a href="#3、尝试去调高max-binlog-cache-size，在此执行update语句：" class="headerlink" title="3、尝试去调高max_binlog_cache_size，在此执行update语句："></a>3、尝试去调高max_binlog_cache_size，在此执行update语句：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set global max_binlog_cache_size=4073741824;</span><br><span class="line">Query OK, 0 rows affected, 1 warning (0.00 sec)</span><br><span class="line">mysql&gt; show variables like &apos;%binlog_cache_size%&apos;;</span><br><span class="line">+-----------------------+------------+</span><br><span class="line">| Variable_name         | Value      |</span><br><span class="line">+-----------------------+------------+</span><br><span class="line">| binlog_cache_size     | 4194304    |</span><br><span class="line">| max_binlog_cache_size | 4073738240 |</span><br><span class="line">+-----------------------+------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<h3 id="4、将至调到4G、8G去执行该语句，均报以上的错误，考虑用批量更新的方法去处理该update问题，尝试每次更新500万数据，binlog-cache-size仍然不满足，每次更新100万，执行正常："><a href="#4、将至调到4G、8G去执行该语句，均报以上的错误，考虑用批量更新的方法去处理该update问题，尝试每次更新500万数据，binlog-cache-size仍然不满足，每次更新100万，执行正常：" class="headerlink" title="4、将至调到4G、8G去执行该语句，均报以上的错误，考虑用批量更新的方法去处理该update问题，尝试每次更新500万数据，binlog_cache_size仍然不满足，每次更新100万，执行正常："></a>4、将至调到4G、8G去执行该语句，均报以上的错误，考虑用批量更新的方法去处理该update问题，尝试每次更新500万数据，binlog_cache_size仍然不满足，每次更新100万，执行正常：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; UPDATE trade_order SET state = &apos;CANCELLED&apos; where state=&apos;CANCEL&apos; and id &gt;=1 and id &lt;= 1000000;</span><br><span class="line">Query OK, 974190 rows affected (2 min 3.48 sec)</span><br><span class="line">Rows matched: 974190  Changed: 974190  Warnings: 0</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">mysql&gt; UPDATE trade_order SET state = &apos;CANCELLED&apos; where state=&apos;CANCEL&apos; and id &gt;=16000000 and id &lt;= 17000000;</span><br><span class="line">Query OK, 982238 rows affected (2 min 37.44 sec)</span><br><span class="line">Rows matched: 982238  Changed: 982238  Warnings: 0</span><br></pre></td></tr></table></figure>
-<p>每100万更新耗时为2min 40s左右</p>
-<h3 id="5、上述方法适用于当前表有主键id且递增的情况。如果该id值从其他关联表获取，可考虑一下方法："><a href="#5、上述方法适用于当前表有主键id且递增的情况。如果该id值从其他关联表获取，可考虑一下方法：" class="headerlink" title="5、上述方法适用于当前表有主键id且递增的情况。如果该id值从其他关联表获取，可考虑一下方法："></a>5、上述方法适用于当前表有主键id且递增的情况。如果该id值从其他关联表获取，可考虑一下方法：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; UPDATE trade_order SET state = &apos;CANCELLED&apos; where state=&apos;CANCEL&apos; and id in (select id from (select id from trade_order ORDER BY id ASC LIMIT 1,1000000) as tmp);</span><br></pre></td></tr></table></figure>
-<p>该方法涉及到一个子查询，总体执行速度会下降，根据取值范围和当前实际更新的行数，耗时在4min左右：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">UPDATE trade_order SET state = &apos;CANCELLED&apos; where state=&apos;CANCEL&apos; and id in (select id from (select id from trade_order ORDER BY id ASC LIMIT 1,1000000) as tmp);</span><br><span class="line">Query OK, 981631 rows affected (3 min 49.27 sec)</span><br><span class="line">Rows matched: 981631  Changed: 981631  Warnings: 0</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/09/09/mysql update一条语句过程遇到的问题/"><span>点击阅读</span></a></h3>
     
   
 </article>
