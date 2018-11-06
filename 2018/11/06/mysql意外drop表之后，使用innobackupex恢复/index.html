@@ -1,0 +1,323 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Mysql] mysql意外drop表之后，使用innobackupex恢复 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、使用innodbackupex备份测试删除表：innobackupex备份某以一张表1./innobackupex --defaults-file=/etc/my.cnf --databases=&amp;quot;aaaa.trade_order&amp;quot; --user=root --passwor">
+  
+
+  
+  
+  <meta name="keywords" content="mysql">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Mysql] mysql意外drop表之后，使用innobackupex恢复"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Mysql] mysql意外drop表之后，使用innobackupex恢复</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/11/06/mysql意外drop表之后，使用innobackupex恢复/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-11-06T14:28:00.000Z">
+          2018-11-06
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、使用innodbackupex备份测试删除表："><a href="#1、使用innodbackupex备份测试删除表：" class="headerlink" title="1、使用innodbackupex备份测试删除表："></a>1、使用innodbackupex备份测试删除表：</h4><p>innobackupex备份某以一张表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./innobackupex --defaults-file=/etc/my.cnf --databases=&quot;aaaa.trade_order&quot; --user=root --password=12345678 --port=3306 /tmp</span><br></pre></td></tr></table></figure></p>
+<p>如果要备份多个表，使用以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./innobackupex --defaults-file=/etc/my.cnf --databases=&quot;aaaa.trade_order aaaa.test1&quot; --user=root --password=12345678 --port=3306 /tmp</span><br></pre></td></tr></table></figure></p>
+<p>使用innobackupex备份出来的的数据在aaaa文件下面会存在table_name.frm和table_name.ibd两个文件。</p>
+<h4 id="2、如果知道表结构重新建表即可，如果表结构也无法获得，可通过该链接，对表结构进行恢复"><a href="#2、如果知道表结构重新建表即可，如果表结构也无法获得，可通过该链接，对表结构进行恢复" class="headerlink" title="2、如果知道表结构重新建表即可，如果表结构也无法获得，可通过该链接，对表结构进行恢复"></a>2、如果知道表结构重新建表即可，如果表结构也无法获得，可通过该<a href="https://zeven0707.github.io/2018/11/01/mysql%E4%BD%BF%E7%94%A8%E5%A4%87%E4%BB%BD%E7%9A%84.frm%E6%96%87%E4%BB%B6%E6%81%A2%E5%A4%8D%E8%A1%A8%E7%BB%93%E6%9E%84/" target="_blank" rel="noopener">链接</a>，对表结构进行恢复</h4><h4 id="3、恢复完表结构之后，开始恢复数据，丢弃表空间："><a href="#3、恢复完表结构之后，开始恢复数据，丢弃表空间：" class="headerlink" title="3、恢复完表结构之后，开始恢复数据，丢弃表空间："></a>3、恢复完表结构之后，开始恢复数据，丢弃表空间：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#为防止新的数据写入，对表加锁：</span><br><span class="line">root@db 16:20:  [aaaa]&gt; lock tables tb1 write;</span><br><span class="line"></span><br><span class="line">root@db 16:20:  [aaaa]&gt; alter table trade_order discard tablespace; </span><br><span class="line">Query OK, 0 rows affected (0.54 sec)</span><br></pre></td></tr></table></figure>
+<p>将对应的ibd文件拷入对应的数据目录,修改数据文件权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; cp trade_order.ibd /data/mysql/data/aaaa/</span><br><span class="line">shell &gt; chown mysql.mysql trade_order.ibd</span><br></pre></td></tr></table></figure></p>
+<p>载入表空间：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 16:24:  [aaaa]&gt; alter table trade_order import tablespace;</span><br><span class="line">Query OK, 0 rows affected, 1 warning (1 min 53.51 sec)</span><br></pre></td></tr></table></figure></p>
+<p>查看有无报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show warnings;</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、对备份之后的数据进行恢复，查看备份开始的时间点"><a href="#4、对备份之后的数据进行恢复，查看备份开始的时间点" class="headerlink" title="4、对备份之后的数据进行恢复，查看备份开始的时间点"></a>4、对备份之后的数据进行恢复，查看备份开始的时间点</h4><p>cat xtrabackup_binlog_info<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql-binlog.000489	748512183</span><br></pre></td></tr></table></figure></p>
+<p>然后查找drop的pos点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog  -v --base64-output=DECODE-ROWS /data/mysql/log/mysql-binlog.000489 | grep -C 10 -i  &quot;DROP&quot;</span><br></pre></td></tr></table></figure></p>
+<p>找到删除的pos点，如果不在该log文件下，需要根据（show master status)的位置向前依次筛选,找到drop表的记录，内容如下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server id 1  end_log_pos 748512209 CRC32 0x3fa6b448   Query   thread_id=27    </span><br><span class="line">DROP TABLE `trade_order` /* generated by server */</span><br><span class="line">/*!*/;</span><br></pre></td></tr></table></figure></p>
+<p>找到表删除的pos点（748512209），利用binlog2sql生成中间发生sql语句，（binlog2sql方法详解<a href="https://github.com/danfengcao/binlog2sql">此处</a>）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python binlog2sql.py  -uroot -p12345678 -daaaa -ttrade_order --start-position=748512183 --stop-position=748512209 --start-file=&apos;mysql-binlog.000489&apos;  &gt; /tmp/re_aaaa_trade_order.sql</span><br></pre></td></tr></table></figure></p>
+<p>生成的sql内容如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@dax-mysql-master binlog2sql]# cat /tmp/re_aaaa_trade_order.sql</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (12); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (11); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (10); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (9); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (8); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (7); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (6); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (5); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (4); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (2); #start 2804 end 2949 time 2018-11-06 18:45:45</span><br><span class="line">DELETE FROM `aaaa`.`trade_order` WHERE `id`=12 LIMIT 1; #start 2571 end 2716 time 2018-11-06 18:45:39</span><br><span class="line">DELETE FROM `aaaa`.`trade_order` WHERE `id`=11 LIMIT 1; #start 2338 end 2483 time 2018-11-06 18:45:33</span><br></pre></td></tr></table></figure></p>
+<p>生成的sql顺序是倒序的，需要重新调整（github上关于binlog2sql的用法未有关于顺序的说明）：<br>sed -i ‘1!G;h;$!d’ /tmp/re_aaaa_trade_order.sql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-master binlog2sql]#  sed -i &apos;1!G;h;$!d&apos; /tmp/re_aaaa_trade_order.sql</span><br><span class="line">[root@dax-mysql-master binlog2sql]# cat /tmp/re_aaaa_trade_order.sql</span><br><span class="line">DELETE FROM `aaaa`.`trade_order` WHERE `id`=11 LIMIT 1; #start 2338 end 2483 time 2018-11-06 18:45:33</span><br><span class="line">DELETE FROM `aaaa`.`trade_order` WHERE `id`=12 LIMIT 1; #start 2571 end 2716 time 2018-11-06 18:45:39</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (2); #start 2804 end 2949 time 2018-11-06 18:45:45</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (4); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (5); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (6); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (7); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (8); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (9); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (10); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (11); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br><span class="line">INSERT INTO `aaaa`.`trade_order`(`id`) VALUES (12); #start 3037 end 3222 time 2018-11-06 18:54:21</span><br></pre></td></tr></table></figure></p>
+<h4 id="5、把这sql文件进入导入即可进行备份后的数据恢复"><a href="#5、把这sql文件进入导入即可进行备份后的数据恢复" class="headerlink" title="5、把这sql文件进入导入即可进行备份后的数据恢复"></a>5、把这sql文件进入导入即可进行备份后的数据恢复</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-master binlog2sql]# mysql -u root -p12345678 aaaa &lt; /tmp/re_aaaa_trade_order.sql</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">ERROR 1205 (HY000) at line 1: Lock wait timeout exceeded; try restarting transaction</span><br></pre></td></tr></table></figure>
+<p>需要先解锁表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unlock tables;</span><br></pre></td></tr></table></figure></p>
+<p>解锁完成在重新导入：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-master binlog2sql]# mysql -u root -p12345678 aaaa &lt; /tmp/re_aaaa_trade_order.sql</span><br></pre></td></tr></table></figure></p>
+<p>导入成功。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、使用innodbackupex备份测试删除表："><span class="toc-number">1.</span> <span class="toc-text">1、使用innodbackupex备份测试删除表：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、如果知道表结构重新建表即可，如果表结构也无法获得，可通过该链接，对表结构进行恢复"><span class="toc-number">2.</span> <span class="toc-text">2、如果知道表结构重新建表即可，如果表结构也无法获得，可通过该链接，对表结构进行恢复</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、恢复完表结构之后，开始恢复数据，丢弃表空间："><span class="toc-number">3.</span> <span class="toc-text">3、恢复完表结构之后，开始恢复数据，丢弃表空间：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、对备份之后的数据进行恢复，查看备份开始的时间点"><span class="toc-number">4.</span> <span class="toc-text">4、对备份之后的数据进行恢复，查看备份开始的时间点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、把这sql文件进入导入即可进行备份后的数据恢复"><span class="toc-number">5.</span> <span class="toc-text">5、把这sql文件进入导入即可进行备份后的数据恢复</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Mysql] mysql意外drop表之后，使用innobackupex恢复'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
