@@ -112,6 +112,84 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>[Mysql] mysql数据库使用innobackupex和mysqldump备份恢复的对比</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
+          2018-10-25
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、查看原库数据文件大小："><a href="#1、查看原库数据文件大小：" class="headerlink" title="1、查看原库数据文件大小："></a>1、查看原库数据文件大小：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">du -sh *|grep data</span><br><span class="line">23G	data</span><br></pre></td></tr></table></figure>
+<h4 id="2、使用innodbackex备份数据"><a href="#2、使用innodbackex备份数据" class="headerlink" title="2、使用innodbackex备份数据"></a>2、使用innodbackex备份数据</h4><p>在percona官方下载xtrabackup软件，并解压<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.9/binary/tarball/percona-xtrabackup-2.4.9-Linux-x86_64.tar.gz</span><br><span class="line">tar -zxvf percona-xtrabackup-2.4.9-Linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure></p>
+<p>开始执行备份，指定配置文件、用户名、密码、端口、备份的目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./innobackupex --defaults-file=/etc/my.cnf --user=root --password=12345678 --port=3306 /data/</span><br></pre></td></tr></table></figure></p>
+<p>（总体耗时25分钟左右，备份文件大小23G）</p>
+<h4 id="3、采用innodbackex备份出来的数据去恢复-将数据文件拷贝到节点1-执行恢复操作"><a href="#3、采用innodbackex备份出来的数据去恢复-将数据文件拷贝到节点1-执行恢复操作" class="headerlink" title="3、采用innodbackex备份出来的数据去恢复,将数据文件拷贝到节点1,执行恢复操作:"></a>3、采用innodbackex备份出来的数据去恢复,将数据文件拷贝到节点1,执行恢复操作:</h4><p>先把事务日志恢复（–apply-log）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/soft/percona-xtrabackup/bin/innobackupex --defaults-file=/etc/my.cnf --user=root --password=12345678 --port=3306 --apply-log /data/2018-09-14_13-34-38</span><br></pre></td></tr></table></figure></p>
+<p>恢复数据之前需要清除数据目录下的所有数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /data/mysql/data/*</span><br></pre></td></tr></table></figure></p>
+<p>开始恢复数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/soft/percona-xtrabackup/bin/innobackupex --defaults-file=/etc/my.cnf --user=root --password=12345678 --port=3306 --copy-back --rsync /data/2018-09-14_13-34-38</span><br></pre></td></tr></table></figure></p>
+<p>数据恢复完成之后，删除datadir下的事务日志log文件（innodb引擎才会有）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; cd /data/mysql/data</span><br><span class="line">shell &gt; rm -rf ib_logfile*</span><br></pre></td></tr></table></figure></p>
+<p>设置数据目录权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; chown -R mysql:mysql /data/mysql/data</span><br><span class="line">shell &gt; /data/mysql/bin/mysqld_safe --defaults-file=/data/mysql/etc/my.cnf &amp;</span><br></pre></td></tr></table></figure></p>
+<p>启动节点1的mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysql restart</span><br></pre></td></tr></table></figure></p>
+<p>恢复总体耗时（35分钟）</p>
+<h4 id="4、原库使用mysqldump方法备份一份数据，用于恢复节点2："><a href="#4、原库使用mysqldump方法备份一份数据，用于恢复节点2：" class="headerlink" title="4、原库使用mysqldump方法备份一份数据，用于恢复节点2："></a>4、原库使用mysqldump方法备份一份数据，用于恢复节点2：</h4><p>原库操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/mysql/bin/mysqldump --all-databases --set-gtid-purged=ON --single-transaction -uroot -p12345678 &gt; /db/test.dump</span><br></pre></td></tr></table></figure></p>
+<p>备份需要指定–set-gtid-purged=ON参数在备份文件中输出global.gtid_purged信息，<br>指定–single-transaction参数避免备份过程中产生锁<br>（备份耗时10分钟，备份文件大小11G）</p>
+<h4 id="5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作："><a href="#5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作：" class="headerlink" title="5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作："></a>5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作：</h4><p> 如果从库@@GLOBAL.GTID_EXECUTED值不为空需要执行reset master;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@db 07:55:  [(none)]&gt; stop group_replication;</span><br><span class="line">Query OK, 0 rows affected (1.01 sec)</span><br><span class="line">root@db 07:55:  [(none)]&gt; reset master;</span><br><span class="line">Query OK, 0 rows affected (0.05 sec)</span><br></pre></td></tr></table></figure></p>
+<p>开始执行恢复<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-mha bin]# mysql -u root -p12345678 &lt; /data/test.dump</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br></pre></td></tr></table></figure></p>
+<p>总体耗时（60分钟左右）</p>
+<h4 id="6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较："><a href="#6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较：" class="headerlink" title="6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较："></a>6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">数据文件目录大小23G情况下，mysqldump逻辑备份出来数据大小11G，备份耗时十分钟，恢复耗时一小时；</span><br><span class="line">innobackupex物理备份备份出来数据大小23G，备份耗时25分钟，恢复耗时35分钟。</span><br><span class="line">使用物理备份备份时间比逻辑备份时间较长，但恢复时间会小于逻辑备份时间,数据量比较大的情况下使用innobackupex会更好一点。</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/25/mysql-MGR集群配置/"><span>[Mysql] mysql-MGR集群配置</span></a></h3>
     
   
@@ -739,86 +817,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/08/使用mysqldiff和mysqldbcompare比较数据库差异/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/09/28/使用certbot为域名生成免费证书(apache版)/"><span>[Linux] 使用certbot为域名生成免费证书(apache版)</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/09/28/使用certbot为域名生成免费证书(apache版)/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-09-28T08:41:30.000Z">
-          2018-09-28
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、下载certbot"><a href="#1、下载certbot" class="headerlink" title="1、下载certbot"></a>1、下载certbot</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /data/soft</span><br><span class="line">wget https://dl.eff.org/certbot-auto</span><br><span class="line">chmod a+x certbot-auto</span><br></pre></td></tr></table></figure>
-<h4 id="2、生成证书"><a href="#2、生成证书" class="headerlink" title="2、生成证书"></a>2、生成证书</h4><p>/data/soft/certbot-auto –apache certonly<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line">Could not choose appropriate plugin: The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Cannot find Apache executable apachectl&apos;,)</span><br><span class="line">The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Cannot find Apache executable apachectl&apos;,)</span><br></pre></td></tr></table></figure></p>
-<h4 id="3、上面报错提示找不到执行路径，需要指定apache的路径"><a href="#3、上面报错提示找不到执行路径，需要指定apache的路径" class="headerlink" title="3、上面报错提示找不到执行路径，需要指定apache的路径"></a>3、上面报错提示找不到执行路径，需要指定apache的路径</h4><p>sudo env PATH=$PATH:/usr/local/apache2/bin ./certbot-auto –apache certonly<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line">Could not choose appropriate plugin: The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Could not find configuration root&apos;,)</span><br><span class="line">The apache plugin is not working; there may be problems with your existing configuration.</span><br><span class="line">The error was: NoInstallationError(&apos;Could not find configuration root&apos;,)</span><br></pre></td></tr></table></figure></p>
-<h4 id="4、上面报错提示找不到配置目录，需要指定–apache-server-root"><a href="#4、上面报错提示找不到配置目录，需要指定–apache-server-root" class="headerlink" title="4、上面报错提示找不到配置目录，需要指定–apache-server-root"></a>4、上面报错提示找不到配置目录，需要指定–apache-server-root</h4><p> sudo env PATH=$PATH:/usr/local/apache2/bin ./certbot-auto –apache –apache-server-root /usr/local/apache2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line">Plugins selected: Authenticator apache, Installer apache</span><br><span class="line">No names were found in your configuration files. Please enter in your domain</span><br><span class="line">name(s) (comma and/or space separated)  (Enter &apos;c&apos; to cancel): www.test.com</span><br><span class="line">Obtaining a new certificate</span><br><span class="line">Performing the following challenges:</span><br><span class="line">http-01 challenge for www.test.com</span><br><span class="line">Cleaning up challenges</span><br><span class="line">Unable to find a virtual host listening on port 80 which is currently needed for Certbot to prove to the CA that you control your domain. Please add a virtual host for port 80.</span><br></pre></td></tr></table></figure></p>
-<h4 id="5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd-conf配置文件，添加上80端口，并重启apache"><a href="#5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd-conf配置文件，添加上80端口，并重启apache" class="headerlink" title="5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd.conf配置文件，添加上80端口，并重启apache"></a>5、使用certbot申请申请域名免费证书，默认会访问80端口，如果80端口不存在，会报以上错误，修改httpd.conf配置文件，添加上80端口，并重启apache</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Listen 80</span><br><span class="line"></span><br><span class="line">&lt;VirtualHost *:80&gt;  </span><br><span class="line">    ServerAdmin test@test.example.com</span><br><span class="line">    ServerName  www.test.com</span><br><span class="line">    ServerAlias test</span><br><span class="line">    DocumentRoot /var/www/html </span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="6、重新生成证书，成功之后会在-etc-letsencrypt-live-ebank-cbibank-com目录下生成四个文件-pem文件和一个README文件"><a href="#6、重新生成证书，成功之后会在-etc-letsencrypt-live-ebank-cbibank-com目录下生成四个文件-pem文件和一个README文件" class="headerlink" title="6、重新生成证书，成功之后会在/etc/letsencrypt/live/ebank.cbibank.com目录下生成四个文件.pem文件和一个README文件"></a>6、重新生成证书，成功之后会在/etc/letsencrypt/live/ebank.cbibank.com目录下生成四个文件.pem文件和一个README文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cert.pem  chain.pem  fullchain.pem  privkey.pem  README</span><br></pre></td></tr></table></figure>
-<h4 id="7、修改conf-httpd-conf文件"><a href="#7、修改conf-httpd-conf文件" class="headerlink" title="7、修改conf/httpd.conf文件"></a>7、修改conf/httpd.conf文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#Include conf/extra/httpd-ssl.conf</span><br><span class="line">#LoadModule ssl_module modules/mod_ssl.so</span><br></pre></td></tr></table></figure>
-<p>将这两行的#去掉</p>
-<h4 id="8、配置conf-extra-httpd-ssl-conf文件，修改对应的域名和证书路径："><a href="#8、配置conf-extra-httpd-ssl-conf文件，修改对应的域名和证书路径：" class="headerlink" title="8、配置conf/extra/httpd-ssl.conf文件，修改对应的域名和证书路径："></a>8、配置conf/extra/httpd-ssl.conf文件，修改对应的域名和证书路径：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">DocumentRoot &quot;/var/www/html&quot;</span><br><span class="line">ServerName ebank.cbibank.com</span><br><span class="line">SSLEngine on</span><br><span class="line">SSLCertificateFile /etc/letsencrypt/live/ebank.cbibank.com/cert.pem</span><br><span class="line">SSLCertificateKeyFile /etc/letsencrypt/live/ebank.cbibank.com/privkey.pem</span><br><span class="line">SSLCertificateChainFile /etc/letsencrypt/live/ebank.cbibank.com/chain.pem</span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="9、修改完成后重启apache："><a href="#9、修改完成后重启apache：" class="headerlink" title="9、修改完成后重启apache："></a>9、修改完成后重启apache：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/apache2/bin/apachectl restart</span><br></pre></td></tr></table></figure>
-<p>重启过程报错，无法关闭apache提示以下错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so: cannot open shared object file: No such file or directory</span><br></pre></td></tr></table></figure></p>
-<p>在/usr/lib64/下面没有httpd的模块，yum安装mod_ssl：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install mod_ssl</span><br></pre></td></tr></table></figure></p>
-<p>安装完成之后在/usr/lib64/httpd/modules/下面会有mod_ssl.so<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib64/httpd/modules/mod_ssl.so</span><br><span class="line">ln -s /usr/lib64/httpd/modules/mod_ssl.so /usr/local/apache2/modules/mod_ssl.so</span><br></pre></td></tr></table></figure></p>
-<p>再次尝试重启apache，报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so:undefined symbol: ap_global_mutex_create</span><br></pre></td></tr></table></figure></p>
-<p>google了一下，有说yum安装的mod_ssl与apache的安装版本不兼容的问题，因此尝试使用对应版本的tar包将模块文件拷过去:<br>拷贝modules目录下的ssl目录和loggers的内容到/usr/local/apache2/modules/ssl目录下、拷贝include目录下的内容到/usr/local/apache2/modules/ssl目录下，拷贝完之后，在/usr/local/apache2/modules/ssl目录下执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/apache2/bin/apxs -a -i -c mod_ssl.c</span><br></pre></td></tr></table></figure></p>
-<p>执行完成之后再次重启apache，依旧报错:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so: undefined symbol: ssl_cmd_SSLPassPhraseDialog</span><br></pre></td></tr></table></figure></p>
-<p>需要指定openssl路径，执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/apache2/bin/apxs -a -i -c -L/usr/lib/openssl/engines/lib -c *.c -lcrypto -lssl -ldl</span><br></pre></td></tr></table></figure></p>
-<p>再次重启apache<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpd: Syntax error on line 434 of /usr/local/apache2/conf/httpd.conf: Cannot load /usr/local/apache2/modules/mod_ssl.so into server: /usr/local/apache2/modules/mod_ssl.so:undefined symbol: ap_global_mutex_create</span><br></pre></td></tr></table></figure></p>
-<p>重启apache依旧报错undefinedsymbol:ap_global_mutex_create，没找到任何解决办法，最后只能添加-enable-ssl参数，重新编译安装apache。</p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/linux/">linux</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/09/28/使用certbot为域名生成免费证书(apache版)/"><span>点击阅读</span></a></h3>
     
   
 </article>
