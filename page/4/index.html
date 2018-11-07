@@ -112,6 +112,69 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/09/10/mysql innodb_locks参数详解/"><span>[Mysql] mysql show innodb_locks详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/10/mysql innodb_locks参数详解/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-10T11:50:03.000Z">
+          2018-09-10
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、INFORMATION-SCHEMA-INNODB-LOCKS-提供innodb事务去请求但没有获取到的锁信息和事务阻塞其他事务的锁信息。执行命令如下："><a href="#1、INFORMATION-SCHEMA-INNODB-LOCKS-提供innodb事务去请求但没有获取到的锁信息和事务阻塞其他事务的锁信息。执行命令如下：" class="headerlink" title="1、INFORMATION_SCHEMA INNODB_LOCKS 提供innodb事务去请求但没有获取到的锁信息和事务阻塞其他事务的锁信息。执行命令如下："></a>1、INFORMATION_SCHEMA INNODB_LOCKS 提供innodb事务去请求但没有获取到的锁信息和事务阻塞其他事务的锁信息。执行命令如下：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from information_schema.innodb_locks\G</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.imgur.com/PCfQYeg.png" alt=""></p>
+<h3 id="2、innodb-locks各列参数详解："><a href="#2、innodb-locks各列参数详解：" class="headerlink" title="2、innodb_locks各列参数详解："></a>2、innodb_locks各列参数详解：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">lock_id:innodb唯一lock id。把他当做一个不透明的字符串。虽然lock_id当前包含trx_id，lock_id的数据格式在任何时间都肯能改变。不要写用于解析lock_id值得应用程序。</span><br><span class="line">lock_trx_id：持有锁的事务id。查询事务信息，与innodb_trx表中trx_id列匹配。</span><br><span class="line">lock_mode:锁请求。该值包括： S, X, IS, IX, GAP, AUTO_INC, and UNKNOWN。锁模式标识符可以组合用于识别特定的锁模式。查看更多信息，点击[此处]((https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html))</span><br><span class="line">lock_type:锁类型。行锁为record，表锁为table。</span><br><span class="line">lock_table:被锁的表名，或者包含锁记录的表名。</span><br><span class="line">lock_index:lock_type为行锁时，该值为索引名，否则为空。</span><br><span class="line">lock_space:lock_type为行锁时，该值为锁记录的表空间的id，否则为空。</span><br><span class="line">lock_page：lock_type为行锁时，该值为锁记录页数量，否则为空。</span><br><span class="line">lock_rec:lock_type为行锁时，页内锁记录的堆数，否则为空。</span><br><span class="line">lock_data：与锁相关的数据。如果lock_type为行锁时，该值是锁记录的主键值，否则为空。这列包含锁定行的主键列的值，转化为一个有效的字符串，如果没有主键，lock_data是唯一innodb内部行id号。如果是键值或者范围大于索引的最大值会使用间隙锁，lock_data表示为supremum pseudo-record。当包含锁记录的页不在buffer pool内，innodb不去从磁盘获取页，为了避免不必要的磁盘操作，lock_data为空。</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/09/10/mysql innodb_locks参数详解/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/09/10/mysql innodb_trx参数详解/"><span>[Mysql] mysql innodb_trx参数详解</span></a></h3>
     
   
@@ -721,77 +784,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/09/04/使用mysqladmin查看innodb_buffer_pool缓存命中率及缓存使用情况/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/09/04/mysql blackhole-engine/"><span>[Mysql] mysql blackhole-engine详解</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/09/04/mysql blackhole-engine/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-09-04T09:06:00.000Z">
-          2018-09-04
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、mysql-黑洞引擎就像黑洞一样，能接受数据，但把接受的数据扔掉，不存储数据，检查结果返回为空。"><a href="#1、mysql-黑洞引擎就像黑洞一样，能接受数据，但把接受的数据扔掉，不存储数据，检查结果返回为空。" class="headerlink" title="1、mysql 黑洞引擎就像黑洞一样，能接受数据，但把接受的数据扔掉，不存储数据，检查结果返回为空。"></a>1、mysql 黑洞引擎就像黑洞一样，能接受数据，但把接受的数据扔掉，不存储数据，检查结果返回为空。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE TABLE test(i INT, c CHAR(10)) ENGINE = BLACKHOLE;</span><br><span class="line">Query OK, 0 rows affected (0.03 sec)</span><br><span class="line">mysql&gt; INSERT INTO test VALUES(1,&apos;record one&apos;),(2,&apos;record two&apos;);</span><br><span class="line">Query OK, 2 rows affected (0.00 sec)</span><br><span class="line">Records: 2  Duplicates: 0  Warnings: 0</span><br><span class="line">mysql&gt; SELECT * FROM test;</span><br><span class="line">Empty set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<h3 id="2、创建黑洞引擎表，数据目录下回创建表格式文件，以表明开头后缀为-frm，没有与该表关联的其他文件"><a href="#2、创建黑洞引擎表，数据目录下回创建表格式文件，以表明开头后缀为-frm，没有与该表关联的其他文件" class="headerlink" title="2、创建黑洞引擎表，数据目录下回创建表格式文件，以表明开头后缀为.frm，没有与该表关联的其他文件"></a>2、创建黑洞引擎表，数据目录下回创建表格式文件，以表明开头后缀为.frm，没有与该表关联的其他文件</h3><p>黑洞引擎支持所有类型的索引，定义表时，可以声明索引。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ll test.*</span><br><span class="line">-rw-r----- 1 mysql mysql 8578 Sep  4 06:22 test.frm</span><br></pre></td></tr></table></figure></p>
-<h3 id="3、可以通过show-engines查看是否支持黑洞引擎："><a href="#3、可以通过show-engines查看是否支持黑洞引擎：" class="headerlink" title="3、可以通过show engines查看是否支持黑洞引擎："></a>3、可以通过show engines查看是否支持黑洞引擎：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">show engines;</span><br><span class="line">+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span><br><span class="line">| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |</span><br><span class="line">+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span><br><span class="line">| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |</span><br><span class="line">| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |</span><br><span class="line">| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |</span><br><span class="line">| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |</span><br><span class="line">| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |</span><br><span class="line">| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |</span><br><span class="line">| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |</span><br><span class="line">| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |</span><br><span class="line">| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |</span><br><span class="line">+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span><br></pre></td></tr></table></figure>
-<h3 id="4、黑洞引擎表不存储任何数据，但是如果启用了二进制日志，sql语句会被记录并复制到从库，这对于中继机制和过滤机制很有用。"><a href="#4、黑洞引擎表不存储任何数据，但是如果启用了二进制日志，sql语句会被记录并复制到从库，这对于中继机制和过滤机制很有用。" class="headerlink" title="4、黑洞引擎表不存储任何数据，但是如果启用了二进制日志，sql语句会被记录并复制到从库，这对于中继机制和过滤机制很有用。"></a>4、黑洞引擎表不存储任何数据，但是如果启用了二进制日志，sql语句会被记录并复制到从库，这对于中继机制和过滤机制很有用。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">假设您的应用程序需要从属端过滤规则，但是传输所有的二进制数据到从库会造成很大的网络流量，在这种情况下，在主库设置存储引擎为黑洞的‘dummy’从进程，如下图所示：</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.imgur.com/cxMKOso.png" alt=""><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">主库写入二级制日志，‘dummy’mysqld 进程作为从进程执行，合并replicate-do-* 和replicate-ignore-*规则，自己写入一个新的，过滤好的二进制日志，该过滤日志传递给从库。</span><br><span class="line">虚拟的进程不存储任何数据，因此外的mysqld进程复制主库信息产生少量的开销。</span><br><span class="line">黑洞引擎表，insert触发器可正常使用，但是因为不存储数据，update和delete引擎没有激活，因为没有行，for each row触发器定义不适用。</span><br></pre></td></tr></table></figure></p>
-<h3 id="5、黑洞引擎的用途："><a href="#5、黑洞引擎的用途：" class="headerlink" title="5、黑洞引擎的用途："></a>5、黑洞引擎的用途：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1、验证转储文件语法</span><br><span class="line">2、启用或禁用二级制日志，来测量二进制日志带来的开销</span><br><span class="line">3、黑洞引擎本质上是一个无操作的引擎，因此可以用于查找与引擎本身无关的性能瓶颈。</span><br></pre></td></tr></table></figure>
-<p>黑洞引擎是交易感知的，提交的事物写入二进制日志，回滚事物不写入。</p>
-<h3 id="6、黑洞引擎和自动增量列的问题："><a href="#6、黑洞引擎和自动增量列的问题：" class="headerlink" title="6、黑洞引擎和自动增量列的问题："></a>6、黑洞引擎和自动增量列的问题：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">主从架构数据库：1、主库黑洞表有一个自动增量字段是主键；2、从服务器有相同表引擎为myisam，3、主库执行insert，并隐式设置增量值。</span><br><span class="line">在这种情况下，主从复制将失败，</span><br><span class="line">如果主站有许多从站，则在发送到从站之前进行过滤可能会减少网络流量。</span><br><span class="line">在基于行的复制中，引擎为行返回的值对于每个插入始终是相同的。这将导致从服务器尝试使用主键列的相同值重播两个插入日志条目，因此复制将失败。</span><br></pre></td></tr></table></figure>
-<h3 id="7、黑洞引擎和列过滤问题："><a href="#7、黑洞引擎和列过滤问题：" class="headerlink" title="7、黑洞引擎和列过滤问题："></a>7、黑洞引擎和列过滤问题：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">基于行的复制，从库支持表中缺少最后一列。</span><br><span class="line">从库端执行过滤，在执行过滤之前，先将数据传到从库，最少有两种情况不希望将列拷贝到从库：</span><br><span class="line">1、数据是机密的，从库没有权限访问它；</span><br><span class="line">2、主库有多个从库，在发送到从库之前执行过滤用于减少网络带宽</span><br></pre></td></tr></table></figure>
-<p>官方文档提供的案例如下,对于受信任和不受信任从库的语句未找到合理解释，没看懂：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">使用BLACKHOLE引擎和 --replicate-do-table或 --replicate-ignore-table选项，可以实现主列过滤，</span><br><span class="line">主库配置：</span><br><span class="line">CREATE TABLE t1 (public_col_1, ..., public_col_N,</span><br><span class="line">                 secret_col_1, ..., secret_col_M) ENGINE=MyISAM;</span><br><span class="line">受信任的从库配置：</span><br><span class="line">CREATE TABLE t1 (public_col_1, ..., public_col_N) ENGINE=BLACKHOLE;</span><br><span class="line">不受信任的从库配置：</span><br><span class="line">CREATE TABLE t1 (public_col_1, ..., public_col_N) ENGINE=MyISAM;</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/09/04/mysql blackhole-engine/"><span>点击阅读</span></a></h3>
     
   
 </article>
