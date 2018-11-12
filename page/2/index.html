@@ -338,6 +338,69 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
+          2018-10-25
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>[Mysql] mysql数据库使用innobackupex和mysqldump备份恢复的对比</span></a></h3>
     
   
@@ -404,69 +467,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
-          2018-10-25
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
