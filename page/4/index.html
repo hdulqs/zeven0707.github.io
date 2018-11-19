@@ -112,6 +112,70 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/09/13/Multi-threaded slave statistics for channel 'group_replication_applier'/"><span>[Mysql] Multi-threaded slave statistics for channel</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/13/Multi-threaded slave statistics for channel 'group_replication_applier'/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-13T13:34:10.000Z">
+          2018-09-13
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="0、从库error日志提示信息如下："><a href="#0、从库error日志提示信息如下：" class="headerlink" title="0、从库error日志提示信息如下："></a>0、从库error日志提示信息如下：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Note] Multi-threaded slave statistics for channel &apos;group_replication_applier&apos;: seconds elapsed = 267; events assigned = 10241; worker queues filled over overrun level = 0; waited due a Worker queue full = 0; waited due the total size = 0; waited at clock conflicts = 981623300 waited (count) when Workers occupied = 1238 waited when Workers occupied = 6762438500</span><br></pre></td></tr></table></figure>
+<h3 id="1、mysqlerror-log出现上述提示信息是因为启用了mts（Multi-threaded-slave）需要启用slave-parallel-workers参数（默认值为0，最大值为1024），并且log-warning（该参数将于v8-0-3去除，被log-error-verbosity-替代）参数要大于1，在error-log里面会有上述提示。"><a href="#1、mysqlerror-log出现上述提示信息是因为启用了mts（Multi-threaded-slave）需要启用slave-parallel-workers参数（默认值为0，最大值为1024），并且log-warning（该参数将于v8-0-3去除，被log-error-verbosity-替代）参数要大于1，在error-log里面会有上述提示。" class="headerlink" title="1、mysqlerror-log出现上述提示信息是因为启用了mts（Multi-threaded slave）需要启用slave_parallel_workers参数（默认值为0，最大值为1024），并且log_warning（该参数将于v8.0.3去除，被log_error_verbosity 替代）参数要大于1，在error_log里面会有上述提示。"></a>1、mysqlerror-log出现上述提示信息是因为启用了mts（Multi-threaded slave）需要启用slave_parallel_workers参数（默认值为0，最大值为1024），并且log_warning（该参数将于v8.0.3去除，被log_error_verbosity 替代）参数要大于1，在error_log里面会有上述提示。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">seconds elapsed 就是上一次统计跟这一次统计的时间间隔。</span><br><span class="line">events assigned：总共有多少个event被分配执行，计的是总数。</span><br><span class="line">worker queues filled over overrun level：mts在所有的并行workers之间倾向于加载平衡的时间。slave_parrllel_workers参数决定workers数量。这个统计参数显示了当前线程承受的饱和等级。如果以一个并行线程序列趋近与饱和，这个数会递增，线程复制时间会被推迟，避免达到线程序列限制。</span><br><span class="line">Waited due to a Worker queue full：因为worker队列爆满，协调线程必须等待该统计参数会增长</span><br><span class="line">Waited due to the total size:该参数代表因为达到了可用内存的限制，worker队列持有未应用事件造成协调线程睡眠的次数。如果这个值持续增长，需要增大slave_pending_jobs_size_max值来避免协调线程等待时间。</span><br><span class="line">slave_pending_jobs_size_max：此变量代表用于保存尚未应用的事件的从worker队列的最大内存量（以字节为单位），如果没有启动mts，修改该参数不会有任何效果。（v8.0.11之前默认值为16M,v8.0.12默认值为128M，最小值为1024，最大值为16eib）</span><br><span class="line">Waited at clock conflicts:在事务之间存在依赖的情况下，该参数显示等待时间相当于冲突检测和解决方案的逻辑时间。</span><br><span class="line">Waited (count) when used occupied:协调进程监控worker足额（enough）分配的统计次数。enough定义取决于调度类型（基于每个库和时钟）</span><br><span class="line">Waited when workers occupied:对任何可用worker计算协调线程等待的次数，仅适用于提交时钟调度程序。</span><br></pre></td></tr></table></figure>
+<p><a href="https://www.percona.com/blog/2017/07/19/multi-threaded-slave-statistics/" target="_blank" rel="noopener">参考文档</a></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/09/13/Multi-threaded slave statistics for channel 'group_replication_applier'/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/09/12/mysql 切割慢日志另附定期切割日志脚本/"><span>[Mysql] mysql切割慢日志</span></a></h3>
     
   
@@ -725,72 +789,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/09/08/mysql报错-[ERROR] InnoDB-Unable to lock -ibdata1/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/09/07/云交易所建库、修改多个表的语句/"><span>[Mysql] mysql批量建库、修改多库中同一命名个表</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/09/07/云交易所建库、修改多个表的语句/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-09-07T15:37:03.000Z">
-          2018-09-07
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、批量删除数据库"><a href="#1、批量删除数据库" class="headerlink" title="1、批量删除数据库"></a>1、批量删除数据库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for i in test_ETH_BTC test_BTC_USDT test_ETH_USDT test_BCH_BTC test_BCH_ETH test_BCH_USDT test_ETC_BTC test_ETC_ETH test_ETC_USDT test_LTC_BTC test_LTC_ETH test_LTC_USDT test_OMG_BTC test_OMG_ETH test_OMG_USDT test_ACT_BTC test_ACT_ETH test_ACT_USDT ;</span><br><span class="line">do</span><br><span class="line">mysql -u root -ptest -e &quot;drop database $i&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-<h3 id="2、批量创建数据库"><a href="#2、批量创建数据库" class="headerlink" title="2、批量创建数据库"></a>2、批量创建数据库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for i in test_ETH_BTC test_BTC_USDT test_ETH_USDT test_BCH_BTC test_BCH_ETH test_BCH_USDT test_ETC_BTC test_ETC_ETH test_ETC_USDT test_LTC_BTC test_LTC_ETH test_LTC_USDT test_OMG_BTC test_OMG_ETH test_OMG_USDT test_ACT_BTC test_ACT_ETH test_ACT_USDT ;</span><br><span class="line">do</span><br><span class="line">mysql -u root -ptest -e &quot;create database $i&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-<h3 id="3、批量在多个库中创建多个表"><a href="#3、批量在多个库中创建多个表" class="headerlink" title="3、批量在多个库中创建多个表"></a>3、批量在多个库中创建多个表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">for i in test_ETH_BTC test_BTC_USDT test_ETH_USDT test_BCH_BTC test_BCH_ETH test_BCH_USDT test_ETC_BTC test_ETC_ETH test_ETC_USDT test_LTC_BTC test_LTC_ETH test_LTC_USDT test_OMG_BTC test_OMG_ETH test_OMG_USDT test_ACT_BTC test_ACT_ETH test_ACT_USDT ;</span><br><span class="line">do</span><br><span class="line">for j in &#123;0..19&#125;</span><br><span class="line">do </span><br><span class="line">sql=&quot;CREATE TABLE \`match_record_$&#123;j&#125;\` (</span><br><span class="line">  \`id\` bigint(20) NOT NULL AUTO_INCREMENT ,</span><br><span class="line">  \`symbol\` varchar(30) NOT NULL COMMENT &apos;交易对&apos;,</span><br><span class="line">  \`price\` decimal(30,15) NOT NULL COMMENT &apos;成交价格&apos;,</span><br><span class="line">  \`quantity\` decimal(30,15) NOT NULL COMMENT &apos;成交量&apos;,</span><br><span class="line">  \`buy_match_seq\` int(11) NOT NULL COMMENT &apos;买入成交序号&apos;,</span><br><span class="line">  \`buy_tx_no\` varchar(32) NOT NULL COMMENT &apos;买入交易单号&apos;,</span><br><span class="line">  \`sell_match_seq\` int(11) NOT NULL COMMENT &apos;卖出成交序号&apos;,</span><br><span class="line">  \`sell_tx_no\` varchar(32) NOT NULL COMMENT &apos;卖出交易单号&apos;,</span><br><span class="line">  \`is_maker\` tinyint(1) NOT NULL COMMENT &apos;买入方是否为maker&apos;,</span><br><span class="line">  \`create_time\` bigint(20) NOT NULL COMMENT &apos;成交时间戳&apos;,</span><br><span class="line">  PRIMARY KEY (\`id\`),</span><br><span class="line">  UNIQUE KEY \`uniq_idsymbol\` (\`id\`,\`symbol\`),</span><br><span class="line">  UNIQUE KEY \`uniq_txno\` (\`buy_tx_no\`,\`sell_tx_no\`),</span><br><span class="line">  KEY \`idx_create_time\` (\`create_time\`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT=&apos;成交记录表&apos;;</span><br><span class="line">&quot;</span><br><span class="line">mysql -uroot -ptest -D $i -e&quot;$&#123;sql&#125;&quot;;</span><br><span class="line">done</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-<h3 id="4、批量修改多个库中的一个同名表做ddl语句操作"><a href="#4、批量修改多个库中的一个同名表做ddl语句操作" class="headerlink" title="4、批量修改多个库中的一个同名表做ddl语句操作"></a>4、批量修改多个库中的一个同名表做ddl语句操作</h3><p>对表增加列，添加唯一索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for i in test_ETH_BTC test_BTC_USDT test_ETH_USDT test_BCH_BTC test_BCH_ETH test_BCH_USDT test_ETC_BTC test_ETC_ETH test_ETC_USDT test_LTC_BTC test_LTC_ETH test_LTC_USDT test_OMG_BTC test_OMG_ETH test_OMG_USDT test_ACT_BTC test_ACT_ETH test_ACT_USDT ;</span><br><span class="line">do</span><br><span class="line">symbol=`echo &quot;$i&quot;| awk -F &apos;test_&apos; &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">sql=&quot;alter table match_record_0 add column symbol varchar(30) NOT NULL COMMENT &apos;交易对&apos; default &apos;&quot;$&#123;symbol&#125;&quot;&apos;&quot;</span><br><span class="line">alter1=&quot;alter table match_record_0 add UNIQUE KEY \`uniq_idsymbol\` (\`id\`,\`symbol\`)&quot;</span><br><span class="line">alter2=&quot;alter table match_record_0 add UNIQUE KEY \`uniq_txno\` (\`buy_tx_no\`,\`sell_tx_no\`)&quot;</span><br><span class="line">mysql -u root -ptest -D $i -e&quot;$&#123;sql&#125;;$&#123;alter1&#125;;$&#123;alter2&#125;&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
-<p>对表删除列，删除唯一索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for i in test_ETH_BTC test_BTC_USDT test_ETH_USDT test_BCH_BTC test_BCH_ETH test_BCH_USDT test_ETC_BTC test_ETC_ETH test_ETC_USDT test_LTC_BTC test_LTC_ETH test_LTC_USDT test_OMG_BTC test_OMG_ETH test_OMG_USDT test_ACT_BTC test_ACT_ETH test_ACT_USDT ;</span><br><span class="line">do</span><br><span class="line">symbol=`echo &quot;$i&quot;| awk -F &apos;test_&apos; &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">sql=&quot;alter table match_record_0 drop column symbol&quot;</span><br><span class="line">alter1=&quot;alter table match_record_0 drop index \`uniq_idsymbol\`&quot;</span><br><span class="line">alter2=&quot;alter table match_record_0 drop index \`uniq_txno\`&quot;</span><br><span class="line">mysql -u root -ptest -D $i -e&quot;$&#123;sql&#125;;$&#123;alter1&#125;;$&#123;alter2&#125;&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/09/07/云交易所建库、修改多个表的语句/"><span>点击阅读</span></a></h3>
     
   
 </article>
