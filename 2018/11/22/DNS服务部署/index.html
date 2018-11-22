@@ -1,0 +1,352 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Linux] DNS服务部署(单点&amp;主从) | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、关闭防火墙开启相应的服务12[root@localhost  ~]#setenforce  0[root@localhost  ~]#iptables  -F
+2、主节点安装dns1yum -y install bind bind-chroot bind-utils
+3、修改配置文件3.1、/e">
+  
+
+  
+  
+  <meta name="keywords" content="linux">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Linux] DNS服务部署(单点&amp;主从)"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Linux] DNS服务部署(单点&amp;主从)</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/11/22/DNS服务部署/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-11-22T15:10:30.000Z">
+          2018-11-22
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、关闭防火墙开启相应的服务"><a href="#1、关闭防火墙开启相应的服务" class="headerlink" title="1、关闭防火墙开启相应的服务"></a>1、关闭防火墙开启相应的服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost  ~]#setenforce  0</span><br><span class="line">[root@localhost  ~]#iptables  -F</span><br></pre></td></tr></table></figure>
+<h3 id="2、主节点安装dns"><a href="#2、主节点安装dns" class="headerlink" title="2、主节点安装dns"></a>2、主节点安装dns</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install bind bind-chroot bind-utils</span><br></pre></td></tr></table></figure>
+<h4 id="3、修改配置文件"><a href="#3、修改配置文件" class="headerlink" title="3、修改配置文件"></a>3、修改配置文件</h4><h5 id="3-1、-etc-named-conf—–主配置文件-服务器主要运行参数"><a href="#3-1、-etc-named-conf—–主配置文件-服务器主要运行参数" class="headerlink" title="3.1、/etc/named.conf—–主配置文件,服务器主要运行参数"></a>3.1、/etc/named.conf—–主配置文件,服务器主要运行参数</h5><p>修改dns主配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">options &#123;</span><br><span class="line">        listen-on port 53 &#123; 10.0.30.95;127.0.0.1 &#125;;</span><br><span class="line">        listen-on-v6 port 53 &#123; ::1; &#125;;</span><br><span class="line">        directory       &quot;/var/named&quot;;</span><br><span class="line">        dump-file       &quot;/var/named/data/cache_dump.db&quot;;</span><br><span class="line">        statistics-file &quot;/var/named/data/named_stats.txt&quot;;</span><br><span class="line">        memstatistics-file &quot;/var/named/data/named_mem_stats.txt&quot;;</span><br><span class="line">        allow-query     &#123; any; &#125;;</span><br><span class="line">        forwarders &#123; 8.8.8.8; &#125;;</span><br></pre></td></tr></table></figure></p>
+<h5 id="3-2、-etc-named-rfc1912-zones—–区域文件，主要指定要解析哪个域名"><a href="#3-2、-etc-named-rfc1912-zones—–区域文件，主要指定要解析哪个域名" class="headerlink" title="3.2、/etc/named.rfc1912.zones—–区域文件，主要指定要解析哪个域名"></a>3.2、/etc/named.rfc1912.zones—–区域文件，主要指定要解析哪个域名</h5><p>vim /etc/named.rfc1912.zones<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 首先对文件中正向解析的区域进行修改</span><br><span class="line">zone &quot;node&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;node.conf&quot;;</span><br><span class="line">        allow-update &#123; none; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line">// 设置好域名格式以及相应的数据文件接下来进行反向解析区域的配置</span><br><span class="line">zone  &quot;30.0.10.in -addr.arpa&quot;  IN&#123;</span><br><span class="line">          type master;</span><br><span class="line">          file &quot;node.txt&quot;;</span><br><span class="line">          allow-update &#123; none; &#125;;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="3-3、配置完成之后校验一下文件配置是否正确："><a href="#3-3、配置完成之后校验一下文件配置是否正确：" class="headerlink" title="3.3、配置完成之后校验一下文件配置是否正确："></a>3.3、配置完成之后校验一下文件配置是否正确：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node4 named]# named-checkconf</span><br><span class="line">[root@node4 named]# </span><br><span class="line">没有任何输出表示 /etc/named.conf没有语法错误</span><br></pre></td></tr></table></figure>
+<h5 id="3-4、-var-named-xxx-xx-——-数据文件，用来正向和反向的解析"><a href="#3-4、-var-named-xxx-xx-——-数据文件，用来正向和反向的解析" class="headerlink" title="3.4、/var/named/xxx.xx ——-数据文件，用来正向和反向的解析"></a>3.4、/var/named/xxx.xx ——-数据文件，用来正向和反向的解析</h5><p>主文件及区域文件修改完成后接下来进行数据文件的修改,切换到/var/named目录下,对数据文件进行相应的选项配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /var/named/</span><br><span class="line">cp named.empty  node.conf</span><br></pre></td></tr></table></figure></p>
+<p>首先对其正向解析的数据文件进行配置<br>vim node.com<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$TTL 3H</span><br><span class="line">@	IN SOA gfs.com rname.invalid. (</span><br><span class="line">					0	; serial</span><br><span class="line">					1D	; refresh</span><br><span class="line">					1H	; retry</span><br><span class="line">					1W	; expire</span><br><span class="line">					3H )	; minimum</span><br><span class="line">                NS	dns.gfs.com.</span><br><span class="line">dns.gfs.com	    A 10.0.30.95</span><br><span class="line">node1.gfs.com 1 A 10.0.30.51</span><br><span class="line">	           AAAA	::1</span><br></pre></td></tr></table></figure></p>
+<p>对反向解析的数据文件进行配置，反向解析数据文件里面只有SOA、NS、PTR资源记录，所有A记录都要改为PTR记录，名称为IP地址，IP地址可以写全也可以简写，如果写全则是IP地址反写加上.in-addr.arpa.例如：116.2.16.172.in-addr.arpa. PTR资源记录的值为域名。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp named.empty  node.txt</span><br></pre></td></tr></table></figure></p>
+<p>vim node.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$TTL 3H</span><br><span class="line">@	IN SOA gfs.com rname.invalid. (</span><br><span class="line">					0	; serial</span><br><span class="line">					1D	; refresh</span><br><span class="line">					1H	; retry</span><br><span class="line">					1W	; expire</span><br><span class="line">					3H )	; minimum</span><br><span class="line">     NS	dns.gfs.com.</span><br><span class="line">95	PTR dns.gfs.com.</span><br><span class="line">51  PTR node1.gfs.com.</span><br></pre></td></tr></table></figure></p>
+<h5 id="3-5、解析文件参数详解"><a href="#3-5、解析文件参数详解" class="headerlink" title="3.5、解析文件参数详解"></a>3.5、解析文件参数详解</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">区域解析库文件第一个记录必须是SOA记录，必须有NS记录并且正解区域要有NS记录的A记录，反解则不需要有NS记录对应的A记录。</span><br><span class="line">$TTL表示宏定义，TTL(Time- To-Live)，dns记录在本地DNS服务器上保留的时间</span><br><span class="line">@符号可代表区域文件/etc/named.conf里面定义的区域名称，即：&quot;gfs.com.&quot;。</span><br><span class="line">2018030422 ;标识序列号，十进制数字，不能超过10位，通常使用日期</span><br><span class="line">2H ;刷新时间，即每隔多久到主服务器检查一次，此处为2小时，实验环境可以设置小一点</span><br><span class="line">4M ;重试时间，应该小于刷新时间，此处为4分钟，实验环境可以设置小一点</span><br><span class="line">1D ;过期时间，此处为1天</span><br><span class="line">2D ;主服务器挂后，从服务器至多工作的时间，此处为2天)</span><br><span class="line">这个文件里所有的域名结尾的点号一定不能省略。</span><br><span class="line">区域解析库文件是放在/var/named目录下，由named进程是以named用户运行，因此区域解析库文件的属组应设置为named。</span><br><span class="line"></span><br><span class="line">（1）A记录（Address）正向解析</span><br><span class="line">A记录是将一个主机名（全称域名FQDN）和一个IP地址关联起来。这也是大多数客户端程序默认的查询类型。</span><br><span class="line">（2）PTR记录（Pointer）反向解析</span><br><span class="line">PTR记录将一个IP地址对应到主机名（全称域名FQDN）。这些记录保存在in-addr.arpa域中。</span><br><span class="line">（3）CNAME记录(Canonical Name)别名</span><br><span class="line">别名记录，也称为规范名字(Canonical Name)。这种记录允许您将多个名字映射到同一台计算机。</span><br><span class="line">（4）MX记录（Mail eXchange）</span><br><span class="line">MX记录是邮件交换记录，它指向一个邮件服务器，用于电子邮件系统发邮件时根据 收信人的地址后缀来定位邮件服务器。MX记录也叫做邮件路由记录，用户可以将该域名下的邮件服务器指向到自己的mail server上，然后即可自行操控所有的邮箱设置。</span><br><span class="line">当有多个MX记录（即有多个邮件服务器）时，则需要设置数值来确定其优先级。通过设置优先级数字来指明首选服务器，数字越小表示优先级越高。</span><br><span class="line">（5）NS记录（Name Server）</span><br><span class="line">NS（Name Server）记录是域名服务器记录，也称为授权服务器，用来指定该域名由哪个DNS服务器来进行解析。</span><br><span class="line">将网站的NS记录指向到目标地址，在设置NS记录的同时还需要设置目标网站的指向，否则NS记录将无法正常解析</span><br><span class="line">NS记录优先于A记录。即，如果一个主机地址同时存在NS记录和A记录，则A记录不生效。</span><br><span class="line">（6）AAAA记录 IPV6解析记录</span><br><span class="line">该记录是将域名解析到一个指定的IPV6的IP上。</span><br></pre></td></tr></table></figure>
+<h5 id="3-6、相应的数据配置文件完成后对数据文件的属主进行修改"><a href="#3-6、相应的数据配置文件完成后对数据文件的属主进行修改" class="headerlink" title="3.6、相应的数据配置文件完成后对数据文件的属主进行修改"></a>3.6、相应的数据配置文件完成后对数据文件的属主进行修改</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost  named]#chown  named  node.*</span><br><span class="line">[root@node4 named]# ll node.*</span><br><span class="line">-rw-r-----. 1 named root 286 Nov 22 16:12 node.conf</span><br><span class="line">-rw-r-----. 1 named root 310 Nov 22 16:12 node.txt</span><br></pre></td></tr></table></figure>
+<h5 id="3-7、配置完成后检测解析文件是否正确"><a href="#3-7、配置完成后检测解析文件是否正确" class="headerlink" title="3.7、配置完成后检测解析文件是否正确"></a>3.7、配置完成后检测解析文件是否正确</h5><p>[root@node4 named]# named-checkzone “gfs.com” node.conf<br>zone gfs.com/IN: loaded serial 0<br>OK</p>
+<h5 id="3-8、检测反向解析库配置有没有错误"><a href="#3-8、检测反向解析库配置有没有错误" class="headerlink" title="3.8、检测反向解析库配置有没有错误"></a>3.8、检测反向解析库配置有没有错误</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node4 named]# named-checkzone &quot;30.0.10.in-addr.arpa&quot; node.txt</span><br><span class="line">zone 30.0.10.in-addr.arpa/IN: loaded serial 0</span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+<h4 id="4、修改完成后启动dns服务"><a href="#4、修改完成后启动dns服务" class="headerlink" title="4、修改完成后启动dns服务"></a>4、修改完成后启动dns服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start named.service</span><br></pre></td></tr></table></figure>
+<h4 id="5、在客户端配置dns信息"><a href="#5、在客户端配置dns信息" class="headerlink" title="5、在客户端配置dns信息"></a>5、在客户端配置dns信息</h4><h5 id="5-1、修改-etc-NetworkManager-NetworkManager-conf-文件，防止重启网卡后dns被重置，在main部分添加-“dns-none”-选项"><a href="#5-1、修改-etc-NetworkManager-NetworkManager-conf-文件，防止重启网卡后dns被重置，在main部分添加-“dns-none”-选项" class="headerlink" title="5.1、修改 /etc/NetworkManager/NetworkManager.conf 文件，防止重启网卡后dns被重置，在main部分添加 “dns=none” 选项"></a>5.1、修改 /etc/NetworkManager/NetworkManager.conf 文件，防止重启网卡后dns被重置，在main部分添加 “dns=none” 选项</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[main]</span><br><span class="line">plugins=ifcfg-rh</span><br><span class="line">dns=none</span><br></pre></td></tr></table></figure>
+<h5 id="5-2、NetworkManager重新装载上面修改的配置"><a href="#5-2、NetworkManager重新装载上面修改的配置" class="headerlink" title="5.2、NetworkManager重新装载上面修改的配置"></a>5.2、NetworkManager重新装载上面修改的配置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># systemctl restart NetworkManager.service</span><br></pre></td></tr></table></figure>
+<h5 id="5-3、之后修改-etc-resolv-conf配置文件："><a href="#5-3、之后修改-etc-resolv-conf配置文件：" class="headerlink" title="5.3、之后修改/etc/resolv.conf配置文件："></a>5.3、之后修改/etc/resolv.conf配置文件：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# more /etc/resolv.conf</span><br><span class="line"># Generated by NetworkManager</span><br><span class="line">nameserver 10.0.30.95</span><br><span class="line">[root@node2 ~]# /etc/init.d/network restart</span><br><span class="line">Restarting network (via systemctl):                        [  OK  ]</span><br><span class="line">[root@node2 ~]# more /etc/resolv.conf</span><br><span class="line"># Generated by NetworkManager</span><br><span class="line">nameserver 202.106.0.20</span><br><span class="line">nameserver 8.8.8.8</span><br><span class="line">[root@node2 ~]# </span><br><span class="line">[root@node2 ~]# ls</span><br><span class="line">anaconda-ks.cfg  Desktop  Documents  Downloads  initial-setup-ks.cfg  Music  Pictures  Public  Templates  Videos</span><br><span class="line">[root@node2 ~]# vim /etc/NetworkManager/NetworkManager.conf </span><br><span class="line">[root@node2 ~]# </span><br><span class="line">[root@node2 ~]# systemctl restart NetworkManager.service</span><br><span class="line">[root@node2 ~]# vim /etc/resolv.conf</span><br><span class="line">[root@node2 ~]# </span><br><span class="line">[root@node2 ~]# more /etc/resolv.conf</span><br><span class="line"># Generated by NetworkManager</span><br><span class="line">nameserver 10.0.30.95</span><br><span class="line">[root@node2 ~]# /etc/init.d/network restart</span><br><span class="line">Restarting network (via systemctl):                        [  OK  ]</span><br><span class="line">[root@node2 ~]# more /etc/resolv.conf</span><br><span class="line"># Generated by NetworkManager</span><br><span class="line">nameserver 10.0.30.95</span><br></pre></td></tr></table></figure>
+<h5 id="5-4、测试dns是否能正常解析："><a href="#5-4、测试dns是否能正常解析：" class="headerlink" title="5.4、测试dns是否能正常解析："></a>5.4、测试dns是否能正常解析：</h5><p>正向解析：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# dig -t A node1.gfs.com</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7 &lt;&lt;&gt;&gt; -t A node1.gfs.com</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 30794</span><br><span class="line">;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 3</span><br><span class="line"></span><br><span class="line">;; OPT PSEUDOSECTION:</span><br><span class="line">; EDNS: version: 0, flags:; udp: 4096</span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;node1.gfs.com.			IN	A</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">node1.gfs.com.		10800	IN	A	10.0.30.51</span><br><span class="line"></span><br><span class="line">;; AUTHORITY SECTION:</span><br><span class="line">gfs.com.		10800	IN	NS	dns1.gfs.com.</span><br><span class="line">gfs.com.		10800	IN	NS	dns2.gfs.com.</span><br><span class="line"></span><br><span class="line">;; ADDITIONAL SECTION:</span><br><span class="line">dns1.gfs.com.		10800	IN	A	10.0.30.95</span><br><span class="line">dns2.gfs.com.		10800	IN	A	10.0.30.117</span><br><span class="line"></span><br><span class="line">;; Query time: 2 msec</span><br><span class="line">;; SERVER: 10.0.30.95#53(10.0.30.95)</span><br><span class="line">;; WHEN: Thu Nov 22 17:44:35 CST 2018</span><br><span class="line">;; MSG SIZE  rcvd: 128</span><br></pre></td></tr></table></figure></p>
+<p>反向解析：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# dig -x 10.0.30.51 </span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7 &lt;&lt;&gt;&gt; -x 10.0.30.51</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 50154</span><br><span class="line">;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 3</span><br><span class="line"></span><br><span class="line">;; OPT PSEUDOSECTION:</span><br><span class="line">; EDNS: version: 0, flags:; udp: 4096</span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;51.30.0.10.in-addr.arpa.	IN	PTR</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">51.30.0.10.in-addr.arpa. 10800	IN	PTR	node1.gfs.com.</span><br><span class="line"></span><br><span class="line">;; AUTHORITY SECTION:</span><br><span class="line">30.0.10.in-addr.arpa.	10800	IN	NS	dns2.gfs.com.</span><br><span class="line">30.0.10.in-addr.arpa.	10800	IN	NS	dns1.gfs.com.</span><br><span class="line"></span><br><span class="line">;; ADDITIONAL SECTION:</span><br><span class="line">dns1.gfs.com.		10800	IN	A	10.0.30.95</span><br><span class="line">dns2.gfs.com.		10800	IN	A	10.0.30.117</span><br><span class="line"></span><br><span class="line">;; Query time: 2 msec</span><br><span class="line">;; SERVER: 10.0.30.95#53(10.0.30.95)</span><br><span class="line">;; WHEN: Thu Nov 22 17:44:47 CST 2018</span><br><span class="line">;; MSG SIZE  rcvd: 149</span><br></pre></td></tr></table></figure></p>
+<p>上面单节点的dns配置完成，下面配置dns主从，从节点实时同步主节点更新的数据。</p>
+<h4 id="6、主节点修改-etc-named-rfc1912-zones"><a href="#6、主节点修改-etc-named-rfc1912-zones" class="headerlink" title="6、主节点修改/etc/named.rfc1912.zones"></a>6、主节点修改/etc/named.rfc1912.zones</h4><p>allow-transfer { 10.0.30.117; }; #指定允许转发的目标主机，即从服务器<br>also-notify:主动通知从域名服务器进行更新，在主域名服务器进行更新后，而不需要在等规定的时间后才通知从域名服务器进行更新<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">zone &quot;gfs.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;node.conf&quot;;</span><br><span class="line">        allow-transfer &#123; 10.0.30.117; &#125;;</span><br><span class="line">        also-notify &#123; 10.0.30.117; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zone  &quot;30.0.10.in-addr.arpa&quot;  IN&#123;</span><br><span class="line">          type master;</span><br><span class="line">          file &quot;node.txt&quot;;</span><br><span class="line">          also-notify &#123; 10.0.30.117; &#125;;</span><br><span class="line">          allow-transfer &#123; 10.0.30.117; &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h4 id="7、修改主节点正向解析文件"><a href="#7、修改主节点正向解析文件" class="headerlink" title="7、修改主节点正向解析文件"></a>7、修改主节点正向解析文件</h4><p>[root@node4 named]# more node.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$TTL 3H</span><br><span class="line">@	IN SOA	gfs.com. rname.invalid. (</span><br><span class="line">					2	; serial</span><br><span class="line">					1D	; refresh</span><br><span class="line">					1H	; retry</span><br><span class="line">					1W	; expire</span><br><span class="line">					3H )	; minimum</span><br><span class="line">	NS	dns1.gfs.com.</span><br><span class="line">    NS  dns2.gfs.com.</span><br><span class="line">dns1 A 10.0.30.95</span><br><span class="line">dns2 A 10.0.30.117</span><br><span class="line">node1  A 10.0.30.51</span><br><span class="line">node2  A 10.0.30.35</span><br><span class="line">node3  A 10.0.30.117</span><br><span class="line">	AAAA	::1</span><br></pre></td></tr></table></figure></p>
+<h4 id="8、修改主节点反向解析文件"><a href="#8、修改主节点反向解析文件" class="headerlink" title="8、修改主节点反向解析文件"></a>8、修改主节点反向解析文件</h4><p>[root@node4 named]# more node.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$TTL 3H</span><br><span class="line">@	IN SOA gfs.com. rname.invalid. (</span><br><span class="line">					2	; serial</span><br><span class="line">					1D	; refresh</span><br><span class="line">					1H	; retry</span><br><span class="line">					1W	; expire</span><br><span class="line">					3H )	; minimum</span><br><span class="line">      NS  dns1.gfs.com.</span><br><span class="line">      NS  dns2.gfs.com.</span><br><span class="line">95   PTR dns1.gfs.com.</span><br><span class="line">117  PTR dns2.gfs.com.</span><br><span class="line">51   PTR node1.gfs.com.</span><br><span class="line">35   PTR node2.gfs.com.</span><br><span class="line">117  PTR node3.gfs.com.</span><br></pre></td></tr></table></figure></p>
+<h4 id="9、重新启动dns服务器"><a href="#9、重新启动dns服务器" class="headerlink" title="9、重新启动dns服务器"></a>9、重新启动dns服务器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart named.service</span><br></pre></td></tr></table></figure>
+<h4 id="10、在从服务器上安装dns服务"><a href="#10、在从服务器上安装dns服务" class="headerlink" title="10、在从服务器上安装dns服务"></a>10、在从服务器上安装dns服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install bind bind-chroot bind-utils</span><br></pre></td></tr></table></figure>
+<h4 id="11、修改从节点-etc-named-conf配置文件"><a href="#11、修改从节点-etc-named-conf配置文件" class="headerlink" title="11、修改从节点/etc/named.conf配置文件"></a>11、修改从节点/etc/named.conf配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">options &#123;</span><br><span class="line">	listen-on port 53 &#123; 10.0.30.117;127.0.0.1; &#125;;</span><br><span class="line">	listen-on-v6 port 53 &#123; ::1; &#125;;</span><br><span class="line">	directory 	&quot;/var/named&quot;;</span><br><span class="line">	dump-file 	&quot;/var/named/data/cache_dump.db&quot;;</span><br><span class="line">	statistics-file &quot;/var/named/data/named_stats.txt&quot;;</span><br><span class="line">	memstatistics-file &quot;/var/named/data/named_mem_stats.txt&quot;;</span><br><span class="line">	allow-query     &#123; any; &#125;;</span><br><span class="line">	forwarders &#123; 8.8.8.8; &#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="12、修改-etc-named-rfc1912-zones"><a href="#12、修改-etc-named-rfc1912-zones" class="headerlink" title="12、修改/etc/named.rfc1912.zones"></a>12、修改/etc/named.rfc1912.zones</h4><p>allow-notify 接受这个网段内的主机发送来的通知<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">zone &quot;gfs.com&quot; IN &#123;</span><br><span class="line">        type slave;</span><br><span class="line">        masters &#123; 10.0.30.95; &#125;;</span><br><span class="line">        allow-notify &#123; 10.0.30.95; &#125;;</span><br><span class="line">        file &quot;slaves/node.conf&quot;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zone  &quot;30.0.10.in-addr.arpa&quot;  IN&#123;</span><br><span class="line">          type slave;</span><br><span class="line">          masters &#123; 10.0.30.95; &#125;;</span><br><span class="line">          allow-notify &#123; 10.0.30.95; &#125;;</span><br><span class="line">          file &quot;slaves/node.txt&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h4 id="13、从服务器启动dns服务"><a href="#13、从服务器启动dns服务" class="headerlink" title="13、从服务器启动dns服务"></a>13、从服务器启动dns服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start named.service</span><br></pre></td></tr></table></figure>
+<h4 id="14、查看-var-named-slaves目录下已经多出了node-的两个文件"><a href="#14、查看-var-named-slaves目录下已经多出了node-的两个文件" class="headerlink" title="14、查看/var/named/slaves目录下已经多出了node.*的两个文件"></a>14、查看/var/named/slaves目录下已经多出了node.*的两个文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@node3 slaves]# pwd</span><br><span class="line">/var/named/slaves</span><br><span class="line">[root@node3 slaves]# ll</span><br><span class="line">total 8</span><br><span class="line">-rw-r--r--. 1 named named 416 Nov 22 16:12 node.conf</span><br><span class="line">-rw-r--r--. 1 named named 514 Nov 22 16:12 node.txt</span><br></pre></td></tr></table></figure>
+<h4 id="15、测试主从文件能否正常同步，修改主节点node-配置文件"><a href="#15、测试主从文件能否正常同步，修改主节点node-配置文件" class="headerlink" title="15、测试主从文件能否正常同步，修改主节点node.*配置文件"></a>15、测试主从文件能否正常同步，修改主节点node.*配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@node4 named]# vim node.conf </span><br><span class="line">[root@node4 named]# vim node.txt </span><br><span class="line">[root@node4 named]# </span><br><span class="line">[root@node4 named]# ll node.*</span><br><span class="line">-rw-r-----. 1 named root 265 Nov 22 18:48 node.conf</span><br><span class="line">-rw-r-----. 1 named root 272 Nov 22 18:48 node.txt</span><br></pre></td></tr></table></figure>
+<p>***注意修改配置文件的时候一定要修改配置文件中serial那一行，只有该行的数值大于前一个值，才会同步到从节点。</p>
+<h4 id="16、主节点重新加载dns"><a href="#16、主节点重新加载dns" class="headerlink" title="16、主节点重新加载dns"></a>16、主节点重新加载dns</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl reload named.service</span><br></pre></td></tr></table></figure>
+<h4 id="17、查看从节点日志信息"><a href="#17、查看从节点日志信息" class="headerlink" title="17、查看从节点日志信息"></a>17、查看从节点日志信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Nov 22 18:48:55 node3 named[98442]: client 10.0.30.95#52505: received notify for zone &apos;gfs.com&apos;</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: zone gfs.com/IN: Transfer started.</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: transfer of &apos;gfs.com/IN&apos; from 10.0.30.95#53: connected using 10.0.30.117#58148</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: zone gfs.com/IN: transferred serial 3</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: transfer of &apos;gfs.com/IN&apos; from 10.0.30.95#53: Transfer completed: 1 messages, 9 records, 252 bytes, 0.008 secs (31500 bytes/sec)</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: zone gfs.com/IN: sending notifies (serial 3)</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: client 10.0.30.95#54023: received notify for zone &apos;30.0.10.in-addr.arpa&apos;</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: zone 30.0.10.in-addr.arpa/IN: Transfer started.</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: transfer of &apos;30.0.10.in-addr.arpa/IN&apos; from 10.0.30.95#53: connected using 10.0.30.117#51530</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: zone 30.0.10.in-addr.arpa/IN: transferred serial 3</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: transfer of &apos;30.0.10.in-addr.arpa/IN&apos; from 10.0.30.95#53: Transfer completed: 1 messages, 8 records, 249 bytes, 0.002 secs (124500 bytes/sec)</span><br><span class="line">Nov 22 18:48:55 node3 named[98442]: zone 30.0.10.in-addr.arpa/IN: sending notifies (serial 3)</span><br></pre></td></tr></table></figure>
+<h4 id="18、查看从节点配置文件信息"><a href="#18、查看从节点配置文件信息" class="headerlink" title="18、查看从节点配置文件信息"></a>18、查看从节点配置文件信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@node3 slaves]# ll</span><br><span class="line">total 8</span><br><span class="line">-rw-r--r--. 1 named named 375 Nov 22 18:48 node.conf</span><br><span class="line">-rw-r--r--. 1 named named 433 Nov 22 18:48 node.txt</span><br></pre></td></tr></table></figure>
+<p>从节点文件已和主节点正常同步</p>
+<h4 id="19、客户端测试主节点dns服务器挂掉从节点能否正常使用"><a href="#19、客户端测试主节点dns服务器挂掉从节点能否正常使用" class="headerlink" title="19、客户端测试主节点dns服务器挂掉从节点能否正常使用"></a>19、客户端测试主节点dns服务器挂掉从节点能否正常使用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# more /etc/resolv.conf</span><br><span class="line"># Generated by NetworkManager</span><br><span class="line">nameserver 10.0.30.95</span><br><span class="line">nameserver 10.0.30.117</span><br></pre></td></tr></table></figure>
+<h4 id="20、测试正向解析是否正常"><a href="#20、测试正向解析是否正常" class="headerlink" title="20、测试正向解析是否正常"></a>20、测试正向解析是否正常</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# dig -t A node1.gfs.com</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7 &lt;&lt;&gt;&gt; -t A node1.gfs.com</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 55761</span><br><span class="line">;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 3</span><br><span class="line"></span><br><span class="line">;; OPT PSEUDOSECTION:</span><br><span class="line">; EDNS: version: 0, flags:; udp: 4096</span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;node1.gfs.com.			IN	A</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">node1.gfs.com.		10800	IN	A	10.0.30.51</span><br><span class="line"></span><br><span class="line">;; AUTHORITY SECTION:</span><br><span class="line">gfs.com.		10800	IN	NS	dns1.gfs.com.</span><br><span class="line">gfs.com.		10800	IN	NS	dns2.gfs.com.</span><br><span class="line"></span><br><span class="line">;; ADDITIONAL SECTION:</span><br><span class="line">dns1.gfs.com.		10800	IN	A	10.0.30.95</span><br><span class="line">dns2.gfs.com.		10800	IN	A	10.0.30.117</span><br><span class="line"></span><br><span class="line">;; Query time: 0 msec</span><br><span class="line">;; SERVER: 10.0.30.95#53(10.0.30.95)</span><br><span class="line">;; WHEN: Thu Nov 22 18:54:03 CST 2018</span><br><span class="line">;; MSG SIZE  rcvd: 128</span><br></pre></td></tr></table></figure>
+<h4 id="21、主节点停掉dns服务："><a href="#21、主节点停掉dns服务：" class="headerlink" title="21、主节点停掉dns服务："></a>21、主节点停掉dns服务：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@node4 named]# systemctl stop named.service</span><br><span class="line">[root@node4 named]# systemctl status named.service</span><br><span class="line">● named.service - Berkeley Internet Name Domain (DNS)</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/named.service; disabled; vendor preset: disabled)</span><br><span class="line">   Active: inactive (dead)</span><br><span class="line"></span><br><span class="line">Nov 22 18:48:55 node4 named[10366]: zone 30.0.10.in-addr.arpa/IN: sending notifies (serial 3)</span><br><span class="line">Nov 22 18:48:55 node4 named[10366]: client 10.0.30.117#58148 (gfs.com): transfer of &apos;gfs.com/IN&apos;: AXFR-style IXFR started</span><br><span class="line">Nov 22 18:48:55 node4 named[10366]: client 10.0.30.117#58148 (gfs.com): transfer of &apos;gfs.com/IN&apos;: AXFR-style IXFR ended</span><br><span class="line">Nov 22 18:48:55 node4 named[10366]: client 10.0.30.117#28664: received notify for zone &apos;gfs.com&apos;</span><br><span class="line">Nov 22 18:48:55 node4 named[10366]: client 10.0.30.117#51530 (30.0.10.in-addr.arpa): transfer of &apos;30.0.10.in-addr.arpa/IN&apos;: AXFR-style IXFR started</span><br><span class="line">Nov 22 18:48:55 node4 named[10366]: client 10.0.30.117#51530 (30.0.10.in-addr.arpa): transfer of &apos;30.0.10.in-addr.arpa/IN&apos;: AXFR-style IXFR ended</span><br><span class="line">Nov 22 18:48:56 node4 named[10366]: client 10.0.30.117#41288: received notify for zone &apos;30.0.10.in-addr.arpa&apos;</span><br><span class="line">Nov 22 18:59:26 node4 systemd[1]: Stopping Berkeley Internet Name Domain (DNS)...</span><br><span class="line">Nov 22 18:59:26 node4 named[10366]: received control channel command &apos;stop&apos;</span><br><span class="line">Nov 22 18:59:26 node4 systemd[1]: Stopped Berkeley Internet Name Domain (DNS).</span><br></pre></td></tr></table></figure>
+<h4 id="22、客户端解析仍然正常"><a href="#22、客户端解析仍然正常" class="headerlink" title="22、客户端解析仍然正常"></a>22、客户端解析仍然正常</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# dig -t A node1.gfs.com</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7 &lt;&lt;&gt;&gt; -t A node1.gfs.com</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 39672</span><br><span class="line">;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 3</span><br><span class="line"></span><br><span class="line">;; OPT PSEUDOSECTION:</span><br><span class="line">; EDNS: version: 0, flags:; udp: 4096</span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;node1.gfs.com.			IN	A</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">node1.gfs.com.		10800	IN	A	10.0.30.51</span><br><span class="line"></span><br><span class="line">;; AUTHORITY SECTION:</span><br><span class="line">gfs.com.		10800	IN	NS	dns2.gfs.com.</span><br><span class="line">gfs.com.		10800	IN	NS	dns1.gfs.com.</span><br><span class="line"></span><br><span class="line">;; ADDITIONAL SECTION:</span><br><span class="line">dns1.gfs.com.		10800	IN	A	10.0.30.95</span><br><span class="line">dns2.gfs.com.		10800	IN	A	10.0.30.117</span><br><span class="line"></span><br><span class="line">;; Query time: 2 msec</span><br><span class="line">;; SERVER: 10.0.30.117#53(10.0.30.117)</span><br><span class="line">;; WHEN: Thu Nov 22 18:59:48 CST 2018</span><br><span class="line">;; MSG SIZE  rcvd: 128</span><br></pre></td></tr></table></figure>
+<h4 id="23、指定dns为主节点，解析失败"><a href="#23、指定dns为主节点，解析失败" class="headerlink" title="23、指定dns为主节点，解析失败"></a>23、指定dns为主节点，解析失败</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# dig -t A node1.gfs.com @10.0.30.95</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7 &lt;&lt;&gt;&gt; -t A node1.gfs.com @10.0.30.95</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; connection timed out; no servers could be reached</span><br></pre></td></tr></table></figure>
+<h4 id="24、指定为从节点，解析正常"><a href="#24、指定为从节点，解析正常" class="headerlink" title="24、指定为从节点，解析正常"></a>24、指定为从节点，解析正常</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# dig -t A node1.gfs.com @10.0.30.117</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7 &lt;&lt;&gt;&gt; -t A node1.gfs.com @10.0.30.117</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 53270</span><br><span class="line">;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 3</span><br><span class="line"></span><br><span class="line">;; OPT PSEUDOSECTION:</span><br><span class="line">; EDNS: version: 0, flags:; udp: 4096</span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;node1.gfs.com.			IN	A</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">node1.gfs.com.		10800	IN	A	10.0.30.51</span><br><span class="line"></span><br><span class="line">;; AUTHORITY SECTION:</span><br><span class="line">gfs.com.		10800	IN	NS	dns1.gfs.com.</span><br><span class="line">gfs.com.		10800	IN	NS	dns2.gfs.com.</span><br><span class="line"></span><br><span class="line">;; ADDITIONAL SECTION:</span><br><span class="line">dns1.gfs.com.		10800	IN	A	10.0.30.95</span><br><span class="line">dns2.gfs.com.		10800	IN	A	10.0.30.117</span><br><span class="line"></span><br><span class="line">;; Query time: 2 msec</span><br><span class="line">;; SERVER: 10.0.30.117#53(10.0.30.117)</span><br><span class="line">;; WHEN: Thu Nov 22 19:01:30 CST 2018</span><br><span class="line">;; MSG SIZE  rcvd: 128</span><br></pre></td></tr></table></figure>
+<h4 id="25、把从节点dns服务也关掉"><a href="#25、把从节点dns服务也关掉" class="headerlink" title="25、把从节点dns服务也关掉"></a>25、把从节点dns服务也关掉</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@node3 slaves]# systemctl stop named.service</span><br></pre></td></tr></table></figure>
+<h4 id="26、解析域名报错"><a href="#26、解析域名报错" class="headerlink" title="26、解析域名报错"></a>26、解析域名报错</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# dig -t A node1.gfs.com</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7 &lt;&lt;&gt;&gt; -t A node1.gfs.com</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; connection timed out; no servers could be reached</span><br></pre></td></tr></table></figure>
+<h4 id="27、额外参考信息"><a href="#27、额外参考信息" class="headerlink" title="27、额外参考信息"></a>27、额外参考信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DNS服务器监听端口:</span><br><span class="line">PORT: udp/tcp  53   ---&gt; 服务端口</span><br><span class="line">PORT: udp/tcp 953  ---&gt; 主从连接端口</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dns各参数详解，点击[此处](https://blog.csdn.net/bpingchang/article/details/38427113)跳转</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、关闭防火墙开启相应的服务"><span class="toc-number">1.</span> <span class="toc-text">1、关闭防火墙开启相应的服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、主节点安装dns"><span class="toc-number">2.</span> <span class="toc-text">2、主节点安装dns</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3、修改配置文件"><span class="toc-number">2.1.</span> <span class="toc-text">3、修改配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-1、-etc-named-conf—–主配置文件-服务器主要运行参数"><span class="toc-number">2.1.1.</span> <span class="toc-text">3.1、/etc/named.conf—–主配置文件,服务器主要运行参数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-2、-etc-named-rfc1912-zones—–区域文件，主要指定要解析哪个域名"><span class="toc-number">2.1.2.</span> <span class="toc-text">3.2、/etc/named.rfc1912.zones—–区域文件，主要指定要解析哪个域名</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3、配置完成之后校验一下文件配置是否正确："><span class="toc-number">2.1.3.</span> <span class="toc-text">3.3、配置完成之后校验一下文件配置是否正确：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-4、-var-named-xxx-xx-——-数据文件，用来正向和反向的解析"><span class="toc-number">2.1.4.</span> <span class="toc-text">3.4、/var/named/xxx.xx ——-数据文件，用来正向和反向的解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-5、解析文件参数详解"><span class="toc-number">2.1.5.</span> <span class="toc-text">3.5、解析文件参数详解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6、相应的数据配置文件完成后对数据文件的属主进行修改"><span class="toc-number">2.1.6.</span> <span class="toc-text">3.6、相应的数据配置文件完成后对数据文件的属主进行修改</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-7、配置完成后检测解析文件是否正确"><span class="toc-number">2.1.7.</span> <span class="toc-text">3.7、配置完成后检测解析文件是否正确</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-8、检测反向解析库配置有没有错误"><span class="toc-number">2.1.8.</span> <span class="toc-text">3.8、检测反向解析库配置有没有错误</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、修改完成后启动dns服务"><span class="toc-number">2.2.</span> <span class="toc-text">4、修改完成后启动dns服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、在客户端配置dns信息"><span class="toc-number">2.3.</span> <span class="toc-text">5、在客户端配置dns信息</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1、修改-etc-NetworkManager-NetworkManager-conf-文件，防止重启网卡后dns被重置，在main部分添加-“dns-none”-选项"><span class="toc-number">2.3.1.</span> <span class="toc-text">5.1、修改 /etc/NetworkManager/NetworkManager.conf 文件，防止重启网卡后dns被重置，在main部分添加 “dns=none” 选项</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2、NetworkManager重新装载上面修改的配置"><span class="toc-number">2.3.2.</span> <span class="toc-text">5.2、NetworkManager重新装载上面修改的配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-3、之后修改-etc-resolv-conf配置文件："><span class="toc-number">2.3.3.</span> <span class="toc-text">5.3、之后修改/etc/resolv.conf配置文件：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-4、测试dns是否能正常解析："><span class="toc-number">2.3.4.</span> <span class="toc-text">5.4、测试dns是否能正常解析：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、主节点修改-etc-named-rfc1912-zones"><span class="toc-number">2.4.</span> <span class="toc-text">6、主节点修改/etc/named.rfc1912.zones</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7、修改主节点正向解析文件"><span class="toc-number">2.5.</span> <span class="toc-text">7、修改主节点正向解析文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8、修改主节点反向解析文件"><span class="toc-number">2.6.</span> <span class="toc-text">8、修改主节点反向解析文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9、重新启动dns服务器"><span class="toc-number">2.7.</span> <span class="toc-text">9、重新启动dns服务器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10、在从服务器上安装dns服务"><span class="toc-number">2.8.</span> <span class="toc-text">10、在从服务器上安装dns服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11、修改从节点-etc-named-conf配置文件"><span class="toc-number">2.9.</span> <span class="toc-text">11、修改从节点/etc/named.conf配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12、修改-etc-named-rfc1912-zones"><span class="toc-number">2.10.</span> <span class="toc-text">12、修改/etc/named.rfc1912.zones</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13、从服务器启动dns服务"><span class="toc-number">2.11.</span> <span class="toc-text">13、从服务器启动dns服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14、查看-var-named-slaves目录下已经多出了node-的两个文件"><span class="toc-number">2.12.</span> <span class="toc-text">14、查看/var/named/slaves目录下已经多出了node.*的两个文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15、测试主从文件能否正常同步，修改主节点node-配置文件"><span class="toc-number">2.13.</span> <span class="toc-text">15、测试主从文件能否正常同步，修改主节点node.*配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#16、主节点重新加载dns"><span class="toc-number">2.14.</span> <span class="toc-text">16、主节点重新加载dns</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#17、查看从节点日志信息"><span class="toc-number">2.15.</span> <span class="toc-text">17、查看从节点日志信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#18、查看从节点配置文件信息"><span class="toc-number">2.16.</span> <span class="toc-text">18、查看从节点配置文件信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19、客户端测试主节点dns服务器挂掉从节点能否正常使用"><span class="toc-number">2.17.</span> <span class="toc-text">19、客户端测试主节点dns服务器挂掉从节点能否正常使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#20、测试正向解析是否正常"><span class="toc-number">2.18.</span> <span class="toc-text">20、测试正向解析是否正常</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#21、主节点停掉dns服务："><span class="toc-number">2.19.</span> <span class="toc-text">21、主节点停掉dns服务：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22、客户端解析仍然正常"><span class="toc-number">2.20.</span> <span class="toc-text">22、客户端解析仍然正常</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#23、指定dns为主节点，解析失败"><span class="toc-number">2.21.</span> <span class="toc-text">23、指定dns为主节点，解析失败</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#24、指定为从节点，解析正常"><span class="toc-number">2.22.</span> <span class="toc-text">24、指定为从节点，解析正常</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#25、把从节点dns服务也关掉"><span class="toc-number">2.23.</span> <span class="toc-text">25、把从节点dns服务也关掉</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#26、解析域名报错"><span class="toc-number">2.24.</span> <span class="toc-text">26、解析域名报错</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#27、额外参考信息"><span class="toc-number">2.25.</span> <span class="toc-text">27、额外参考信息</span></a></li></ol></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Linux] DNS服务部署(单点&amp;主从)'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
