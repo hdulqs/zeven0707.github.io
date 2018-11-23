@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Linux] vsftp启用虚拟用户功能 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="0、部署vsftp-server，请先跳转到此处，部署vsfpt-ssl功能，点击此处1、在/etc/vsftpd.conf配置文件添加以下内容12345678#开启虚拟用户的功能guest_enable=YES#指定虚拟用户的宿主用户guest_username=vir#指定虚拟用户配置文件的存放">
+  
+
+  
+  
+  <meta name="keywords" content="linux">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Linux] vsftp启用虚拟用户功能"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Linux] vsftp启用虚拟用户功能</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/11/23/vsftp启用虚拟用户功能/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-11-23T09:17:30.000Z">
+          2018-11-23
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="0、部署vsftp-server，请先跳转到此处，部署vsfpt-ssl功能，点击此处"><a href="#0、部署vsftp-server，请先跳转到此处，部署vsfpt-ssl功能，点击此处" class="headerlink" title="0、部署vsftp-server，请先跳转到此处，部署vsfpt-ssl功能，点击此处"></a>0、部署vsftp-server，请先跳转到<a href="https://zeven0707.github.io/2018/11/06/centos%E5%AE%89%E8%A3%85vsftp/" target="_blank" rel="noopener">此处</a>，部署vsfpt-ssl功能，点击<a href="https://zeven0707.github.io/2018/11/12/vsftpd%E9%85%8D%E7%BD%AEssl/" target="_blank" rel="noopener">此处</a></h4><h4 id="1、在-etc-vsftpd-conf配置文件添加以下内容"><a href="#1、在-etc-vsftpd-conf配置文件添加以下内容" class="headerlink" title="1、在/etc/vsftpd.conf配置文件添加以下内容"></a>1、在/etc/vsftpd.conf配置文件添加以下内容</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#开启虚拟用户的功能</span><br><span class="line">guest_enable=YES</span><br><span class="line">#指定虚拟用户的宿主用户</span><br><span class="line">guest_username=vir</span><br><span class="line">#指定虚拟用户配置文件的存放路径</span><br><span class="line">user_config_dir=/etc/vsftpd/vuser_conf</span><br><span class="line">#虚拟用户和本地用户有相同的权限</span><br><span class="line">virtual_use_local_privs=YES</span><br></pre></td></tr></table></figure>
+<h4 id="2、建立虚拟用户名文件"><a href="#2、建立虚拟用户名文件" class="headerlink" title="2、建立虚拟用户名文件"></a>2、建立虚拟用户名文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# vim /etc/vsftpd/vsftpd_users.conf</span><br><span class="line">#输入奇数行为账号，偶数行为密码</span><br><span class="line">f1</span><br><span class="line">123456</span><br></pre></td></tr></table></figure>
+<h4 id="3、生成认证文件-如果db-load命令不存在先安装-yum-install-db4-db4-utils"><a href="#3、生成认证文件-如果db-load命令不存在先安装-yum-install-db4-db4-utils" class="headerlink" title="3、生成认证文件,如果db_load命令不存在先安装(yum install db4 db4-utils)"></a>3、生成认证文件,如果db_load命令不存在先安装(yum install db4 db4-utils)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# db_load -T -t hash -f /etc/vsftpd/vsftpd_users.conf /etc/vsftpd/vsftpd_users.db</span><br></pre></td></tr></table></figure>
+<h4 id="4、文件生成之后，修改文件权限"><a href="#4、文件生成之后，修改文件权限" class="headerlink" title="4、文件生成之后，修改文件权限"></a>4、文件生成之后，修改文件权限</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chmod 600 /etc/vsftpd/vsftpd_users.db</span><br></pre></td></tr></table></figure>
+<h4 id="5、编辑认证文件-将其余行注释，只保留第一行和最后两行"><a href="#5、编辑认证文件-将其余行注释，只保留第一行和最后两行" class="headerlink" title="5、编辑认证文件,将其余行注释，只保留第一行和最后两行"></a>5、编辑认证文件,将其余行注释，只保留第一行和最后两行</h4><p>“/etc/vsftpd/vsftpd_users”根据自己配置的文件设置，.db后缀无需添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost f2]# more /etc/pam.d/vsftpd</span><br><span class="line">#%PAM-1.0</span><br><span class="line">#session    optional     pam_keyinit.so    force revoke</span><br><span class="line">#auth       required	pam_listfile.so item=user sense=deny file=/etc/vsftpd/ftpusers onerr=succeed</span><br><span class="line">#auth       required	pam_shells.so</span><br><span class="line">#auth       include	password-auth</span><br><span class="line">#account    include	password-auth</span><br><span class="line">#session    required     pam_loginuid.so</span><br><span class="line">#session    include	password-auth</span><br><span class="line">auth sufficient /lib64/security/pam_userdb.so db=/etc/vsftpd/vsftpd_users</span><br><span class="line">account sufficient /lib64/security/pam_userdb.so db=/etc/vsftpd/vsftpd_users</span><br></pre></td></tr></table></figure></p>
+<h4 id="6、建立虚拟用户配置文件存放位置"><a href="#6、建立虚拟用户配置文件存放位置" class="headerlink" title="6、建立虚拟用户配置文件存放位置"></a>6、建立虚拟用户配置文件存放位置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mkdir /etc/vsftpd/vuser_conf/</span><br><span class="line">[root@localhost ~]# vim /etc/vsftpd/vuser_conf/f1</span><br><span class="line">#添加以下内容</span><br><span class="line">local_root=/var/ftp/f1</span><br><span class="line">write_enable=YES</span><br><span class="line">anon_umask=022</span><br><span class="line">anon_world_readable_only=NO</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_other_write_enable=YES</span><br></pre></td></tr></table></figure>
+<h4 id="7、将f1用户加入-etc-vsftpd-chroot-list，-etc-vsftpd-vsftpd-user-list允许f1用户登录"><a href="#7、将f1用户加入-etc-vsftpd-chroot-list，-etc-vsftpd-vsftpd-user-list允许f1用户登录" class="headerlink" title="7、将f1用户加入/etc/vsftpd/chroot_list，/etc/vsftpd/vsftpd.user_list允许f1用户登录"></a>7、将f1用户加入/etc/vsftpd/chroot_list，/etc/vsftpd/vsftpd.user_list允许f1用户登录</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost vsftpd]# more /etc/vsftpd/chroot_list |grep f1</span><br><span class="line">f1</span><br><span class="line">[root@localhost vsftpd]# more /etc/vsftpd/vsftpd.user_list |grep f1</span><br><span class="line">f1</span><br></pre></td></tr></table></figure>
+<h4 id="8、重新启动vsftp"><a href="#8、重新启动vsftp" class="headerlink" title="8、重新启动vsftp"></a>8、重新启动vsftp</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# systemctl vsftpd restart</span><br></pre></td></tr></table></figure>
+<h4 id="9、测试用户能否正常登录："><a href="#9、测试用户能否正常登录：" class="headerlink" title="9、测试用户能否正常登录："></a>9、测试用户能否正常登录：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost surgeftp_2.3f2_linux64]# ./sslftp 192.168.168.120</span><br><span class="line">Connected to 192.168.168.120</span><br><span class="line">220 (vsFTPd 3.0.2)</span><br><span class="line">234 Proceed with negotiation.</span><br><span class="line">starting SSL/TLS</span><br><span class="line">sslinit 3</span><br><span class="line">Negotiated secure protocol TLSv1.2, using an AES cipher.</span><br><span class="line">200 PBSZ set to 0.</span><br><span class="line">200 PROT now Private.</span><br><span class="line">(secure) User: f1</span><br><span class="line">331 Please specify the password.</span><br><span class="line">(secure) Password: ******</span><br><span class="line">Connection problem SSLTCP:525:ssl_read tcp:-1000:SSL failure. (SSL_ERROR_SSL):error:1408F10B:SSL routines:SSL3_GET_RECORD:wrong version number</span><br><span class="line">Channel open, login Failed!</span><br></pre></td></tr></table></figure>
+<p>提示的错误没找到任何相关文档，尝试用tcpdump抓包看看交互情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">15:50:39.932746 IP 192.168.168.120.21 &gt; 192.168.168.121.39398: Flags [P.], seq 1806:1816, ack 772, win 243, options [nop,nop,TS val 513318660 ecr 1441172002], length 10: FTP: 500 OOPS: [!ftp]</span><br><span class="line">15:50:39.932769 IP 192.168.168.120.21 &gt; 192.168.168.121.39398: Flags [P.], seq 1816:1851, ack 772, win 243, options [nop,nop,TS val 513318660 ecr 1441172002], length 35: FTP: cannot change directory:/var/ftp/f1[!ftp]</span><br></pre></td></tr></table></figure></p>
+<p>提示f1的目录不存在，尝试创建f1的目录，并修改权限：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /var/ftp/f1</span><br><span class="line">chown ftp1.ftp1 /var/ftp/f1</span><br></pre></td></tr></table></figure></p>
+<p>再次登录，正常<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost surgeftp_2.3f2_linux64]# ./sslftp 192.168.168.120</span><br><span class="line">Connected to 192.168.168.120</span><br><span class="line">220 (vsFTPd 3.0.2)</span><br><span class="line">234 Proceed with negotiation.</span><br><span class="line">starting SSL/TLS</span><br><span class="line">sslinit 3</span><br><span class="line">Negotiated secure protocol TLSv1.2, using an AES cipher.</span><br><span class="line">200 PBSZ set to 0.</span><br><span class="line">200 PROT now Private.</span><br><span class="line">(secure) User: f1</span><br><span class="line">331 Please specify the password.</span><br><span class="line">(secure) Password: ******</span><br><span class="line">230 Login successful.</span><br><span class="line">Type in &quot;save&quot; to save login details to /root/.netrc</span><br><span class="line">sslftp&gt; ls</span><br><span class="line">226 Directory send OK.</span><br><span class="line">sslftp&gt; exit</span><br><span class="line">221 Goodbye.</span><br><span class="line">Channel Closed.</span><br></pre></td></tr></table></figure></p>
+<h4 id="10、新增f2用户，修改vsftpd-users-conf配置文件，添加f2用户"><a href="#10、新增f2用户，修改vsftpd-users-conf配置文件，添加f2用户" class="headerlink" title="10、新增f2用户，修改vsftpd_users.conf配置文件，添加f2用户"></a>10、新增f2用户，修改vsftpd_users.conf配置文件，添加f2用户</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# vim /etc/vsftpd/vsftpd_users.conf</span><br><span class="line">#输入奇数行为账号，偶数行为密码</span><br><span class="line">f1</span><br><span class="line">123456</span><br><span class="line">f2</span><br><span class="line">123456</span><br></pre></td></tr></table></figure>
+<h4 id="11、重新生成认证文件"><a href="#11、重新生成认证文件" class="headerlink" title="11、重新生成认证文件"></a>11、重新生成认证文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# db_load -T -t hash -f /etc/vsftpd/vsftpd_users.conf /etc/vsftpd/vsftpd_users.db</span><br></pre></td></tr></table></figure>
+<h4 id="12、将f2用户加入-etc-vsftpd-chroot-list，-etc-vsftpd-vsftpd-user-list允许f2用户登录"><a href="#12、将f2用户加入-etc-vsftpd-chroot-list，-etc-vsftpd-vsftpd-user-list允许f2用户登录" class="headerlink" title="12、将f2用户加入/etc/vsftpd/chroot_list，/etc/vsftpd/vsftpd.user_list允许f2用户登录"></a>12、将f2用户加入/etc/vsftpd/chroot_list，/etc/vsftpd/vsftpd.user_list允许f2用户登录</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost vsftpd]# more /etc/vsftpd/chroot_list |grep -E &quot;f1|f2&quot;</span><br><span class="line">f1</span><br><span class="line">f2</span><br><span class="line">[root@localhost vsftpd]# more /etc/vsftpd/vsftpd.user_list |grep -E &quot;f1|f2&quot;</span><br><span class="line">f1</span><br><span class="line">f2</span><br></pre></td></tr></table></figure>
+<h4 id="13、添加f2配置文件"><a href="#13、添加f2配置文件" class="headerlink" title="13、添加f2配置文件"></a>13、添加f2配置文件</h4><p>vim /etc/vsftpd/vuser_conf/f2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">local_root=/var/ftp/f2</span><br><span class="line">write_enable=YES</span><br><span class="line">anon_umask=022</span><br><span class="line">anon_world_readable_only=NO</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_other_write_enable=YES</span><br></pre></td></tr></table></figure></p>
+<h4 id="14、创建f2目录，并修改权限"><a href="#14、创建f2目录，并修改权限" class="headerlink" title="14、创建f2目录，并修改权限"></a>14、创建f2目录，并修改权限</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /var/ftp/f2</span><br><span class="line">chown ftp1.ftp1 /var/ftp/f2</span><br></pre></td></tr></table></figure>
+<h4 id="15、重新启动vsftpd"><a href="#15、重新启动vsftpd" class="headerlink" title="15、重新启动vsftpd"></a>15、重新启动vsftpd</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# systemctl vsftpd restart</span><br></pre></td></tr></table></figure>
+<h4 id="16、测试登录vsftpd是否正常"><a href="#16、测试登录vsftpd是否正常" class="headerlink" title="16、测试登录vsftpd是否正常"></a>16、测试登录vsftpd是否正常</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost surgeftp_2.3f2_linux64]# ./sslftp 192.168.168.120</span><br><span class="line">Connected to 192.168.168.120</span><br><span class="line">220 (vsFTPd 3.0.2)</span><br><span class="line">234 Proceed with negotiation.</span><br><span class="line">starting SSL/TLS</span><br><span class="line">sslinit 3</span><br><span class="line">Negotiated secure protocol TLSv1.2, using an AES cipher.</span><br><span class="line">200 PBSZ set to 0.</span><br><span class="line">200 PROT now Private.</span><br><span class="line">(secure) User: f2 </span><br><span class="line">331 Please specify the password.</span><br><span class="line">(secure) Password: ******</span><br><span class="line">230 Login successful.</span><br><span class="line">Type in &quot;save&quot; to save login details to /root/.netrc</span><br><span class="line">sslftp&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#0、部署vsftp-server，请先跳转到此处，部署vsfpt-ssl功能，点击此处"><span class="toc-number">1.</span> <span class="toc-text">0、部署vsftp-server，请先跳转到此处，部署vsfpt-ssl功能，点击此处</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1、在-etc-vsftpd-conf配置文件添加以下内容"><span class="toc-number">2.</span> <span class="toc-text">1、在/etc/vsftpd.conf配置文件添加以下内容</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、建立虚拟用户名文件"><span class="toc-number">3.</span> <span class="toc-text">2、建立虚拟用户名文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、生成认证文件-如果db-load命令不存在先安装-yum-install-db4-db4-utils"><span class="toc-number">4.</span> <span class="toc-text">3、生成认证文件,如果db_load命令不存在先安装(yum install db4 db4-utils)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、文件生成之后，修改文件权限"><span class="toc-number">5.</span> <span class="toc-text">4、文件生成之后，修改文件权限</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、编辑认证文件-将其余行注释，只保留第一行和最后两行"><span class="toc-number">6.</span> <span class="toc-text">5、编辑认证文件,将其余行注释，只保留第一行和最后两行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、建立虚拟用户配置文件存放位置"><span class="toc-number">7.</span> <span class="toc-text">6、建立虚拟用户配置文件存放位置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7、将f1用户加入-etc-vsftpd-chroot-list，-etc-vsftpd-vsftpd-user-list允许f1用户登录"><span class="toc-number">8.</span> <span class="toc-text">7、将f1用户加入/etc/vsftpd/chroot_list，/etc/vsftpd/vsftpd.user_list允许f1用户登录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8、重新启动vsftp"><span class="toc-number">9.</span> <span class="toc-text">8、重新启动vsftp</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9、测试用户能否正常登录："><span class="toc-number">10.</span> <span class="toc-text">9、测试用户能否正常登录：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10、新增f2用户，修改vsftpd-users-conf配置文件，添加f2用户"><span class="toc-number">11.</span> <span class="toc-text">10、新增f2用户，修改vsftpd_users.conf配置文件，添加f2用户</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11、重新生成认证文件"><span class="toc-number">12.</span> <span class="toc-text">11、重新生成认证文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12、将f2用户加入-etc-vsftpd-chroot-list，-etc-vsftpd-vsftpd-user-list允许f2用户登录"><span class="toc-number">13.</span> <span class="toc-text">12、将f2用户加入/etc/vsftpd/chroot_list，/etc/vsftpd/vsftpd.user_list允许f2用户登录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13、添加f2配置文件"><span class="toc-number">14.</span> <span class="toc-text">13、添加f2配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14、创建f2目录，并修改权限"><span class="toc-number">15.</span> <span class="toc-text">14、创建f2目录，并修改权限</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15、重新启动vsftpd"><span class="toc-number">16.</span> <span class="toc-text">15、重新启动vsftpd</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#16、测试登录vsftpd是否正常"><span class="toc-number">17.</span> <span class="toc-text">16、测试登录vsftpd是否正常</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Linux] vsftp启用虚拟用户功能'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
