@@ -112,6 +112,77 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/11/06/centos安装vsftp/"><span>[Linux] centos安装vsftp</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/11/06/centos安装vsftp/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-11-06T14:49:30.000Z">
+          2018-11-06
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、检查vsftp是否安装，如果没有yum安装vsftp："><a href="#1、检查vsftp是否安装，如果没有yum安装vsftp：" class="headerlink" title="1、检查vsftp是否安装，如果没有yum安装vsftp："></a>1、检查vsftp是否安装，如果没有yum安装vsftp：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa| grep vsftpd</span><br><span class="line">yum install vsftpd -y</span><br></pre></td></tr></table></figure>
+<h4 id="2、创建用户："><a href="#2、创建用户：" class="headerlink" title="2、创建用户："></a>2、创建用户：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adduser -s /sbin/nologin -d /var/ftp/ftp1 ftp1 </span><br><span class="line">修改用户名：</span><br><span class="line">passwd ftp1</span><br></pre></td></tr></table></figure>
+<h4 id="3、修改配置文件："><a href="#3、修改配置文件：" class="headerlink" title="3、修改配置文件："></a>3、修改配置文件：</h4><p>cat /etc/vsftpd/vsftpd.conf |grep -v ‘^#’<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#禁止匿名用户登录</span><br><span class="line">anonymous_enable=NO</span><br><span class="line">local_enable=YES</span><br><span class="line">write_enable=YES</span><br><span class="line">local_umask=022</span><br><span class="line">dirmessage_enable=YES</span><br><span class="line">xferlog_enable=YES</span><br><span class="line">connect_from_port_20=YES</span><br><span class="line">xferlog_std_format=YES</span><br><span class="line">#不允许chroot_list下的用户访问其他目录：</span><br><span class="line">chroot_list_file=/etc/vsftpd/chroot_list</span><br><span class="line">chroot_local_user=YES</span><br><span class="line">chroot_list_enable=NO</span><br><span class="line">listen=NO</span><br><span class="line">listen_ipv6=YES</span><br><span class="line"></span><br><span class="line">pam_service_name=vsftpd</span><br><span class="line">#只允许vsftpd.user_list文件下的用户登录：</span><br><span class="line">userlist_enable=YES</span><br><span class="line">userlist_deny=NO</span><br><span class="line">userlist_file=/etc/vsftpd/vsftpd.user_list</span><br><span class="line">tcp_wrappers=YES</span><br><span class="line">allow_writeable_chroot=YES</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、添加访问用户："><a href="#4、添加访问用户：" class="headerlink" title="4、添加访问用户："></a>4、添加访问用户：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/vsftpd/vsftpd.user_list</span><br><span class="line">ftp1</span><br><span class="line"></span><br><span class="line">cat /etc/vsftpd/chroot_list</span><br><span class="line">ftp1</span><br></pre></td></tr></table></figure>
+<h4 id="5、启动，查看ftp服务状态"><a href="#5、启动，查看ftp服务状态" class="headerlink" title="5、启动，查看ftp服务状态"></a>5、启动，查看ftp服务状态</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">service vsftpd status</span><br><span class="line">service vsftpd start</span><br><span class="line">service vsftpd stop</span><br><span class="line">service vsftpd restart</span><br></pre></td></tr></table></figure>
+<h4 id="6、客户端安装ftp："><a href="#6、客户端安装ftp：" class="headerlink" title="6、客户端安装ftp："></a>6、客户端安装ftp：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install ftp</span><br></pre></td></tr></table></figure>
+<p>连接到ftp-server<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; ftp *.*.*.*</span><br></pre></td></tr></table></figure></p>
+<h4 id="7、配置过程遇到的问题："><a href="#7、配置过程遇到的问题：" class="headerlink" title="7、配置过程遇到的问题："></a>7、配置过程遇到的问题：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">500 OOPS: vsftpd: refusing to run with writable root inside chroot ()</span><br><span class="line">查看配置文件该行参数是否配置：</span><br><span class="line">allow_writeable_chroot=YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">500 OOPS: chroot</span><br><span class="line">Login failed.</span><br><span class="line">421 Service not available, remote server has closed connection</span><br><span class="line">检查selinux是否为enforcing状态，并修改：</span><br><span class="line">setenforce 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ftp vsftpd 530 login incorrect</span><br><span class="line">解决方法：</span><br><span class="line">1.检查密码是否正常。</span><br><span class="line">2.检查/etc/vsftpd/vsftpd.conf配置：</span><br><span class="line">pam_service_name=vsftpd</span><br><span class="line">userlist_enable=YES</span><br><span class="line">userlist_deny=NO</span><br><span class="line">userlist_file=/etc/vsftpd/vsftpd.user_list</span><br><span class="line">3.检查/etc/pam.d/vsftpd配置：</span><br><span class="line">#%PAM-1.0</span><br><span class="line">session    optional     pam_keyinit.so    force revoke</span><br><span class="line">auth       required	pam_listfile.so item=user sense=deny file=/etc/vsftpd/ftpusers onerr=succeed</span><br><span class="line">auth       required	pam_shells.so</span><br><span class="line">auth       include	password-auth</span><br><span class="line">account    include	password-auth</span><br><span class="line">session    required     pam_loginuid.so</span><br><span class="line">session    include	password-auth</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/11/06/centos安装vsftp/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/11/06/mysql意外drop表之后，使用innobackupex恢复/"><span>[Mysql] mysql意外drop表之后，使用innobackupex恢复</span></a></h3>
     
   
@@ -713,84 +784,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/28/Old incarnation found while trying to add node/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>[Mysql] mysql数据库使用innobackupex和mysqldump备份恢复的对比</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
-          2018-10-25
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、查看原库数据文件大小："><a href="#1、查看原库数据文件大小：" class="headerlink" title="1、查看原库数据文件大小："></a>1、查看原库数据文件大小：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">du -sh *|grep data</span><br><span class="line">23G	data</span><br></pre></td></tr></table></figure>
-<h4 id="2、使用innodbackex备份数据"><a href="#2、使用innodbackex备份数据" class="headerlink" title="2、使用innodbackex备份数据"></a>2、使用innodbackex备份数据</h4><p>在percona官方下载xtrabackup软件，并解压<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.9/binary/tarball/percona-xtrabackup-2.4.9-Linux-x86_64.tar.gz</span><br><span class="line">tar -zxvf percona-xtrabackup-2.4.9-Linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure></p>
-<p>开始执行备份，指定配置文件、用户名、密码、端口、备份的目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./innobackupex --defaults-file=/etc/my.cnf --user=root --password=12345678 --port=3306 /data/</span><br></pre></td></tr></table></figure></p>
-<p>（总体耗时25分钟左右，备份文件大小23G）</p>
-<h4 id="3、采用innodbackex备份出来的数据去恢复-将数据文件拷贝到节点1-执行恢复操作"><a href="#3、采用innodbackex备份出来的数据去恢复-将数据文件拷贝到节点1-执行恢复操作" class="headerlink" title="3、采用innodbackex备份出来的数据去恢复,将数据文件拷贝到节点1,执行恢复操作:"></a>3、采用innodbackex备份出来的数据去恢复,将数据文件拷贝到节点1,执行恢复操作:</h4><p>先把事务日志恢复（–apply-log）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/soft/percona-xtrabackup/bin/innobackupex --defaults-file=/etc/my.cnf --user=root --password=12345678 --port=3306 --apply-log /data/2018-09-14_13-34-38</span><br></pre></td></tr></table></figure></p>
-<p>恢复数据之前需要清除数据目录下的所有数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /data/mysql/data/*</span><br></pre></td></tr></table></figure></p>
-<p>开始恢复数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/soft/percona-xtrabackup/bin/innobackupex --defaults-file=/etc/my.cnf --user=root --password=12345678 --port=3306 --copy-back --rsync /data/2018-09-14_13-34-38</span><br></pre></td></tr></table></figure></p>
-<p>数据恢复完成之后，删除datadir下的事务日志log文件（innodb引擎才会有）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; cd /data/mysql/data</span><br><span class="line">shell &gt; rm -rf ib_logfile*</span><br></pre></td></tr></table></figure></p>
-<p>设置数据目录权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; chown -R mysql:mysql /data/mysql/data</span><br><span class="line">shell &gt; /data/mysql/bin/mysqld_safe --defaults-file=/data/mysql/etc/my.cnf &amp;</span><br></pre></td></tr></table></figure></p>
-<p>启动节点1的mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysql restart</span><br></pre></td></tr></table></figure></p>
-<p>恢复总体耗时（35分钟）</p>
-<h4 id="4、原库使用mysqldump方法备份一份数据，用于恢复节点2："><a href="#4、原库使用mysqldump方法备份一份数据，用于恢复节点2：" class="headerlink" title="4、原库使用mysqldump方法备份一份数据，用于恢复节点2："></a>4、原库使用mysqldump方法备份一份数据，用于恢复节点2：</h4><p>原库操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/mysql/bin/mysqldump --all-databases --set-gtid-purged=ON --single-transaction -uroot -p12345678 &gt; /db/test.dump</span><br></pre></td></tr></table></figure></p>
-<p>备份需要指定–set-gtid-purged=ON参数在备份文件中输出global.gtid_purged信息，<br>指定–single-transaction参数避免备份过程中产生锁<br>（备份耗时10分钟，备份文件大小11G）</p>
-<h4 id="5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作："><a href="#5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作：" class="headerlink" title="5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作："></a>5、将mysqldump备份出的数据拷贝到节点2，节点2进行恢复操作：</h4><p> 如果从库@@GLOBAL.GTID_EXECUTED值不为空需要执行reset master;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@db 07:55:  [(none)]&gt; stop group_replication;</span><br><span class="line">Query OK, 0 rows affected (1.01 sec)</span><br><span class="line">root@db 07:55:  [(none)]&gt; reset master;</span><br><span class="line">Query OK, 0 rows affected (0.05 sec)</span><br></pre></td></tr></table></figure></p>
-<p>开始执行恢复<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-mha bin]# mysql -u root -p12345678 &lt; /data/test.dump</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br></pre></td></tr></table></figure></p>
-<p>总体耗时（60分钟左右）</p>
-<h4 id="6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较："><a href="#6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较：" class="headerlink" title="6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较："></a>6、关于使用mysqldump备份恢复和innobackupex备份恢复的比较：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">数据文件目录大小23G情况下，mysqldump逻辑备份出来数据大小11G，备份耗时十分钟，恢复耗时一小时；</span><br><span class="line">innobackupex物理备份备份出来数据大小23G，备份耗时25分钟，恢复耗时35分钟。</span><br><span class="line">使用物理备份备份时间比逻辑备份时间较长，但恢复时间会小于逻辑备份时间,数据量比较大的情况下使用innobackupex会更好一点。</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>点击阅读</span></a></h3>
     
   
 </article>
