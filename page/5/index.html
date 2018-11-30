@@ -112,6 +112,73 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/09/10/mysql-Lock wait timeout exceeded; try restarting transaction/"><span>[Mysql] mysql-Lock wait timeout exceeded; try restarting transaction</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/10/mysql-Lock wait timeout exceeded; try restarting transaction/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-10T14:19:03.000Z">
+          2018-09-10
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、mysql执行一条update语句报错："><a href="#1、mysql执行一条update语句报错：" class="headerlink" title="1、mysql执行一条update语句报错："></a>1、mysql执行一条update语句报错：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</span><br></pre></td></tr></table></figure>
+<p>查看当前系统锁等待超时时间:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">show variables like &apos;%lock_wait_timeout%&apos;;</span><br><span class="line">+--------------------------+-------+</span><br><span class="line">| Variable_name            | Value |</span><br><span class="line">+--------------------------+-------+</span><br><span class="line">| innodb_lock_wait_timeout | 30    |</span><br><span class="line">| lock_wait_timeout        | 60    |</span><br><span class="line">+--------------------------+-------+</span><br></pre></td></tr></table></figure></p>
+<p>innodb事务锁等待超时事件30s，其他非innodb事务锁等待事件超时为60s，</p>
+<h3 id="2、查看造成事务阻塞的信息："><a href="#2、查看造成事务阻塞的信息：" class="headerlink" title="2、查看造成事务阻塞的信息："></a>2、查看造成事务阻塞的信息：</h3><p>select * from information_schema.innodb_trx\G；查看innodb_trx各列参数，点击<a href="https://zeven0707.github.io/2018/09/10/mysql%20innodb_trx%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener">此处</a><br><img src="https://i.imgur.com/FxQAYyR.png" alt=""><br>线程id为1308的事务被线程id为1311的事务阻塞，查看不到线程id为1311正在执行的语句</p>
+<h3 id="3、查看事务锁信息，记录了当前锁的相关信息；查看innodb-lock各列参数，点击此处："><a href="#3、查看事务锁信息，记录了当前锁的相关信息；查看innodb-lock各列参数，点击此处：" class="headerlink" title="3、查看事务锁信息，记录了当前锁的相关信息；查看innodb_lock各列参数，点击此处："></a>3、查看事务锁信息，记录了当前锁的相关信息；查看innodb_lock各列参数，点击<a href="https://zeven0707.github.io/2018/09/10/mysql%20innodb_locks%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener">此处</a>：</h3><p>select * from information_schema.innodb_locks\G<br><img src="https://i.imgur.com/DlBpbOe.png" alt=""></p>
+<h3 id="4、查看线程id为1311的线程信息，select-from-information-schema-processlist-where-id-1311-G，"><a href="#4、查看线程id为1311的线程信息，select-from-information-schema-processlist-where-id-1311-G，" class="headerlink" title="4、查看线程id为1311的线程信息，select * from information_schema.processlist where id=1311\G，"></a>4、查看线程id为1311的线程信息，select * from information_schema.processlist where id=1311\G，</h3><p><img src="https://i.imgur.com/chR1kiv.png" alt=""><br>该事务command为sleep，表示事务sql语句已经执行完成，但是锁仍然存在，没有释放手动kill掉该线程，在执行其他操作正常。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill 1311</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/09/10/mysql-Lock wait timeout exceeded; try restarting transaction/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/09/10/mysql innodb_locks参数详解/"><span>[Mysql] mysql show innodb_locks详解</span></a></h3>
     
   
@@ -710,80 +777,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/09/05/mysql前缀索引/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/09/04/使用mysqladmin查看innodb_buffer_pool缓存命中率及缓存使用情况/"><span>[Mysql] 使用mysqladmin查看innodb_buffer_pool缓存命中率及缓存使用情况</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/09/04/使用mysqladmin查看innodb_buffer_pool缓存命中率及缓存使用情况/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-09-04T15:13:24.000Z">
-          2018-09-04
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、查看缓存命中率"><a href="#1、查看缓存命中率" class="headerlink" title="1、查看缓存命中率"></a>1、查看缓存命中率</h3><p>计算缓存命中率相关参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Innodb_buffer_pool_reads：innodb缓存无法满足逻辑读，不得不从磁盘获取数据的逻辑读数量</span><br><span class="line">Innodb_buffer_pool_read_requests：逻辑读的请求数量</span><br></pre></td></tr></table></figure></p>
-<p>如果查看当前某一时刻的值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> mysqladmin -uroot -p12345678  ext | grep Innodb_buffer_pool_reads</span><br><span class="line">mysqladmin: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">| Innodb_buffer_pool_reads                      | 31763701                                         |</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> mysqladmin -uroot -p12345678 ext | grep Innodb_buffer_pool_read_requests </span><br><span class="line">mysqladmin: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 866018530                                        |</span><br></pre></td></tr></table></figure>
-<p>如果想要查看多次的取值，并计算间隔的差值(-i 1间隔为1s)(-r 获取前后两个值之间的差值)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> mysqladmin -uroot -p12345678 -ri1 ext | grep Innodb_buffer_pool_reads</span><br><span class="line">mysqladmin: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">| Innodb_buffer_pool_reads                      | 31763701                                         |</span><br><span class="line">| Innodb_buffer_pool_reads                      | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_reads                      | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_reads                      | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_reads                      | 0                                                |</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p12345678 -ri1 ext | grep Innodb_buffer_pool_read_requests </span><br><span class="line">mysqladmin: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 866018530                                        |</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_read_requests              | 0                                                |</span><br></pre></td></tr></table></figure>
-<p>也可指定-c(value)参数，指定获取几次的值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p12345678 -ri1 -c5 ext | grep Innodb_buffer_pool_read_requests</span><br></pre></td></tr></table></figure></p>
-<p>根据获取到的值计算缓存命中率：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(Innodb_buffer_pool_read_requests-Innodb_buffer_pool_reads)/Innodb_buffer_pool_read_requests</span><br></pre></td></tr></table></figure></p>
-<p>如果太低，建议增大innodb_buffer_pool</p>
-<h3 id="2、查看缓存池使用情况"><a href="#2、查看缓存池使用情况" class="headerlink" title="2、查看缓存池使用情况"></a>2、查看缓存池使用情况</h3><p>缓存池使用情况参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Innodb_buffer_pool_pages_free:innodb buffer pool空闲页；</span><br><span class="line">Innodb_buffer_pool_pages_data：innodb buffer pool包含数据的页数量：</span><br><span class="line">Innodb_buffer_pool_pages_total：innodb buffer pool内存页总数量(每页16k)；</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p12345678 -ri1 ext | grep Innodb_buffer_pool_pages_free</span><br><span class="line">mysqladmin: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">| Innodb_buffer_pool_pages_free                 | 31974                                            |</span><br><span class="line">| Innodb_buffer_pool_pages_free                 | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_free                 | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_free                 | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_free                 | 0                                                |</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p12345678 -ri1 ext | grep Innodb_buffer_pool_pages_data</span><br><span class="line">mysqladmin: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">| Innodb_buffer_pool_pages_data                 | 96923                                            |</span><br><span class="line">| Innodb_buffer_pool_pages_data                 | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_data                 | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_data                 | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_data                 | 0                                                |</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p12345678 -ri1 ext | grep Innodb_buffer_pool_pages_total</span><br><span class="line">mysqladmin: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">| Innodb_buffer_pool_pages_total                | 131056                                           |</span><br><span class="line">| Innodb_buffer_pool_pages_total                | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_total                | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_total                | 0                                                |</span><br><span class="line">| Innodb_buffer_pool_pages_total                | 0                                                |</span><br></pre></td></tr></table></figure>
-<p>如果Innodb_buffer_pool_pages_free偏大的话，证明有很多缓存没有被利用到，这时可以考虑减小缓存，相反Innodb_buffer_pool_pages_data过大就考虑增大缓存。</p>
-<h3 id="3、另附使用mysqladmin查询qps的方法，参考链接"><a href="#3、另附使用mysqladmin查询qps的方法，参考链接" class="headerlink" title="3、另附使用mysqladmin查询qps的方法，参考链接"></a>3、另附使用mysqladmin查询qps的方法，<a href="http://blog.itpub.net/31475233/viewspace-2142864/" target="_blank" rel="noopener">参考链接</a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -P3306 -uroot -p12345678  -ri1 ext |\</span><br><span class="line">awk -F&quot;|&quot; \</span><br><span class="line">&quot;BEGIN&#123; count=0; &#125;&quot;\</span><br><span class="line">&apos;&#123; if($2 ~ /Variable_name/ &amp;&amp; ((++count)%20 == 1))&#123;\</span><br><span class="line">  print &quot;----------|---------|--- MySQL Command Status --|----- Innodb row operation ----|-- Buffer Pool Read --&quot;;\</span><br><span class="line">  print &quot;---Time---|---QPS---|select insert update delete| read inserted updated deleted|  logical  physical&quot;;\</span><br><span class="line">&#125;\</span><br><span class="line">else if ($2 ~ /Queries/)&#123;queries=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Com_select /)&#123;com_select=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Com_insert /)&#123;com_insert=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Com_update /)&#123;com_update=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Com_delete /)&#123;com_delete=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Innodb_rows_read/)&#123;innodb_rows_read=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Innodb_rows_deleted/)&#123;innodb_rows_deleted=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Innodb_rows_inserted/)&#123;innodb_rows_inserted=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Innodb_rows_updated/)&#123;innodb_rows_updated=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Innodb_buffer_pool_read_requests/)&#123;innodb_lor=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Innodb_buffer_pool_reads/)&#123;innodb_phr=$3;&#125;\</span><br><span class="line">else if ($2 ~ /Uptime / &amp;&amp; count &gt;= 2)&#123;\</span><br><span class="line"> printf(&quot; %s |%9d&quot;,strftime(&quot;%H:%M:%S&quot;),queries);\</span><br><span class="line"> printf(&quot;|%6d %6d %6d %6d&quot;,com_select,com_insert,com_update,com_delete);\</span><br><span class="line"> printf(&quot;|%6d %8d %7d %7d&quot;,innodb_rows_read,innodb_rows_inserted,innodb_rows_updated,innodb_rows_deleted);\</span><br><span class="line"> printf(&quot;|%10d %11d\n&quot;,innodb_lor,innodb_phr);\</span><br><span class="line">&#125;&#125;&apos;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/09/04/使用mysqladmin查看innodb_buffer_pool缓存命中率及缓存使用情况/"><span>点击阅读</span></a></h3>
     
   
 </article>
