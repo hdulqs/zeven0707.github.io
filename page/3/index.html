@@ -112,6 +112,253 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/10/31/oracle 静默安装/"><span>[Oracle] oracle 静默安装</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/31/oracle 静默安装/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-31T07:19:00.000Z">
+          2018-10-31
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、安装数据库所需依赖包"><a href="#1、安装数据库所需依赖包" class="headerlink" title="1、安装数据库所需依赖包"></a>1、安装数据库所需依赖包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yum install -y gcc*</span><br><span class="line">yum install -y glibc*</span><br><span class="line">yum install -y compat-libstdc++-33 elfutils-libelf-devel libaio-devel compat-libcap1</span><br><span class="line">yum install -y sysstat</span><br><span class="line">yum install -y smartmontools</span><br></pre></td></tr></table></figure>
+<h4 id="2、创建用户-并修改用户名密码"><a href="#2、创建用户-并修改用户名密码" class="headerlink" title="2、创建用户,并修改用户名密码"></a>2、创建用户,并修改用户名密码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/usr/sbin/groupadd -g 505 oinstall</span><br><span class="line">/usr/sbin/groupadd -g 502 dba</span><br><span class="line">/usr/sbin/groupadd -g 503 oper</span><br><span class="line">/usr/sbin/useradd -u 506 -g oinstall -G dba,oper oracle</span><br></pre></td></tr></table></figure>
+<p>配置用户名密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd oracle</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、配置相关数据库目录权限"><a href="#3、配置相关数据库目录权限" class="headerlink" title="3、配置相关数据库目录权限"></a>3、配置相关数据库目录权限</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/u01/app/oracle</span><br><span class="line">chown oracle.oinstall -R /data/u01/app/oracle</span><br><span class="line">chmod 775 /data/u01/app/oracle</span><br><span class="line">mkdir -p /data/u01/app/oracle/product/11.2.0.4/dbhome_1/</span><br><span class="line">chown oracle.oinstall -R /data/u01/app/oracle/product/11.2.0.4/dbhome_1/</span><br><span class="line">chmod 775 /data/u01/app/oracle/product/11.2.0.4/dbhome_1/</span><br><span class="line">chown oracle.oinstall -R /data/u01</span><br></pre></td></tr></table></figure>
+<h4 id="4、修改系统参数："><a href="#4、修改系统参数：" class="headerlink" title="4、修改系统参数："></a>4、修改系统参数：</h4><p>4.1、关闭selinux<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setenforce 0</span><br></pre></td></tr></table></figure></p>
+<p>4.2、关闭防火墙<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F</span><br></pre></td></tr></table></figure></p>
+<p>4.3、设置用户连接限制<br>cat /etc/security/limits.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">oracle soft nproc 16384</span><br><span class="line">oracle hard nproc 16384</span><br><span class="line">oracle soft nofile 65536</span><br><span class="line">oracle hard nofile 65536</span><br><span class="line">oracle soft memlock 8088608</span><br><span class="line">oracle hard memlock 8088608</span><br><span class="line">oracle hard stack 10240</span><br><span class="line">grid soft nproc 16384</span><br><span class="line">grid hard nproc 16384</span><br><span class="line">grid soft nofile 65536</span><br><span class="line">grid hard nofile 65536</span><br><span class="line">grid soft memlock 8088608</span><br><span class="line">grid hard memlock 8088608</span><br><span class="line">grid hard stack 10240</span><br></pre></td></tr></table></figure></p>
+<p>oracle用户最大能开启的进程数不超过16384，最大能打开的文件数不超过65536。至于soft和hard的区别，不同于磁盘配额中的软限制和硬限制。普通用户可以调整自己的softlimit但最高不能超过hardlimit，而且除了root以外的普通用户也不能够随意更改hard limit。该调整完成之后一般可以使用ulimit命令查看。<br>针对nofile，这个只是基于用户层面的限制和调整方法。基于系统层面的限制和调整方法是修改/etc/sysctl.conf文件，直接改fs.file-max参数，调整之后sysctl –p生效<br>memlock参数随着服务器内存不同，进行调整，该参数要偏小于实际的物理内存，本文以（8g内存为例）</p>
+<p>4.4、为使/etc/security/limits.conf文件配置生效，需要确保pam模块pam_limits.so被加入到启动文件中：<br>grep ‘pam_limits.so’ /etc/pam.d/login<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">session    required     pam_limits.so</span><br></pre></td></tr></table></figure></p>
+<p>pam_limits.so模块对用户使用系统资源的情况进行限制,也可以使用在对一般应用程序使用的资源限制方面。举例来说，如果需要在SSH服务器上对来自不同用户的ssh访问进行限制，就可以调用该模块来实现相关功能。例如，当需要限制用户admin登录到SSH服务器时的最大连接数（防止同一个用户开启过多的登录进程），就可以在/etc/pam.d/sshd 文件中增加一行对 pam_limits.so 模块的调用:<br>然后在/etc/security/limits.conf文件中增加一行对admin用户产生的连接数进行限定:<br>admin      hard        maxlogins       2<br>完成之后重启服务器端的sshd服务。<br>之后我们可以看到，从客户端以admin身份登录SSH服务器时，在客户端上可以打开两个控制台登录。但当客户端开启第三个登录窗口的时候会被服务器拒绝，但其它用户不会受到限制。</p>
+<p>4.5、设置用户最大进程数和进程可以打开的最大文件描述符的数量：<br>cat /etc/profile<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">if [ $USER = &quot;oracle&quot; -o $USER = &quot;grid&quot; ]; then</span><br><span class="line">  if [ $SHELL = &quot;/bin/ksh&quot; ]; then</span><br><span class="line">    ulimit -p 16384</span><br><span class="line">    ulimit -n 65536</span><br><span class="line">  else</span><br><span class="line">    ulimit -u 16384 -n 65536</span><br><span class="line">  fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
+<p>4.6、设置内核参数<br>cat /etc/sysctl.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">kernel.shmmax = 7730941132</span><br><span class="line">kernel.shmall = 15586574</span><br><span class="line">kernel.shmmni = 4096</span><br><span class="line">kernel.sem = 250 32000 100 128</span><br><span class="line">fs.file-max = 6815744</span><br><span class="line">fs.aio-max-nr = 1048576</span><br><span class="line">net.ipv4.ip_local_port_range = 9000 65500</span><br><span class="line">net.core.rmem_default = 1048576</span><br><span class="line">net.core.rmem_max = 4194304</span><br><span class="line">net.core.wmem_default = 262144</span><br><span class="line">net.core.wmem_max = 1048576</span><br><span class="line">vm.min_free_kbytes = 524288</span><br><span class="line">vm.swappiness = 60</span><br></pre></td></tr></table></figure></p>
+<p>使配置生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure></p>
+<p>安装过程中shmmax,shmall参数设置过小，导致dbca创建数据库的时候报错ORA-12547：TNS：lost contact<br>图形化安装，oracle有一个runfix脚本，调整这些参数，参考response下的文件，如果文件里面的参数小于参考文件的参数，会进行调整，如果文件参数大于参考文件参数，则不会进行调整。</p>
+<p>SHMMAX应该比SGA区大,否则会引发性能的下降,shmmax 指的是单个共享内存段的最大尺寸， 设置shmmax=1G，sga分配了1.2G，当启动实例的时候就分配 2 块共享内存给Oracle</p>
+<p>kernel.shmall=（SHMMAX/PAGE_SIZE）：共享内存总量，以页为单位。Linux 共享内存页大小为4KB, 共享内<br>存段的大小都是共享内存页大小的整数倍。一个共享内存段的最大大小是16G，那么需<br>要共享内存页数是 16GB/4KB=16777216KB/4KB=4194304 （页），也就是64Bit 系统下<br>16GB 物理内存，设置 kernel.shmall = 4194304 才符合要求</p>
+<p>SHMMIN= 最小的内存段的大小 </p>
+<p>kernel.shmmni：共享内存段的最大数量，shmmni 缺省值 4096 ，一般肯定是够用了</p>
+<p>kernel.sem(SEMMSL SEMMNS SEMOPM SEMMNI)：<br>SEMMSL，每个信号量集中的最大信号量数，应该设置为服务器中各个实例中PROCESSES参数的和+10；SEMMNS，系统中信号量的最大数，参数应设置为SEMMSL*SEMMNI。<br>SEMOPM，每个信号量调用所包含的最大操作数。<br>SEMMNI：系统中信号量集的最大数。<br>swappiness的值的大小对如何使用swap分区是有着很大的联系的。swappiness=0的时候表示最大限度使用物理内存，然后才是 swap空间，swappiness＝100的时候表示积极的使用swap分区，并且把内存上的数据及时的搬运到swap空间里面。linux的基本默认设置为60</p>
+<h5 id="5、修改oracle用户环境变量"><a href="#5、修改oracle用户环境变量" class="headerlink" title="5、修改oracle用户环境变量"></a>5、修改oracle用户环境变量</h5><p>su - oracle<br>vim ~/.bash_profile<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># .bash_profile</span><br><span class="line"># Get the aliases and functions</span><br><span class="line">if [ -f ~/.bashrc ]; then</span><br><span class="line">        . ~/.bashrc</span><br><span class="line">fi</span><br><span class="line"># User specific environment and startup programs</span><br><span class="line">PATH=$PATH:$HOME/bin</span><br><span class="line">export PATH</span><br><span class="line">export THREADS_FLAG=native</span><br><span class="line">export ORACLE_BASE=/data/u01/app/oracle</span><br><span class="line">export ORACLE_HOME=$ORACLE_BASE/product/11.2.0.4/dbhome_1</span><br><span class="line">export PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch:$PATH:/usr/sbin</span><br><span class="line">export LD_LIBRARY_PATH=$ORACLE_HOME/lib</span><br><span class="line">export ORACLE_SID=boston</span><br><span class="line">export NLS_LANG=AMERICAN_AMERICA.ZHS16GBK</span><br><span class="line">export NLS_DATE_FORMAT=&quot;YYYY:MM:DD HH24:MI:SS&quot;</span><br><span class="line">export EDITOR=vi</span><br><span class="line">set -o vi</span><br><span class="line">umask 022</span><br><span class="line">alias bdump=&quot;cd $ORACLE_BASE/diag/rdbms/otcdb/$&#123;ORACLE_SID&#125;/trace&quot;</span><br><span class="line">alias sql=&apos;sqlplus &quot;/ as sysdba&quot;&apos;</span><br></pre></td></tr></table></figure></p>
+<p>使环境变量生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<h4 id="6、解压软件包，在database-response目录下找到db-install-rsp文件"><a href="#6、解压软件包，在database-response目录下找到db-install-rsp文件" class="headerlink" title="6、解压软件包，在database/response目录下找到db_install.rsp文件"></a>6、解压软件包，在database/response目录下找到db_install.rsp文件</h4><p>编辑db_install.rsp文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">#选择安装类型：1.INSTALL_DB_SWONLY只装数据库软件 2.INSTALL_DB_AND_CONFIG安装数据库软件并建库 3.UPGRADE_DB升级数据库</span><br><span class="line">oracle.install.option=INSTALL_DB_SWONLY</span><br><span class="line">#指定操作系统主机名，通过hostname命令获得</span><br><span class="line">ORACLE_HOSTNAME=dax-mysql-slave</span><br><span class="line">#指定oracle inventory目录的所有者，通常会是oinstall或者dba</span><br><span class="line">UNIX_GROUP_NAME=oinstall</span><br><span class="line">#指定产品清单oracle inventory目录的路径,如果是Win平台下可以省略</span><br><span class="line">INVENTORY_LOCATION=/data/u01/app/oracle/oraInventory</span><br><span class="line">#指定数据库语言，可以选择多个，用逗号隔开。选择en, zh_CN(英文和简体中文)</span><br><span class="line">SELECTED_LANGUAGES=en,zh_CN</span><br><span class="line"># Specify the complete path of the OracleHome.设置ORALCE_HOME的路径</span><br><span class="line">ORACLE_HOME=/data/u01/app/oracle/product/11.2.0.4/dbhome_1</span><br><span class="line"># Specify the complete path of the OracleBase. 设置ORALCE_BASE的路径</span><br><span class="line">ORACLE_BASE=/data/u01/app/oracle</span><br><span class="line">#选择Oracle安装数据库软件的版本（企业版，标准版，标准版1），不同的版本功能不同</span><br><span class="line">oracle.install.db.InstallEdition=EE</span><br><span class="line">#是否自定义Oracle的组件，如果选择false，则会使用默认的组件</span><br><span class="line">#如果选择true否则需要自己在下面一条参数将要安装的组件一一列出。</span><br><span class="line">#安装相应版权后会安装所有的组件，后期如果缺乏某个组件，再次安装会非常的麻烦。</span><br><span class="line">oracle.install.db.EEOptionsSelection=false</span><br><span class="line"># oracle.install.db.EEOptionsSelection=true的话下面的安装组件会安装</span><br><span class="line">oracle.install.db.optionalComponents=oracle.rdbms.partitioning:11.2.0.4.0,oracle.oraolap:11.2.0.4.0,oracle.rdbms.dm:11.2.0.4.0,oracle.rdbms.dv:11.2.0.4.0,oracle.rdbms.lbac:11.2.0.4.0,oracle.rdbms.rat:11.2.0.4.0</span><br><span class="line">#指定拥有OSDBA、OSOPER权限的用户组，通常会是dba组</span><br><span class="line">oracle.install.db.DBA_GROUP=dba</span><br><span class="line">oracle.install.db.OPER_GROUP=oinstall</span><br><span class="line">#如果是RAC的安装，在这里指定所有的节点</span><br><span class="line">oracle.install.db.CLUSTER_NODES=</span><br><span class="line">oracle.install.db.isRACOneInstall=</span><br><span class="line">oracle.install.db.isRACOneInstall=</span><br><span class="line">--------安装数据库选项</span><br><span class="line">#选择数据库的用途，一般用途/事物处理，数据仓库</span><br><span class="line">oracle.install.db.config.starterdb.type=GENERAL_PURPOSE</span><br><span class="line"># Specify the Starter Database GlobalDatabase Name. 指定GlobalName</span><br><span class="line">oracle.install.db.config.starterdb.globalDBName=boston</span><br><span class="line"># Specify the Starter Database SID.指定SID</span><br><span class="line">oracle.install.db.config.starterdb.SID=boston</span><br><span class="line">#选择字符集。不正确的字符集会给数据显示和存储带来麻烦无数。</span><br><span class="line">#通常中文选择的有ZHS16GBK简体中文库，建议选择unicode的AL32UTF8国际字符集</span><br><span class="line">oracle.install.db.config.starterdb.characterSet=AL32UTF8</span><br><span class="line">#11g的新特性自动内存管理，也就是SGA_TARGET和PAG_AGGREGATE_TARGET都#不用设置了，Oracle会自动调配两部分大小。</span><br><span class="line">oracle.install.db.config.starterdb.memoryOption=true</span><br><span class="line">#指定Oracle自动管理内存的大小，最小是256MB</span><br><span class="line">oracle.install.db.config.starterdb.memoryLimit=5120</span><br><span class="line">#是否载入模板示例</span><br><span class="line">oracle.install.db.config.starterdb.installExampleSchemas=false</span><br><span class="line"># These settings may also be disabled.   是否启用安全设置</span><br><span class="line">oracle.install.db.config.starterdb.enableSecuritySettings=true</span><br><span class="line">#设置数据库用户密码</span><br><span class="line">oracle.install.db.config.starterdb.password.ALL=oracle</span><br><span class="line">#数据库本地管理工具DB_CONTROL，远程集中管理工具GRID_CONTROL</span><br><span class="line">oracle.install.db.config.starterdb.control=DB_CONTROL</span><br><span class="line">#.设置自动备份，和OUI里的自动备份一样。</span><br><span class="line">oracle.install.db.config.starterdb.automatedBackup.enable=false</span><br><span class="line">#自动备份会启动一个job，指定启动JOB的系统用户ID</span><br><span class="line">oracle.install.db.config.starterdb.automatedBackup.osuid=</span><br><span class="line">#自动备份会开启一个job，需要指定OSUser的密码</span><br><span class="line">oracle.install.db.config.starterdb.automatedBackup.ospwd=</span><br><span class="line">#自动备份，要求指定使用的文件系统存放数据库文件还是ASM</span><br><span class="line">oracle.install.db.config.starterdb.storageType=</span><br><span class="line">#使用文件系统存放数据库文件才需要指定数据文件、控制文件、Redo log的存放目录</span><br><span class="line">oracle.install.db.config.starterdb.fileSystemStorage.dataLocation=</span><br><span class="line">#使用文件系统存放数据库文件才需要指定备份恢复目录</span><br><span class="line">oracle.install.db.config.starterdb.fileSystemStorage.recoveryLocation=</span><br><span class="line">#使用ASM存放数据库文件才需要指定存放的磁盘组</span><br><span class="line">oracle.install.db.config.asm.diskGroup=</span><br><span class="line">#使用ASM存放数据库文件才需要指定ASM实例密码</span><br><span class="line">oracle.install.db.config.asm.ASMSNMPPassword=</span><br><span class="line">#指定metalink账户用户名</span><br><span class="line">MYORACLESUPPORT_USERNAME=</span><br><span class="line"># 指定metalink账户密码</span><br><span class="line">MYORACLESUPPORT_PASSWORD=</span><br><span class="line"># 用户是否可以设置metalink密码</span><br><span class="line">SECURITY_UPDATES_VIA_MYORACLESUPPORT=</span><br><span class="line"># False表示不需要设置安全更新，注意，在11.2的静默安装中疑似有一个BUG</span><br><span class="line">******# Response File中必须指定为true，否则会提示错误,不管是否正确填写了邮件地址</span><br><span class="line">DECLINE_SECURITY_UPDATES=true</span><br><span class="line">#代理服务器名</span><br><span class="line">PROXY_HOST=</span><br><span class="line">#代理服务器端口</span><br><span class="line">PROXY_PORT=</span><br><span class="line">#代理服务器用户名</span><br><span class="line">PROXY_USER=</span><br><span class="line">#代理服务器密码</span><br><span class="line">PROXY_PWD=</span><br></pre></td></tr></table></figure></p>
+<p>开始安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./runInstaller -silent -responseFile /data/soft/database/response/db_install.rsp</span><br></pre></td></tr></table></figure></p>
+<p>如果是测试环境可能碰到下面的问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Checking swap space: 0 MB available, 150 MB required.    Failed &lt;&lt;&lt;&lt;</span><br><span class="line">解决方法：</span><br><span class="line">dd if=/dev/zero of=/data/swapfile bs=1M count=1024</span><br><span class="line">mkswap /data/swapfile</span><br><span class="line">swapon /data/swapfile</span><br><span class="line"></span><br><span class="line">在/etc/fstab添加下面内容</span><br><span class="line">/data/swapfile swap swap defaults 0 0</span><br><span class="line">&gt;&gt;&gt;&gt;&gt;</span><br><span class="line">`</span><br></pre></td></tr></table></figure></p>
+<p>oracle安装到最后提示，使用root用户执行以下两个脚本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/data/u01/app/oracle/oraInventory/orainstRoot.sh</span><br><span class="line">/data/u01/app/oracle/product/11.2.0.4/dbhome_1/root.sh</span><br></pre></td></tr></table></figure></p>
+<h4 id="7、静默配置监听"><a href="#7、静默配置监听" class="headerlink" title="7、静默配置监听"></a>7、静默配置监听</h4><p>通过response文件运行netca, 生成sqlnet.ora和listener.ora文件, 位于$ORACLE_HOME/network/admin目录下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># su - oracle</span><br><span class="line">$ORACLE_HOME/bin/netca -silent -responsefile /data/soft/database/response/netca.rsp</span><br><span class="line">ll $ORACLE_HOME/network/admin/*.ora</span><br><span class="line">lsnrctl status</span><br></pre></td></tr></table></figure></p>
+<h4 id="8、创建数据库"><a href="#8、创建数据库" class="headerlink" title="8、创建数据库"></a>8、创建数据库</h4><p>修改配置文件dbca.rsp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[GENERAL]</span><br><span class="line">RESPONSEFILE_VERSION = &quot;11.2.0&quot;</span><br><span class="line">OPERATION_TYPE = &quot;createDatabase&quot;</span><br><span class="line">[CREATEDATABASE]</span><br><span class="line">GDBNAME = &quot;boston.us.oracle.com&quot;</span><br><span class="line">TEMPLATENAME = &quot;General_Purpose.dbc&quot;</span><br><span class="line">SID = &quot;boston&quot;</span><br><span class="line">SYSPASSWORD = &quot;oracle&quot;</span><br><span class="line">SYSTEMPASSWORD = &quot;oracle&quot;</span><br><span class="line">SYSMANPASSWORD = &quot;oracle&quot;</span><br><span class="line">DBSNMPPASSWORD = &quot;oracle&quot;</span><br><span class="line">CHARACTERSET = &quot;ZHS16GBK&quot;</span><br><span class="line">TOTALMEMORY = &quot;2048&quot;</span><br></pre></td></tr></table></figure></p>
+<p>运行命令开始创建数据库：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dbca -silent -createDatabase -responseFile /data/soft/database/response/createdbca.rsp</span><br></pre></td></tr></table></figure></p>
+<p>如果不适用配置文件，也可使用下面命令直接指定参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">##dbca -silent -createDatabase -templateName $ORACLE_HOME/assistants/dbca/templates/General_Purpose.dbc -gdbName orcogg -sid orcogg  -sysPassword oracle -systemPassword oracle -datafileDestination /u01/app/oradata/orcogg -characterSet GBK16 -TOTALMEMORY 2048</span><br></pre></td></tr></table></figure></p>
+<p>各参数含义如下:<br>-silent 表示以静默方式安装<br>-responseFile 表示使用哪个响应文件,必需使用绝对路径<br>RESPONSEFILE_VERSION 响应文件模板的版本,该参数不要更改<br>OPERATION_TYPE 安装类型,该参数不要更改<br>GDBNAME 全局数据库名,点号前面默认是db_name,点号后面默认就是db_domain<br>TEMPLATENAME 建库模板名,参考各模板定义:$ORACLE_HOME/assistants/dbca/templates/*.dbc<br>CHARACTERSET 字符集,默认是WE8MSWIN1252<br>TOTALMEMORY 实例内存,默认是服务器物理内存的40%</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/31/oracle 静默安装/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><a href="/2018/10/30/测试mysql where条件顺序对sql查询效率的影响/"><span>[Mysql] 测试mysql where条件执行顺序对sql查询效率的影响</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/30/测试mysql where条件顺序对sql查询效率的影响/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-30T04:40:00.000Z">
+          2018-10-30
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、创建基表测试数据"><a href="#1、创建基表测试数据" class="headerlink" title="1、创建基表测试数据"></a>1、创建基表测试数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `test1` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into test1(name,age) values(&apos;lucy&apos;,10),(&apos;bobo&apos;,18),(&apos;david&apos;,20),(&apos;tom&apos;,21),(&apos;dobu&apos;,22),(&apos;dali&apos;,12);</span><br></pre></td></tr></table></figure>
+<h4 id="2、创建中间表"><a href="#2、创建中间表" class="headerlink" title="2、创建中间表"></a>2、创建中间表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `testfororder` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=14699990 DEFAULT CHARSET=utf8mb4;</span><br></pre></td></tr></table></figure>
+<p>创建存储过程对中间表插入数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">drop procedure if exists test;</span><br><span class="line">delimiter //</span><br><span class="line">create procedure test()</span><br><span class="line"> begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i=0;</span><br><span class="line">  while i&lt;300000 do</span><br><span class="line">   insert into testfororder(newid,name,age) select concat(i,name),FLOOR(18 + (RAND() * 12)) from test1;</span><br><span class="line">   set i=i+1;</span><br><span class="line">  end while;</span><br><span class="line"> end//</span><br><span class="line"> delimiter ;</span><br><span class="line">调用存储过程：</span><br><span class="line">call test();</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、创建测试表："><a href="#3、创建测试表：" class="headerlink" title="3、创建测试表："></a>3、创建测试表：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `sequence` (</span><br><span class="line">  `id` int(10) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `newid` int(10) NOT NULL,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=89179437 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into sequence(newid,name,age) select * from testfororder;</span><br></pre></td></tr></table></figure>
+<p>数据量根据自己需求可以多次导入</p>
+<h4 id="4、查看sequence测试表数据："><a href="#4、查看sequence测试表数据：" class="headerlink" title="4、查看sequence测试表数据："></a>4、查看sequence测试表数据：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">| 12600000 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (2.83 sec)</span><br></pre></td></tr></table></figure>
+<p>age条件筛选数据量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence where age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  7341992 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (3.82 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid条件筛选数量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence where newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|       56 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (3.28 sec)</span><br></pre></td></tr></table></figure></p>
+<h4 id="5、where条件-age-newid-在没有创建索引的情况下："><a href="#5、where条件-age-newid-在没有创建索引的情况下：" class="headerlink" title="5、where条件(age,newid)在没有创建索引的情况下："></a>5、where条件(age,newid)在没有创建索引的情况下：</h4><p>age在前，newid在后，查看执行计划：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 12292293 |    25.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (5.36 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 12292293 |    25.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (4.47 sec)</span><br></pre></td></tr></table></figure></p>
+<p>没有任何索引的情况下，where后面跟的条件从左到右，返回数据越小的条件在前面，效率会优于返回数据较大的条件在前面。</p>
+<h4 id="6、where条件-age-在没有创建索引，newid创建索引的情况下："><a href="#6、where条件-age-在没有创建索引，newid创建索引的情况下：" class="headerlink" title="6、where条件(age)在没有创建索引，newid创建索引的情况下："></a>6、where条件(age)在没有创建索引，newid创建索引的情况下：</h4><p>创建newid的索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create index newid_ind on sequence(newid);</span><br></pre></td></tr></table></figure></p>
+<p>age在前，newid在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key       | key_len | ref  | rows | filtered | Extra                              |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_ind     | newid_ind | 4       | NULL |   56 |    50.00 | Using index condition; Using where |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key       | key_len | ref  | rows | filtered | Extra                              |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_ind     | newid_ind | 4       | NULL |   56 |    50.00 | Using index condition; Using where |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+------------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<p>在newid创建索引的情况下，where后面的查询条件前后顺序对查询效率影响不大。</p>
+<h4 id="7、where条件-newid-在没有创建索引，age创建索引的情况下："><a href="#7、where条件-newid-在没有创建索引，age创建索引的情况下：" class="headerlink" title="7、where条件(newid)在没有创建索引，age创建索引的情况下："></a>7、where条件(newid)在没有创建索引，age创建索引的情况下：</h4><p>删除newid的索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop index newid_ind on sequence;</span><br></pre></td></tr></table></figure></p>
+<p>创建age的索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create index age_ind on sequence(age);</span><br></pre></td></tr></table></figure></p>
+<p>age在前，newid在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | age_ind       | NULL | NULL    | NULL | 12292293 |    50.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (4.97 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | age_ind       | NULL | NULL    | NULL | 12292293 |    50.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (4.82 sec)</span><br></pre></td></tr></table></figure></p>
+<p>创建age索引之后，执行计划会默认使用索引执行，但是因为age的筛选出来的数据量比较大，使用索引也不是特别理想。</p>
+<h4 id="8、where条件-newid-age-创建联合索引的情况下："><a href="#8、where条件-newid-age-创建联合索引的情况下：" class="headerlink" title="8、where条件(newid,age)创建联合索引的情况下："></a>8、where条件(newid,age)创建联合索引的情况下：</h4><p>删除age索引，创建newid，age的联合索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">drop index age_ind on sequence;</span><br><span class="line">create index newid_age_ind on sequence(newid,age);</span><br></pre></td></tr></table></figure></p>
+<p>age在前，newid在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_age_ind | newid_age_ind | 9       | NULL |   98 |   100.00 | Using index condition |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line"></span><br><span class="line"> select * from sequence where age in (26,19,22,20,28,29,25) and newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<p>newid在前，age在后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_age_ind | newid_age_ind | 9       | NULL |   98 |   100.00 | Using index condition |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726) and age in (26,19,22,20,28,29,25);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679487 | 116719 | 2382lucy  |   29 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">49 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure></p>
+<p>联合索引存在的情况下，where后面的查询条件前后顺序对查询效率影响不大，但是创建了联合索引之后要注意查询条件问题，如果是以（newid，age）的顺序创建的联合索引，如果where查询条件后面有newid会使用联合索引，但是如果where查询条件后面之后age则不会引用联合索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">explain select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | range | newid_age_ind | newid_age_ind | 4       | NULL |   56 |   100.00 | Using index condition |</span><br><span class="line">+----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">explain select * from sequence where age in (26,19,22,20,28,29,25);</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows     | filtered | Extra       |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | sequence | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 12292293 |    50.00 | Using where |</span><br><span class="line">+----+-------------+----------+------------+------+---------------+------+---------+------+----------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.01 sec)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/30/测试mysql where条件顺序对sql查询效率的影响/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><a href="/2018/10/30/测试mysql or和in对sql查询效率的影响/"><span>[Mysql] 测试mysql or和in对sql查询效率的影响</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/30/测试mysql or和in对sql查询效率的影响/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-30T04:39:00.000Z">
+          2018-10-30
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、创建基表测试数据"><a href="#1、创建基表测试数据" class="headerlink" title="1、创建基表测试数据"></a>1、创建基表测试数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `test1` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into test1(name,age) values(&apos;lucy&apos;,10),(&apos;bobo&apos;,18),(&apos;david&apos;,20),(&apos;tom&apos;,21),(&apos;dobu&apos;,22),(&apos;dali&apos;,12);</span><br></pre></td></tr></table></figure>
+<h4 id="2、创建中间表"><a href="#2、创建中间表" class="headerlink" title="2、创建中间表"></a>2、创建中间表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `testfororder` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=14699990 DEFAULT CHARSET=utf8mb4;</span><br></pre></td></tr></table></figure>
+<p>创建存储过程对中间表插入数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">drop procedure if exists test;</span><br><span class="line">delimiter //</span><br><span class="line">create procedure test()</span><br><span class="line"> begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i=0;</span><br><span class="line">  while i&lt;300000 do</span><br><span class="line">   insert into testfororder(newid,name,age) select concat(i,name),FLOOR(18 + (RAND() * 12)) from test1;</span><br><span class="line">   set i=i+1;</span><br><span class="line">  end while;</span><br><span class="line"> end//</span><br><span class="line"> delimiter ;</span><br><span class="line">调用存储过程：</span><br><span class="line">call test();</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、创建测试表："><a href="#3、创建测试表：" class="headerlink" title="3、创建测试表："></a>3、创建测试表：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `sequence` (</span><br><span class="line">  `id` int(10) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `newid` int(10) NOT NULL,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=89179437 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into sequence(newid,name,age) select * from testfororder;</span><br></pre></td></tr></table></figure>
+<p>数据量根据自己需求可以多次导入</p>
+<h4 id="4、查看sequence测试表数据："><a href="#4、查看sequence测试表数据：" class="headerlink" title="4、查看sequence测试表数据："></a>4、查看sequence测试表数据：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">| 12600000 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (2.83 sec)</span><br></pre></td></tr></table></figure>
+<h4 id="5、在newid没有索引的情况下，in和or的对比："><a href="#5、在newid没有索引的情况下，in和or的对比：" class="headerlink" title="5、在newid没有索引的情况下，in和or的对比："></a>5、在newid没有索引的情况下，in和or的对比：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">repl@db 16:14:  [aaaa]&gt; select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (4.47 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid =116670 or newid = 116677 or newid = 116684 or newid =116691 or newid = 116698 or newid=116705 or newid=116719 or newid=116726;</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (6.77 sec)</span><br></pre></td></tr></table></figure>
+<p>没有索引的情况下使用in查询效率高于or</p>
+<h4 id="6、创建newid索引，再次进行测试："><a href="#6、创建newid索引，再次进行测试：" class="headerlink" title="6、创建newid索引，再次进行测试："></a>6、创建newid索引，再次进行测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"> create index newid_ind on sequence(newid);</span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid =116670 or newid = 116677 or newid = 116684 or newid =116691 or newid = 116698 or newid=116705 or newid=116719 or newid=116726;</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<p>在newid存在索引的情况下，使用or和in查询对sql查询效率影响较小。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/30/测试mysql or和in对sql查询效率的影响/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/28/Old incarnation found while trying to add node/"><span>[Mysql] Old incarnation found while trying to add node</span></a></h3>
     
   
@@ -170,69 +417,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/28/Old incarnation found while trying to add node/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
-          2018-10-25
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
@@ -311,6 +495,69 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
+          2018-10-25
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
@@ -600,203 +847,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/22/oracle 定期删除trace文件/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/22/oracle-audit_file_dest和audit_trail参数详解/"><span>[Oracle] oracle-audit_file_dest和audit_trail参数详解</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/22/oracle-audit_file_dest和audit_trail参数详解/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-22T08:22:00.000Z">
-          2018-10-22
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、AUDIT-FILE-DEST参数："><a href="#1、AUDIT-FILE-DEST参数：" class="headerlink" title="1、AUDIT_FILE_DEST参数："></a>1、AUDIT_FILE_DEST参数：</h4><p>当AUDIT_TRAIL初始化参数被设置为os, xml, or xml,extended，AUDIT_FILE_DEST指定操作系统目录，用于记录跟踪审计。<br>AUDIT_FILE_DEST的第一个默认值为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ORACLE_BASE/admin/ORACLE_SID/adump</span><br></pre></td></tr></table></figure></p>
-<p>如果第一个值指定的目录不存在或者该值不可用，会启用第二个默认值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ORACLE_HOME/rdbms/audit</span><br></pre></td></tr></table></figure></p>
-<p>这两个默认值只适用于unix系统，其他平台系统默认值不同。<br>在多租户cdb模式下,默认值会被追加pdb的guid，用于存储属于pdb的审计记录。<br>例如，pdb的guid为03E1F908EE04252CE053B280E80AAAA3，第一个默认目录是:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ORACLE_BASE/admin/ORACLE_SID/adump/03E1F908EE04252CE053B280E80AAAA3</span><br></pre></td></tr></table></figure></p>
-<p>关于pdb的guid可以通过V$CONTAINERS视图参看。</p>
-<p>如果AUDIT_TRAIL参数设置为xml, or xml,extended，审计记录会以xml的格式存储。如果AUDIT_SYS_OPERATIONS参数启用，用于审计sys用户的记录，审计信息也会强制写入这个位置。<br>在多租户容器数据库，audit_file_dest的值设置范围是cdb。虽然审计记录是每个pdb提供的，但是每个pdb不能修改该初始化参数。</p>
-<h4 id="2、audit-trail参数"><a href="#2、audit-trail参数" class="headerlink" title="2、audit_trail参数"></a>2、audit_trail参数</h4><p>value值详解：<br>none：禁用数据库审计<br>os：开启数据库审计，并将所有审计记录定向到操作系统的审计跟踪。<br>db：开启数据库审计，并将所有审计记录定向到数据库审计跟踪（sys.aud$)<br>db, extended:开启数据库审计，并将所有审计记录定向到数据库审计跟踪（sys.aud$),另外，sys.aud$表中类型为clob的两列（sqlbind和sqltext会被写入数据）<br>xml：开启数据库审计，并将所有审计记录以xml格式写入操作系统文件<br>xml,extended:开启数据库审计，并打印所有的审计记录列，包括SqlText和SqlBind字段</p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/oracle/">oracle</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/22/oracle-audit_file_dest和audit_trail参数详解/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/18/linux区分当前服务器是物理机还是虚拟机/"><span>[Linux] linux区分当前服务器是物理机还是虚拟机方法</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/18/linux区分当前服务器是物理机还是虚拟机/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-18T10:35:00.000Z">
-          2018-10-18
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、查看系统产品名称："><a href="#1、查看系统产品名称：" class="headerlink" title="1、查看系统产品名称："></a>1、查看系统产品名称：</h3><p>dmidecode -s system-product-name<br>物理机：<br><img src="https://i.imgur.com/fV68YVX.png" alt=""><br>Azure微软云服务器<br><img src="https://i.imgur.com/zlsbp4u.png" alt=""><br>aws亚马逊云服务器<br><img src="https://i.imgur.com/5iOdIf3.png" alt=""><br>阿里云服务器<br><img src="https://i.imgur.com/AlWSFW0.png" alt=""><br>使用vmware建立的虚拟机<br><img src="https://i.imgur.com/TpzQH8s.png" alt=""><br>使用kvm建立的虚拟机<br><img src="https://i.imgur.com/Q7h1vEC.png" alt=""></p>
-<h3 id="2、查看scsi供应商："><a href="#2、查看scsi供应商：" class="headerlink" title="2、查看scsi供应商："></a>2、查看scsi供应商：</h3><p>cat /proc/scsi/scsi|grep Vendor<br>物理机：<br><img src="https://i.imgur.com/3ID5hHz.png" alt=""><br>Azure微软云服务器<br><img src="https://i.imgur.com/A9HEqR5.png" alt=""><br>aws亚马逊云服务器（看不到任何信息）<br><img src="https://i.imgur.com/x2Eandx.png" alt=""><br>阿里云服务器<br><img src="https://i.imgur.com/5wt4HXK.png" alt=""><br>使用vmware建立的虚拟机<br><img src="https://i.imgur.com/X1v9alH.png" alt=""><br>使用kvm建立的虚拟机<br><img src="https://i.imgur.com/rFMO9XJ.png" alt=""></p>
-<h3 id="3、查看内核缓冲信息："><a href="#3、查看内核缓冲信息：" class="headerlink" title="3、查看内核缓冲信息："></a>3、查看内核缓冲信息：</h3><p>dmesg | grep -i virtual<br>物理机：<br><img src="https://i.imgur.com/lfLe8yz.png" alt=""><br>Azure微软云服务器<br><img src="https://i.imgur.com/ZP2vlPq.png" alt=""><br>aws亚马逊云服务器<br><img src="https://i.imgur.com/CJijhJv.png" alt=""><br>阿里云服务器<br><img src="https://i.imgur.com/Wy7zTE3.png" alt=""><br>使用vmware建立的虚拟机<br><img src="https://i.imgur.com/8SEgcjn.png" alt=""><br>使用kvm建立的虚拟机<br><img src="https://i.imgur.com/7IacEIc.png" alt=""></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/linux/">linux</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/18/linux区分当前服务器是物理机还是虚拟机/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/18/mysql忘记root密码，修改密码方法/"><span>[Mysql] mysql忘记root密码，修改密码方法</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/18/mysql忘记root密码，修改密码方法/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-18T02:23:00.000Z">
-          2018-10-18
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、修改my-cnf文件，在-mysqld-下添加’skip-grant-tables’参数："><a href="#1、修改my-cnf文件，在-mysqld-下添加’skip-grant-tables’参数：" class="headerlink" title="1、修改my.cnf文件，在[mysqld]下添加’skip-grant-tables’参数："></a>1、修改my.cnf文件，在[mysqld]下添加’skip-grant-tables’参数：</h3><p>cat /usr/local/mysql/etc/my.cnf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">!include /usr/local/mysql/etc/mysqld.cnf</span><br><span class="line">port            = 3306</span><br><span class="line">basedir         = /usr/local/mysql/</span><br><span class="line">socket          = /usr/local/mysql/tmp/mysql.sock</span><br><span class="line">pid-file        = /usr/local/mysql/var/mysql.pid</span><br><span class="line">datadir         = /usr/local/mysql/var/</span><br><span class="line">skip-grant-tables</span><br></pre></td></tr></table></figure></p>
-<h3 id="2、重启mysql进程："><a href="#2、重启mysql进程：" class="headerlink" title="2、重启mysql进程："></a>2、重启mysql进程：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysql restart</span><br></pre></td></tr></table></figure>
-<h3 id="3、进入mysql控制台，修改mysql密码："><a href="#3、进入mysql控制台，修改mysql密码：" class="headerlink" title="3、进入mysql控制台，修改mysql密码："></a>3、进入mysql控制台，修改mysql密码：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; USE mysql ; </span><br><span class="line">Database changed</span><br><span class="line">mysql&gt;  UPDATE user SET Password = password ( &apos;12345678&apos; ) WHERE User = &apos;root&apos; ; </span><br><span class="line">Query OK, 1 row affected (0.06 sec)</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line">mysql&gt; flush privileges ; </span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line">mysql&gt; quit</span><br></pre></td></tr></table></figure>
-<h3 id="4、注释掉my-cnf配置文件下的skip-grant-tables这行参数，重新启动mysql："><a href="#4、注释掉my-cnf配置文件下的skip-grant-tables这行参数，重新启动mysql：" class="headerlink" title="4、注释掉my.cnf配置文件下的skip-grant-tables这行参数，重新启动mysql："></a>4、注释掉my.cnf配置文件下的skip-grant-tables这行参数，重新启动mysql：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysql restart</span><br></pre></td></tr></table></figure>
-<h3 id="5、测试密码是否修改成功-能否正常登陆控制台："><a href="#5、测试密码是否修改成功-能否正常登陆控制台：" class="headerlink" title="5、测试密码是否修改成功,能否正常登陆控制台："></a>5、测试密码是否修改成功,能否正常登陆控制台：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p12345678</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/18/mysql忘记root密码，修改密码方法/"><span>点击阅读</span></a></h3>
     
   
 </article>
