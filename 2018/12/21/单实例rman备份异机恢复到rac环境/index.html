@@ -1,0 +1,346 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Oracle] 单实例rman备份异机恢复到rac环境 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、查询DBID信息DBID是DataBase IDentifier的缩写，是数据库的唯一标识符。这个DBID在数据文件头和控制文件都是存在的，可以用于标示数据文件的归属。对于不同数据库来说，DBID应当不同，而db_name则可能是相同的。一般在nocatalog模式并且控制文件丢失时才需要这个。">
+  
+
+  
+  
+  <meta name="keywords" content="oracle">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Oracle] 单实例rman备份异机恢复到rac环境"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Oracle] 单实例rman备份异机恢复到rac环境</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/12/21/单实例rman备份异机恢复到rac环境/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-12-21T03:11:00.000Z">
+          2018-12-21
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、查询DBID信息"><a href="#1、查询DBID信息" class="headerlink" title="1、查询DBID信息"></a>1、查询DBID信息</h4><p>DBID是DataBase IDentifier的缩写，是数据库的唯一标识符。这个DBID在数据文件头和控制文件都是存在的，可以用于标示数据文件的归属。对于不同数据库来说，DBID应当不同，而db_name则可能是相同的。一般在nocatalog模式并且控制文件丢失时才需要这个。<br>查看源库的dbid<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SYS@ testcadb&gt; select name,dbid from v$database;</span><br><span class="line">NAME		DBID</span><br><span class="line">--------- ----------</span><br><span class="line">TESTCADB  2313387174</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、查看源库的数据文件路径"><a href="#2、查看源库的数据文件路径" class="headerlink" title="2、查看源库的数据文件路径"></a>2、查看源库的数据文件路径</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">SYS@ testcadb&gt; select file_id,file_name from dba_data_files;</span><br><span class="line">FILE_ID FILE_NAME</span><br><span class="line"></span><br><span class="line"> 4 /home/oracle/u01/app/oracle/oradata/testcadb/users01.dbf</span><br><span class="line"> 3 /home/oracle/u01/app/oracle/oradata/testcadb/undotbs01.dbf</span><br><span class="line"> 2 /home/oracle/u01/app/oracle/oradata/testcadb/sysaux01.dbf</span><br><span class="line"> 1 /home/oracle/u01/app/oracle/oradata/testcadb/system01.dbf</span><br><span class="line"> 5 /home/oracle/oradata/orcl/ebank_data.dbf</span><br></pre></td></tr></table></figure>
+<h4 id="3、查看临时表空间数据文件"><a href="#3、查看临时表空间数据文件" class="headerlink" title="3、查看临时表空间数据文件"></a>3、查看临时表空间数据文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SYS@ testcadb&gt; select * from dba_temp_files;</span><br><span class="line">FILE_NAME																					           FILE_ID TABLESPACE_NAME			 BYTES	   BLOCKS STATUS  RELATIVE_FNO AUT   MAXBYTES  MAXBLOCKS INCREMENT_BY USER_BYTES USER_BLOCKS</span><br><span class="line">-----------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line">/home/oracle/u01/app/oracle/oradata/testcadb/temp01.dbf 															         1 TEMP			      20971520	     2560 ONLINE	     1 YES 3.4360E+10	 4194302	   80	19922944	2432</span><br><span class="line">/home/oracle/oradata/orcl/test_temp01.dbf																	         2 TEST_TEMP			      33554432	     4096 ONLINE	     1 YES 2147483648	  262144	 4096	32505856	3968</span><br></pre></td></tr></table></figure>
+<h4 id="4、查看日志文件路径："><a href="#4、查看日志文件路径：" class="headerlink" title="4、查看日志文件路径："></a>4、查看日志文件路径：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; select a.bytes/1024/1024,b.member,b.group#,a.thread# from v$log a,v$logfile b where a.group#=b.group#;</span><br><span class="line">A.BYTES/1024/1024 MEMBER																			      GROUP#	  THREAD#</span><br><span class="line">50 /home/oracle/u01/app/oracle/oradata/testcadb/redo03.log													           3		1</span><br><span class="line">50 /home/oracle/u01/app/oracle/oradata/testcadb/redo02.log													           2		1</span><br><span class="line">50 /home/oracle/u01/app/oracle/oradata/testcadb/redo01.log													           1		1</span><br></pre></td></tr></table></figure>
+<h4 id="5、开始备份数据库（非归档模式的数据库需要在mount状态下执行）"><a href="#5、开始备份数据库（非归档模式的数据库需要在mount状态下执行）" class="headerlink" title="5、开始备份数据库（非归档模式的数据库需要在mount状态下执行）"></a>5、开始备份数据库（非归档模式的数据库需要在mount状态下执行）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; mkdir -p /tmp/backup/</span><br><span class="line">shell &gt; rman target /</span><br><span class="line">RMAN&gt; run &#123;</span><br><span class="line"> allocate channel c1 device type disk;  </span><br><span class="line"> backup incremental level 0 format &apos;/tmp/backup/db_full_%U.bkp&apos; tag &apos;2018-12-19-FULL&apos; database plus archivelog;  </span><br><span class="line"> release channel c1;</span><br><span class="line">&#125;</span><br><span class="line">备份控制文件</span><br><span class="line">RMAN&gt; backup current controlfile format &apos;/tmp/backup/control20181219.bak&apos;;</span><br><span class="line">备份pfile文件</span><br><span class="line">RMAN&gt; backup spfile format &apos;/tmp/backup/spfile20181219.bak&apos;;</span><br></pre></td></tr></table></figure>
+<h4 id="6、拷贝源库备份文件到目标库服务器"><a href="#6、拷贝源库备份文件到目标库服务器" class="headerlink" title="6、拷贝源库备份文件到目标库服务器"></a>6、拷贝源库备份文件到目标库服务器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; scp /tmp/backup/* oracle@hostip*:/home/oracle/backup/</span><br></pre></td></tr></table></figure>
+<h4 id="7、以下操作都是在目标节点上执行"><a href="#7、以下操作都是在目标节点上执行" class="headerlink" title="7、以下操作都是在目标节点上执行"></a>7、以下操作都是在目标节点上执行</h4><h4 id="8、查看文件权限，如果权限不对需要修改"><a href="#8、查看文件权限，如果权限不对需要修改" class="headerlink" title="8、查看文件权限，如果权限不对需要修改"></a>8、查看文件权限，如果权限不对需要修改</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; chown oracle.oinstall /home/oracle/backup/*</span><br></pre></td></tr></table></figure>
+<h4 id="9、在节点1上执行恢复spfile文件："><a href="#9、在节点1上执行恢复spfile文件：" class="headerlink" title="9、在节点1上执行恢复spfile文件："></a>9、在节点1上执行恢复spfile文件：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">生成临时pfile文件</span><br><span class="line">shell &gt; echo &apos;db_name=testcadb&apos; &gt; $ORACLE_HOME/dbs/inittestcadb1.ora  </span><br><span class="line">声明ORACLE_SID</span><br><span class="line">shell &gt; export ORACLE_SID=testcadb1</span><br><span class="line">shell &gt; rman target /</span><br><span class="line">以临时pfile文件启动库到nomount：</span><br><span class="line">rman &gt; startup nomount  pfile=&apos;/u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/inittestcadb1.ora&apos;;</span><br><span class="line">设置dbid</span><br><span class="line">rman &gt; set DBID=2313387174;</span><br><span class="line">从备份中恢复spfile文件</span><br><span class="line">rman &gt; restore spfile to &apos;/u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/spfileoibs1.ora&apos; from &apos;/home/oracle/backup/spfile20181218.bak&apos;;</span><br></pre></td></tr></table></figure>
+<p>操作结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[oracle@rac1 backup]$ rman target /</span><br><span class="line">恢复管理器: Release 11.2.0.4.0 - Production on 星期五 9月 23 14:13:35 2016</span><br><span class="line">Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.</span><br><span class="line">RMAN&gt; startup nomount  pfile=&apos;/u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/inittestcadb1.ora&apos;;</span><br><span class="line">Oracle instance started</span><br><span class="line">Total System Global Area     371654656 bytes</span><br><span class="line">Fixed Size                     2253304 bytes</span><br><span class="line">Variable Size                314576392 bytes</span><br><span class="line">Database Buffers              50331648 bytes</span><br><span class="line">Redo Buffers                   4493312 bytes</span><br><span class="line"></span><br><span class="line">RMAN&gt; set DBID=2313387174;</span><br><span class="line">executing command: SET DBID</span><br><span class="line"></span><br><span class="line">RMAN&gt; restore spfile to &apos;/u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/spfiletestcadb1.ora&apos; from &apos;/home/oracle/backup/spfile20181219.bak&apos;;</span><br><span class="line">Starting restore at 2018:12:19 10:25:18</span><br><span class="line">using target database control file instead of recovery catalog</span><br><span class="line">allocated channel: ORA_DISK_1</span><br><span class="line">channel ORA_DISK_1: SID=134 device type=DISK</span><br><span class="line">channel ORA_DISK_1: restoring spfile from AUTOBACKUP /home/oracle/backup/spfile20181218.bak</span><br><span class="line">channel ORA_DISK_1: SPFILE restore from AUTOBACKUP complete</span><br><span class="line">Finished restore at 2018:12:19 10:25:20</span><br></pre></td></tr></table></figure></p>
+<p>根据生成的spfile文件生成pfile文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[oracle@rac1 backup]$ sqlplus / as sysdba</span><br><span class="line">sql &gt; create pfile from spfile;</span><br></pre></td></tr></table></figure></p>
+<p>对生成的pfile文件进行修改<br>vim /u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/inittestcadb1.ora<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">*.__db_cache_size=969567232</span><br><span class="line">*.__java_pool_size=16777216</span><br><span class="line">*.__large_pool_size=184549376</span><br><span class="line">*.__oracle_base=&apos;/home/oracle/u01/app/oracle&apos;#ORACLE_BASE set from environment</span><br><span class="line">*.__pga_aggregate_target=1617245696</span><br><span class="line">*.__sga_target=1925868544</span><br><span class="line">*.__shared_io_pool_size=0</span><br><span class="line">*.__shared_pool_size=704643072</span><br><span class="line">*.__streams_pool_size=0</span><br><span class="line">*.aq_tm_processes=0</span><br><span class="line">*.audit_file_dest=&apos;/u01/app/oracle/admin/testcadb/adump&apos;</span><br><span class="line">*.audit_trail=&apos;db&apos;</span><br><span class="line">*.compatible=&apos;11.2.0.4.0&apos;</span><br><span class="line">*.control_files=&apos;+DATA1/testcadb/control01.ctl&apos;,&apos;+DATA1/testcadb/control02.ctl&apos;</span><br><span class="line">*.cpu_count=3</span><br><span class="line">*.db_block_size=8192</span><br><span class="line">*.db_domain=&apos;&apos;</span><br><span class="line">*.db_name=&apos;testcadb&apos;</span><br><span class="line">*.db_recovery_file_dest=&apos;+ARCH&apos;</span><br><span class="line">*.db_recovery_file_dest_size=4385144832</span><br><span class="line">*.diagnostic_dest=&apos;/u01/app/oracle&apos;</span><br><span class="line">*.dispatchers=&apos;(PROTOCOL=TCP) (SERVICE=testcadbXDB)&apos;</span><br><span class="line">*.job_queue_processes=0</span><br><span class="line">*.memory_target=3529482752</span><br><span class="line">*.open_cursors=300</span><br><span class="line">*.processes=400</span><br><span class="line">*.remote_login_passwordfile=&apos;EXCLUSIVE&apos;</span><br><span class="line">*.resource_manager_plan=&apos;default_plan&apos;</span><br><span class="line">*.sessions=445</span><br><span class="line">*.log_archive_dest_1=&apos;LOCATION=+ARCH/testcadb/archivelog&apos;</span><br><span class="line">*.log_archive_format=&apos;arch_%t_%s_%r.arc&apos;</span><br><span class="line">testcadb1.instance_name=&apos;testcadb1&apos;</span><br><span class="line">testcadb2.instance_name=&apos;testcadb2&apos;</span><br><span class="line">testcadb1.instance_number=1</span><br><span class="line">testcadb2.instance_number=2</span><br><span class="line">testcadb1.undo_tablespace=&apos;UNDOTBS1&apos;</span><br><span class="line">testcadb2.undo_tablespace=&apos;UNDOTBS2&apos;</span><br><span class="line">testcadb2.thread=2</span><br><span class="line">testcadb1.thread=1</span><br><span class="line">*.remote_listener=&apos;racscan:1521&apos;</span><br></pre></td></tr></table></figure></p>
+<p>停止数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">19:17:48 SYS@ testcadb1&gt; shutdown immediate;</span><br><span class="line">ORA-01507: database not mounted</span><br><span class="line">ORACLE instance shut down.</span><br></pre></td></tr></table></figure></p>
+<p>根据pfile文件中的设置路径,创建相应目录,oracle用户：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; mkdir -p /u01/app/oracle/admin/testcadb/adump</span><br></pre></td></tr></table></figure></p>
+<p>grid用户：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; asmcmd</span><br><span class="line">asmcmd&gt; mkdir ***</span><br></pre></td></tr></table></figure></p>
+<p>修改完成之后以pfile文件重新启动数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; startup nomount pfile=&apos;/u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/inittestcadb1.ora&apos;;</span><br></pre></td></tr></table></figure></p>
+<p>根据pfile文件生成新的spfile文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; create spfile=&apos;+DATA1/testcadb/spfiletestcadb.ora&apos; from pfile;</span><br><span class="line">SQL&gt; shutdown abort</span><br><span class="line">ORACLE instance shut down.</span><br></pre></td></tr></table></figure></p>
+<p>将所有的节点上pfile文件，指向共享文件上的spfile文件<br>rac1节点:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[oracle@rac1 ~]$ echo &quot;SPFILE=&apos;+DATA1/testcadb/spfiletestcadb.ora&apos; &quot; &gt; /u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/inittestcadb1.ora</span><br></pre></td></tr></table></figure></p>
+<p>rac2节点:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[oracle@rac2 ~]$ echo &quot;SPFILE=&apos;+DATA1/testcadb/spfiletestcadb.ora&apos; &quot; &gt; /u01/app/oracle/product/11.2.0.4/dbhome_1/dbs/inittestcadb2.ora</span><br></pre></td></tr></table></figure></p>
+<h4 id="10、还原数据库的controlfile"><a href="#10、还原数据库的controlfile" class="headerlink" title="10、还原数据库的controlfile"></a>10、还原数据库的controlfile</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[oracle@rac2 ~]$ rman target /</span><br><span class="line">rman &gt; startup nomount</span><br></pre></td></tr></table></figure>
+<p>还原控制文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rman &gt; restore controlfile from &apos;/home/oracle/backup/control20181219.bak&apos;;</span><br></pre></td></tr></table></figure></p>
+<p>启动到mount<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rman &gt; alter database mount;</span><br></pre></td></tr></table></figure></p>
+<h4 id="11、还原数据库，指定备份文件到存放路径"><a href="#11、还原数据库，指定备份文件到存放路径" class="headerlink" title="11、还原数据库，指定备份文件到存放路径"></a>11、还原数据库，指定备份文件到存放路径</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">rman &gt; catalog start with &apos;/home/oracle/backup&apos;;</span><br><span class="line">rman &gt; list backup summary;</span><br><span class="line">执行下列run脚本(根据数据文件的不同作相应修改)</span><br><span class="line">RMAN&gt; run&#123;</span><br><span class="line">set newname for datafile &apos;/home/oracle/u01/app/oracle/oradata/testcadb/users01.dbf&apos; to &apos;+DATA1/testcadb/users01.dbf&apos;;</span><br><span class="line">set newname for datafile &apos;/home/oracle/u01/app/oracle/oradata/testcadb/undotbs01.dbf&apos; to &apos;+DATA1/testcadb/undotbs01.dbf&apos;;</span><br><span class="line">set newname for datafile &apos;/home/oracle/u01/app/oracle/oradata/testcadb/sysaux01.dbf&apos; to &apos;+DATA1/testcadb/sysaux01.dbf&apos;;</span><br><span class="line">set newname for datafile &apos;/home/oracle/u01/app/oracle/oradata/testcadb/system01.dbf&apos; to &apos;+DATA1/testcadb/system01.dbf&apos;;</span><br><span class="line">set newname for datafile &apos;/home/oracle/oradata/orcl/ebank_data.dbf&apos; to &apos;+DATA1/testcadb/ebank_data.dbf&apos;;</span><br><span class="line">restore database;</span><br><span class="line">switch datafile all;</span><br><span class="line">&#125;</span><br><span class="line">或者：</span><br><span class="line">RMAN&gt; run&#123;</span><br><span class="line">set newname for datafile 1 to &apos;+DATA1/testcadb/users01.dbf&apos;;</span><br><span class="line">set newname for datafile 2 to &apos;+DATA1/testcadb/undotbs01.dbf&apos;;</span><br><span class="line">set newname for datafile 3 to &apos;+DATA1/testcadb/sysaux01.dbf&apos;;</span><br><span class="line">set newname for datafile 4 to &apos;+DATA1/testcadb/system01.dbf&apos;;</span><br><span class="line">set newname for datafile 5 to &apos;+DATA1/testcadb/ebank_data.dbf&apos;;</span><br><span class="line">restore database;</span><br><span class="line">switch datafile all;</span><br><span class="line">&#125;</span><br><span class="line">查看备份的归档（如果是非归档模式的备份没有数据）</span><br><span class="line">RMAN&gt; list backup of archivelog all;</span><br><span class="line">根据scn恢复数据库</span><br><span class="line">RMAN&gt; recover database until scn 2896925;</span><br><span class="line">或者如果没有归档，直接恢复数据库</span><br><span class="line">RMAN&gt; recover database;</span><br></pre></td></tr></table></figure>
+<p>尝试打开数据库：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; sqlplus / as sysdba</span><br><span class="line">sql &gt; alter database open resetlogs;</span><br><span class="line">alter database open resetlogs</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-00344: unable to re-create online log &apos;/home/oracle/u01/app/oracle/oradata/testcadb/redo01.log&apos;</span><br><span class="line">ORA-27040: file create error, unable to create file</span><br><span class="line">Linux-x86_64 Error: 2: No such file or directory</span><br><span class="line">Additional information: 1</span><br></pre></td></tr></table></figure></p>
+<p>提示redolog文件路径错误，重新生成redolog文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; select group#,thread#,members,archived,status from v$log;</span><br><span class="line"></span><br><span class="line">    GROUP#    THREAD#	 MEMBERS ARCHIV STATUS</span><br><span class="line">---------- ---------- ---------- ------ --------------------------------</span><br><span class="line">	 1	    1	       1 NO	CLEARING</span><br><span class="line">	 3	    1	       1 NO	CLEARING_CURRENT</span><br><span class="line">	 2	    1	       1 NO	CLEARING</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">删除原来的logfile</span><br><span class="line">sql &gt; alter database drop logfile group 1;</span><br><span class="line">新增logfile(要保证redolog路径存在)</span><br><span class="line">sql &gt; alter database add logfile group 1 &apos;+ARCH/testcadb/redolog/redo01.log&apos; size 100M;</span><br><span class="line">sql &gt; alter database drop logfile group 2;</span><br><span class="line">sql &gt; alter database add logfile group 2 &apos;+ARCH/testcadb/redolog/redo02.log&apos; size 100M;</span><br><span class="line">sql &gt; alter database drop logfile group 3;</span><br><span class="line">提示日志无法删除</span><br><span class="line">sql &gt; alter database drop logfile group 3;</span><br><span class="line">alter database drop logfile group 3</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-01623: log 3 is current log for instance testcadb1 (thread 1) - cannot drop</span><br><span class="line">ORA-00312: online log 3 thread 1: &apos;/home/oracle/u01/app/oracle/oradata/testcadb/redo03.log&apos;</span><br><span class="line">对文件进行重命名</span><br><span class="line">sql &gt; alter database rename file &apos;/home/oracle/u01/app/oracle/oradata/testcadb/redo03.log&apos; to &apos;+ARCH/testcadb/redolog/redo03.log&apos;;</span><br><span class="line">sql &gt; alter database clear logfile group 3;</span><br><span class="line">因为日志文件大小还是按原来的大小，需要重新建</span><br><span class="line">sql &gt; alter database drop logfile group 3;</span><br><span class="line">sql &gt; alter database add logfile group 3 &apos;+ARCH/testcadb/redolog/redo03.log&apos; size 100M;</span><br><span class="line">打开数据库</span><br><span class="line">sql &gt; alter database open resetlogs;</span><br><span class="line">如果原库版本不一样（源库11.2.0.3目标库11.2.0.4）需要升级数据库</span><br><span class="line">sql &gt; startup mount;</span><br><span class="line">sql &gt; alter database open upgrade;</span><br><span class="line">sql &gt; select status from v$Instance; </span><br><span class="line">sql &gt; @$ORACLE_HOME/rdbms/admin/catupgrd.sql;</span><br></pre></td></tr></table></figure></p>
+<p>启动库之后临时表空间是不可用的，需要重新配置临时表空间：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; select * from dba_temp_files;</span><br><span class="line">select * from dba_temp_files</span><br><span class="line">              *</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-01157: cannot identify/lock data file 201 - see DBWR trace file</span><br><span class="line">ORA-01110: data file 201: &apos;/home/oracle/u01/app/oracle/oradata/testcadb/temp01.dbf&apos;</span><br></pre></td></tr></table></figure></p>
+<p>更换临时表空间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">创建中转临时表空间</span><br><span class="line">sql &gt; create TEMPORARY TABLESPACE TEMP2 TEMPFILE &apos;+DATA1/testcadb/TEMP02.DBF&apos; SIZE 2048M REUSE AUTOEXTEND ON NEXT 640K MAXSIZE 5120M;</span><br><span class="line">切换默认临时表空间</span><br><span class="line">sql &gt; alter database default temporary tablespace temp2; </span><br><span class="line">sql &gt; </span><br><span class="line">sql &gt; drop tablespace temp including contents and datafiles; </span><br><span class="line">sql &gt; create TEMPORARY TABLESPACE TEMP TEMPFILE &apos;+DATA1/testcadb/TEMP01.DBF&apos; SIZE 2048M REUSE AUTOEXTEND ON NEXT 640K MAXSIZE 5120M; </span><br><span class="line">sql &gt; alter database default temporary tablespace temp; </span><br><span class="line">或者 sql &gt; alter user *** temporary tablespace temp;（修改单独某个用户的临时表空间）</span><br><span class="line"></span><br><span class="line">sql &gt; drop tablespace temp2 including contents and datafiles; </span><br><span class="line">sql &gt; select * from v$log;</span><br><span class="line">    GROUP#    THREAD#  SEQUENCE#      BYTES  BLOCKSIZE	  MEMBERS ARCHIV STATUS 			  FIRST_CHANGE# FIRST_TIME	    NEXT_CHANGE# NEXT_TIME</span><br><span class="line">---------- ---------- ---------- ---------- ---------- ---------- ------ -------------------------------- ------------- ------------------- ------------ -------------------</span><br><span class="line">	 1	    1	      25  104857600	   512		1 NO	 INACTIVE			       64817466 2018:12:19 14:19:09	64828852 2018:12:19 14:21:47</span><br><span class="line">	 2	    1	      26  104857600	   512		1 NO	 CURRENT			       64828852 2018:12:19 14:21:47   2.8147E+14</span><br><span class="line">	 3	    1	      24   52428800	   512		1 NO	 INACTIVE			       64807090 2018:12:19 14:18:29	64817466 2018:12:19 14:19:09</span><br></pre></td></tr></table></figure></p>
+<p>添加thread 2对应的logfile，用于分配给节点2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; alter database add logfile thread 2 group 4 &apos;+ARCH/testcadb/redolog/redo04.log&apos; size 100m;</span><br><span class="line">sql &gt; alter database add logfile thread 2 group 5 &apos;+ARCH/testcadb/redolog/redo05.log&apos; size 100m;</span><br><span class="line">sql &gt; alter database add logfile thread 2 group 6 &apos;+ARCH/testcadb/redolog/redo06.log&apos; size 100m;</span><br></pre></td></tr></table></figure></p>
+<p>启动thread2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; select thread#,status,enabled from v$thread;</span><br><span class="line">   THREAD# STATUS	ENABLED</span><br><span class="line">---------- ------------ ----------------</span><br><span class="line">	 1 OPEN 	PUBLIC</span><br><span class="line">	 2 CLOSED	DISABLED</span><br><span class="line">sql &gt; alter database enable thread 2;</span><br></pre></td></tr></table></figure></p>
+<p>配置两个节点信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; alter system set thread=1 scope=spfile sid=&apos;testcadb1&apos;;</span><br><span class="line">sql &gt; alter system set thread=2 scope=spfile sid=&apos;testcadb2&apos;;</span><br><span class="line">sql &gt; alter system set instance_number=1 scope=spfile sid=&apos;testcadb1&apos;;</span><br><span class="line">sql &gt; alter system set instance_number=2 scope=spfile sid=&apos;testcadb2&apos;;</span><br><span class="line">sql &gt; alter system set cluster_database_instances=2 scope=spfile;</span><br><span class="line">sql &gt; alter system set cluster_database=true scope=spfile;</span><br></pre></td></tr></table></figure></p>
+<p>为节点2添加undo表空间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; select substr(file_name,1,60) UNDO_FILES from dba_data_files where tablespace_name = &apos;UNDOTBS1&apos; </span><br><span class="line">sql &gt; create undo tablespace undotbs2 datafile &apos;+data1/testcadb/undotbs02.dbf&apos; size 200M;</span><br><span class="line">sql &gt; alter system set undo_tablespace=&apos;undotbs2&apos; scope=spfile sid=&apos;testcadb2&apos;;</span><br></pre></td></tr></table></figure></p>
+<p>关闭节点1并重新启动,如果不重新启动节点1，直接启动节点2报一下错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ORA-01102: cannot mount database in EXCLUSIVE mode</span><br></pre></td></tr></table></figure></p>
+<p>启动节点2（在节点2操作）<br>节点2：注意audit目录是否存在，不存在手动创建一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; mkdir -p /u01/app/oracle/admin/testcadb/adump</span><br><span class="line">shell &gt; export ORACLE_SID=testcadb2</span><br><span class="line">shell &gt; sqlplus / as sysdba</span><br><span class="line">sql &gt; startup nomount;</span><br><span class="line">sql &gt; alter database mount;</span><br><span class="line">sql &gt; alter database open;</span><br></pre></td></tr></table></figure></p>
+<p>至此数据库已经换成完成，但是恢复的数据库还没有注册到集群管理下</p>
+<h4 id="12、将数据库注册到集群下"><a href="#12、将数据库注册到集群下" class="headerlink" title="12、将数据库注册到集群下"></a>12、将数据库注册到集群下</h4><p>在节点1使用oracle用户执行（不要使用grid用户）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[oracle@rac1 ~]$ srvctl add database -d testcadb -o /u01/app/oracle/product/11.2.0.4/dbhome_1 -p +DATA1/testcadb/spfiletestcadb.ora</span><br><span class="line">[oracle@rac1 ~]$ srvctl add instance -d testcadb -i testcadb1 -n rac1</span><br><span class="line">[oracle@rac1 ~]$ srvctl add instance -d testcadb -i testcadb2 -n rac2</span><br></pre></td></tr></table></figure></p>
+<p>重启数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[oracle@rac1 ~]$ srvctl stop database -d testcadb</span><br><span class="line">#因为启动不是通过srvctl启动的，可能需要进入sqlplus控制台先手动关闭库（两个节点都要运行），然后通过下面命令启动数据库：</span><br><span class="line">[oracle@rac1 ~]$ srvctl start database -d testcadb</span><br></pre></td></tr></table></figure></p>
+<h4 id="13、查看监听有没有注册到scanip上，如果没有注册到scanip上继续下面的操作"><a href="#13、查看监听有没有注册到scanip上，如果没有注册到scanip上继续下面的操作" class="headerlink" title="13、查看监听有没有注册到scanip上，如果没有注册到scanip上继续下面的操作"></a>13、查看监听有没有注册到scanip上，如果没有注册到scanip上继续下面的操作</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; show parameter remote_listener;</span><br><span class="line">NAME				     TYPE	 VALUE</span><br><span class="line">------------------------------------ ----------- ------------------------------</span><br><span class="line">remote_listener 		     string	 racscan:1521</span><br><span class="line">#grid用户执行：</span><br><span class="line">shell &gt; lsnrctl status LISTENER_SCAN1</span><br><span class="line">#如果没有注册监听信息，按下面方法配置</span><br><span class="line">alter system set remote_listener = &apos;racscan:1521&apos; sid=&apos;*&apos; scope=both;</span><br><span class="line">alter system register;</span><br><span class="line">lsnrctl status LISTENER_SCAN1</span><br></pre></td></tr></table></figure>
+<h4 id="14、因为恢复过来的数据库没有passwordfile，存在sys用户远程登录问题"><a href="#14、因为恢复过来的数据库没有passwordfile，存在sys用户远程登录问题" class="headerlink" title="14、因为恢复过来的数据库没有passwordfile，存在sys用户远程登录问题"></a>14、因为恢复过来的数据库没有passwordfile，存在sys用户远程登录问题</h4><p>查看remote_login_passwordfile设置值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sql &gt; show parameter remote_login_passwordfile;</span><br><span class="line">NAME				     TYPE	 VALUE</span><br><span class="line">------------------------------------ ----------- ------------------------------</span><br><span class="line">remote_login_passwordfile	     string	 EXCLUSIVE</span><br><span class="line"></span><br><span class="line">修改值使用下面方法，修改完成之后，需要重新启动数据库才能生效：</span><br><span class="line">alter system set remote_login_passwordfile=&apos;exclusive&apos; scope=spfile sid=&apos;*&apos;;</span><br></pre></td></tr></table></figure></p>
+<p>查看详细的remote_login_passwordfile配置点击<a href="https://zeven0707.github.io/2018/12/21/remote_login_passwordfile&amp;SQLNET.AUTHENTICATION_SERVICES%E5%8F%82%E6%95%B0/" target="_blank" rel="noopener">此处</a><br>remote_login_passwordfile修改完成之后,生成秘钥文件<br>节点1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">orapwd file=orapwtestcadb1 password=oracle entries=100</span><br></pre></td></tr></table></figure></p>
+<p>节点2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">orapwd file=orapwtestcadb2 password=oracle entries=100</span><br></pre></td></tr></table></figure></p>
+<p>现在，数据终于可以正常访问了。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、查询DBID信息"><span class="toc-number">1.</span> <span class="toc-text">1、查询DBID信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、查看源库的数据文件路径"><span class="toc-number">2.</span> <span class="toc-text">2、查看源库的数据文件路径</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、查看临时表空间数据文件"><span class="toc-number">3.</span> <span class="toc-text">3、查看临时表空间数据文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、查看日志文件路径："><span class="toc-number">4.</span> <span class="toc-text">4、查看日志文件路径：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、开始备份数据库（非归档模式的数据库需要在mount状态下执行）"><span class="toc-number">5.</span> <span class="toc-text">5、开始备份数据库（非归档模式的数据库需要在mount状态下执行）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、拷贝源库备份文件到目标库服务器"><span class="toc-number">6.</span> <span class="toc-text">6、拷贝源库备份文件到目标库服务器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7、以下操作都是在目标节点上执行"><span class="toc-number">7.</span> <span class="toc-text">7、以下操作都是在目标节点上执行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8、查看文件权限，如果权限不对需要修改"><span class="toc-number">8.</span> <span class="toc-text">8、查看文件权限，如果权限不对需要修改</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9、在节点1上执行恢复spfile文件："><span class="toc-number">9.</span> <span class="toc-text">9、在节点1上执行恢复spfile文件：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10、还原数据库的controlfile"><span class="toc-number">10.</span> <span class="toc-text">10、还原数据库的controlfile</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11、还原数据库，指定备份文件到存放路径"><span class="toc-number">11.</span> <span class="toc-text">11、还原数据库，指定备份文件到存放路径</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12、将数据库注册到集群下"><span class="toc-number">12.</span> <span class="toc-text">12、将数据库注册到集群下</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13、查看监听有没有注册到scanip上，如果没有注册到scanip上继续下面的操作"><span class="toc-number">13.</span> <span class="toc-text">13、查看监听有没有注册到scanip上，如果没有注册到scanip上继续下面的操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14、因为恢复过来的数据库没有passwordfile，存在sys用户远程登录问题"><span class="toc-number">14.</span> <span class="toc-text">14、因为恢复过来的数据库没有passwordfile，存在sys用户远程登录问题</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Oracle] 单实例rman备份异机恢复到rac环境'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2018 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
