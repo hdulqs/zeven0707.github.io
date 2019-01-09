@@ -1,0 +1,311 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Mysql] mysql大小写敏感参数 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、lower_case_file_systemvalue=ON|OFF1该参数代表mysql数据目录所在的文件系统下的文件名的大小写是否敏感，off代表大小写铭感，on代表大小写不敏感。该变量是个只读参数，只代表一个文件系统属性，进行设置对文件系统没有任何影响。
+2、lower_case_tabl">
+  
+
+  
+  
+  <meta name="keywords" content="mysql">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Mysql] mysql大小写敏感参数"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Mysql] mysql大小写敏感参数</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/01/09/mysql大小写敏感参数/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-01-09T09:22:00.000Z">
+          2019-01-09
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、lower-case-file-system"><a href="#1、lower-case-file-system" class="headerlink" title="1、lower_case_file_system"></a>1、lower_case_file_system</h4><p>value=ON|OFF<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">该参数代表mysql数据目录所在的文件系统下的文件名的大小写是否敏感，off代表大小写铭感，on代表大小写不敏感。该变量是个只读参数，只代表一个文件系统属性，进行设置对文件系统没有任何影响。</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、lower-case-table-names"><a href="#2、lower-case-table-names" class="headerlink" title="2、lower_case_table_names"></a>2、lower_case_table_names</h4><p>value=0|1|2<br>不同值代表的含义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">默认值为0，如果设置为0，表名是被指定存储的并且会进行大小写敏感的比较。</span><br><span class="line">如果设置为1，表名存为小写，不进行大小写敏感的比较。</span><br><span class="line">如果设置为2，表名按指定的存储，但是按小写的方式比较。这个参数同时适用于库名和表别名。</span><br></pre></td></tr></table></figure></p>
+<p>不同操作系统的默认值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">如果是windows，值默认为1。</span><br><span class="line">如果是macos，值默认是2。</span><br><span class="line">如果是linux默认是0，且不支持设置为2，如果这是为2，服务端会强制用0替代。</span><br></pre></td></tr></table></figure></p>
+<p>使用过程要注意的问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1)如果MySQL服务运行在操作系统（windows或者macos）上，mysql的数据目录所在的文件系统是大小写不敏感的，因此不能设置lower_case_table_names为0。这种组合是不被支持的，当执行INSERT INTO...SELECT...FROM tbl_name操作时，因为tb1_name的小写，会导致系统hang主。</span><br><span class="line">2)在myisam表中，使用不同的字母大小写访问表，会引起索引损坏。</span><br><span class="line">3)如果在一个大小写不明感的文件系统上设置lower_case_table_names=0，会打印error信息并退出服务。</span><br><span class="line">4)如果使用innodb引擎表，不管什么平台，都需要设置该参数为1，强制将名称转换为小写。</span><br><span class="line">5)数据库禁止启动的时候使用的lower_case_table_names的值与数据库初始化时的值不一致。这个限制是因为，当数据库初始化时候，数据字典表字段的排序是基于当时的值定义的。如果重启以不同的lower_case_table_names值启动，会导致在标识符的排序和比较引起不一致性。</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、lower-case-file-system"><span class="toc-number">1.</span> <span class="toc-text">1、lower_case_file_system</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、lower-case-table-names"><span class="toc-number">2.</span> <span class="toc-text">2、lower_case_table_names</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Mysql] mysql大小写敏感参数'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2019 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
