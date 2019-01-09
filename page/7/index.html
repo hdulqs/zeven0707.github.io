@@ -112,6 +112,101 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/29/grafana+prometheus安装配置监控mysql、redis、mongodb/"><span>[Grafana] grafana监控redis、mongodb、mysql数据库</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/29/grafana+prometheus安装配置监控mysql、redis、mongodb/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-29T13:35:24.000Z">
+          2018-08-29
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="0、参考链接"><a href="#0、参考链接" class="headerlink" title="0、参考链接"></a>0、参考链接</h3><p><a href="https://mp.weixin.qq.com/s/Qz87UE1aXFZbAdFlx7Zeow" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Qz87UE1aXFZbAdFlx7Zeow</a></p>
+<h3 id="1、grafana下载安装"><a href="#1、grafana下载安装" class="headerlink" title="1、grafana下载安装"></a>1、grafana下载安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.2-1.x86_64.rpm</span><br><span class="line">sudo yum localinstall grafana-5.2.2-1.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<p>启动grafana<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service grafana-server start</span><br><span class="line">service grafana-server status</span><br></pre></td></tr></table></figure></p>
+<p>加入开机启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --add grafana-server</span><br></pre></td></tr></table></figure></p>
+<p>查看grafana端口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -plntu | grep grafana-serv</span><br><span class="line">tcp6       0      0 :::3000                 :::*                    LISTEN      2539/grafana-server</span><br></pre></td></tr></table></figure></p>
+<p>登录web界面，localhost:3000<br>用户：admin<br>密码：admin（默认）<br>登录之后提示修改密码,登录界面如下图所示<br><img src="https://i.imgur.com/drKlMKC.png" alt=""></p>
+<h3 id="2、安装Prometheus"><a href="#2、安装Prometheus" class="headerlink" title="2、安装Prometheus"></a>2、安装Prometheus</h3><p>下载Prometheus<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/prometheus/prometheus/releases/download/v2.3.2/prometheus-2.3.2.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure></p>
+<p>解压安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf prometheus-2.3.2.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure></p>
+<p>配置 Prometheus<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">cd prometheus-2.3.2.linux-amd64/</span><br><span class="line">cat prometheus.yml </span><br><span class="line"># my global config</span><br><span class="line">global:</span><br><span class="line">  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.</span><br><span class="line">  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.</span><br><span class="line">  # scrape_timeout is set to the global default (10s).</span><br><span class="line"></span><br><span class="line"># Alertmanager configuration</span><br><span class="line">alerting:</span><br><span class="line">  alertmanagers:</span><br><span class="line">  - static_configs:</span><br><span class="line">    - targets:</span><br><span class="line">      # - alertmanager:9093</span><br><span class="line"></span><br><span class="line"># Load rules once and periodically evaluate them according to the global &apos;evaluation_interval&apos;.</span><br><span class="line">rule_files:</span><br><span class="line">  # - &quot;first_rules.yml&quot;</span><br><span class="line">  # - &quot;second_rules.yml&quot;</span><br><span class="line"></span><br><span class="line"># A scrape configuration containing exactly one endpoint to scrape:</span><br><span class="line"># Here it&apos;s Prometheus itself.</span><br><span class="line">scrape_configs:</span><br><span class="line">  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span><br><span class="line">  - job_name: &apos;prometheus&apos;</span><br><span class="line"></span><br><span class="line">    # metrics_path defaults to &apos;/metrics&apos;</span><br><span class="line">    # scheme defaults to &apos;http&apos;.</span><br><span class="line"></span><br><span class="line">    static_configs:</span><br><span class="line">    - targets: [&apos;0.0.0.0:9090&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>启动prometheus<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">./prometheus --config.file=prometheus.yml</span><br><span class="line">----</span><br><span class="line">level=info ts=2018-08-28T03:42:08.966212621Z caller=main.go:222 msg=&quot;Starting Prometheus&quot; version=&quot;(version=2.3.2, branch=HEAD, revision=71af5e29e815795e9dd14742ee7725682fa14b7b)&quot;</span><br><span class="line">level=info ts=2018-08-28T03:42:08.966876421Z caller=main.go:223 build_context=&quot;(go=go1.10.3, user=root@5258e0bd9cc1, date=20180712-14:02:52)&quot;</span><br><span class="line">level=info ts=2018-08-28T03:42:08.966953021Z caller=main.go:224 host_details=&quot;(Linux 3.10.0-693.21.1.el7.x86_64 #1 SMP Wed Mar 7 19:03:37 UTC 2018 x86_64 dax-mysql-mha (none))&quot;</span><br><span class="line">level=info ts=2018-08-28T03:42:08.966990021Z caller=main.go:225 fd_limits=&quot;(soft=1024, hard=4096)&quot;</span><br><span class="line">level=info ts=2018-08-28T03:42:08.968101421Z caller=main.go:533 msg=&quot;Starting TSDB ...&quot;</span><br><span class="line">level=info ts=2018-08-28T03:42:08.970314221Z caller=web.go:415 component=web msg=&quot;Start listening for connections&quot; address=0.0.0.0:9090</span><br><span class="line">level=info ts=2018-08-28T03:42:08.977918922Z caller=main.go:543 msg=&quot;TSDB started&quot;</span><br><span class="line">level=info ts=2018-08-28T03:42:08.977966022Z caller=main.go:603 msg=&quot;Loading configuration file&quot; filename=prometheus.yml</span><br><span class="line">level=info ts=2018-08-28T03:42:08.979126022Z caller=main.go:629 msg=&quot;Completed loading of configuration file&quot; filename=prometheus.yml</span><br><span class="line">level=info ts=2018-08-28T03:42:08.979171222Z caller=main.go:502 msg=&quot;Server is ready to receive web requests.&quot;</span><br><span class="line">level=info ts=2018-08-28T05:00:04.558075427Z caller=compact.go:398 component=tsdb msg=&quot;write block&quot; mint=1535421600000 maxt=1535428800000 ulid=01CNZEEBGJ237RVH965D3VWT57</span><br><span class="line">level=info ts=2018-08-28T05:00:04.566214242Z caller=head.go:348 component=tsdb msg=&quot;head GC completed&quot; duration=1.539902ms</span><br><span class="line">level=info ts=2018-08-28T05:00:04.575381958Z caller=head.go:357 component=tsdb msg=&quot;WAL truncation completed&quot; duration=9.095816ms</span><br><span class="line">-----</span><br></pre></td></tr></table></figure></p>
+<p>登录控制台 localhost:9090,登录界面如下：<br><img src="https://i.imgur.com/xMfoPTq.png" alt=""></p>
+<h3 id="3、mysql-exporter部署"><a href="#3、mysql-exporter部署" class="headerlink" title="3、mysql_exporter部署"></a>3、mysql_exporter部署</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.11.0/mysqld_exporter-0.11.0.linux-amd64.tar.gz</span><br><span class="line">tar -zxvf mysqld_exporter-0.11.0.linux-amd64.tar.gz </span><br><span class="line">cd mysqld_exporter-0.11.0.linux-amd64/</span><br></pre></td></tr></table></figure>
+<p>配置连接数据库文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat .my.cnf</span><br><span class="line">[client]</span><br><span class="line">host = 127.0.0.1</span><br><span class="line">user=root</span><br><span class="line">password=12345678</span><br></pre></td></tr></table></figure></p>
+<p>启动mysqld_exporter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">./mysqld_exporter --config.my-cnf=&quot;/data/soft/mysqld_exporter-0.11.0.linux-amd64/.my.cnf&quot;  </span><br><span class="line">----</span><br><span class="line">INFO[0000] Starting mysqld_exporter (version=0.11.0, branch=HEAD, revision=5d7179615695a61ecc3b5bf90a2a7c76a9592cdd)  source=&quot;mysqld_exporter.go:206&quot;</span><br><span class="line">INFO[0000] Build context (go=go1.10.3, user=root@3d3ff666b0e4, date=20180629-15:00:35)  source=&quot;mysqld_exporter.go:207&quot;</span><br><span class="line">INFO[0000] Enabled scrapers:                             source=&quot;mysqld_exporter.go:218&quot;</span><br><span class="line">INFO[0000]  --collect.global_status                      source=&quot;mysqld_exporter.go:222&quot;</span><br><span class="line">INFO[0000]  --collect.global_variables                   source=&quot;mysqld_exporter.go:222&quot;</span><br><span class="line">INFO[0000]  --collect.slave_status                       source=&quot;mysqld_exporter.go:222&quot;</span><br><span class="line">INFO[0000]  --collect.info_schema.tables                 source=&quot;mysqld_exporter.go:222&quot;</span><br><span class="line">INFO[0000] Listening on :9104                            source=&quot;mysqld_exporter.go:232&quot;</span><br><span class="line">----</span><br></pre></td></tr></table></figure></p>
+<p>查看进程是否启动正常：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -tunlp|grep 9104</span><br></pre></td></tr></table></figure></p>
+<p>登录web界面,<a href="http://localhost:9104/" target="_blank" rel="noopener">http://localhost:9104/</a><br><img src="https://i.imgur.com/aqDGY1B.png" alt=""><br>修改vim prometheus.yml配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- job_name: mysql</span><br><span class="line">    static_configs:</span><br><span class="line">      - targets: [&apos;127.0.0.1:9104&apos;]</span><br><span class="line">        labels:</span><br><span class="line">          instance: test</span><br></pre></td></tr></table></figure></p>
+<p>备注:<br>job_name,当前执行job的名字<br>targets，连接的主机<br>instance，数据库实例的标签明</p>
+<p>重新启动prometheus，进入prometheus控制台，点击status-&gt;target<br><img src="https://i.imgur.com/ecV2em3.png" alt=""></p>
+<h3 id="4、添加数据源"><a href="#4、添加数据源" class="headerlink" title="4、添加数据源"></a>4、添加数据源</h3><p><img src="https://i.imgur.com/MDVSTgs.png" alt=""><br><img src="https://i.imgur.com/NCJXDQj.png" alt=""><br>保存测试</p>
+<h3 id="5、下载仪表盘"><a href="#5、下载仪表盘" class="headerlink" title="5、下载仪表盘"></a>5、下载仪表盘</h3><p><a href="https://github.com/percona/grafana-dashboards/tree/master/dashboards">https://github.com/percona/grafana-dashboards/tree/master/dashboards</a><br>选择仪表盘类型，导入到grafana<br><img src="https://i.imgur.com/L0zhbuM.png" alt=""><br><img src="https://i.imgur.com/PkzRe5Y.png" alt=""><br><img src="https://i.imgur.com/1eYa7uN.png" alt=""><br>点击仪表盘查看<br><img src="https://i.imgur.com/i5qvt2u.png" alt=""></p>
+<h3 id="6、mongodb-exporter部署用于监控mongodb"><a href="#6、mongodb-exporter部署用于监控mongodb" class="headerlink" title="6、mongodb_exporter部署用于监控mongodb"></a>6、mongodb_exporter部署用于监控mongodb</h3><p>prometheus监控mongodb数据库，安装之前需要配置go环境下载配置go环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://dl.google.com/go/go1.11.linux-amd64.tar.gz</span><br><span class="line">tar -C /usr/local -xzf go1.11.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure></p>
+<p>添加环境变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;</span><br><span class="line">GOPATH=$HOME/go</span><br><span class="line">export PATH=$PATH:$GOPATH/bin&quot; &gt;&gt; ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<p>使配置的环境变量生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<p>创建配置mognodb所需要的目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p $HOME/go/&#123;dir,src,pkg&#125;</span><br></pre></td></tr></table></figure></p>
+<p>安装glide<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://glide.sh/get | sh</span><br></pre></td></tr></table></figure></p>
+<p>安装mongodb-exporter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:dcu/mongodb_exporter.git $GOPATH/src/github.com/dcu/mongodb_exporter</span><br><span class="line">cd $GOPATH/src/github.com/dcu/mongodb_exporter</span><br><span class="line">make build</span><br></pre></td></tr></table></figure></p>
+<p>查看mongdob_exporter使用的参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./mongodb_exporter -h</span><br></pre></td></tr></table></figure></p>
+<p>启动mongodb_exporter,获取数据库的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./mongodb_exporter -mongodb.uri mongodb://localhost:30000</span><br></pre></td></tr></table></figure></p>
+<p>启动端口默认为9001,登录<a href="http://localhost:9001，查看是否正常" target="_blank" rel="noopener">http://localhost:9001，查看是否正常</a><br><img src="https://i.imgur.com/1pnvKo4.png" alt=""><br>修改prometheus.yml，添加mongodb参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- job_name: mongodb</span><br><span class="line">  static_configs:</span><br><span class="line">    - targets: [&apos;127.0.0.1:9001&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>重启premetheus,登录premetheus控制台查看获取mognodb是否正常<br><img src="https://i.imgur.com/UK4EwiK.png" alt=""><br>登录grafana添加模板，可以添加模板id或者导入代码<br><img src="https://i.imgur.com/24JBVvP.png" alt=""><br>点击<a href="https://grafana.com/dashboards/2583" target="_blank" rel="noopener">链接</a>，跳转到mongodb_exporter模板<br>添加完成模板如下图所示：<br><img src="https://i.imgur.com/O0lRt1R.png" alt=""></p>
+<h3 id="7、redis-exporter部署用于监控redis-安装redis-exporter模板"><a href="#7、redis-exporter部署用于监控redis-安装redis-exporter模板" class="headerlink" title="7、redis_exporter部署用于监控redis,安装redis-exporter模板"></a>7、redis_exporter部署用于监控redis,安装redis-exporter模板</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/oliver006/redis_exporter</span><br><span class="line">cd $GOPATH/src/github.com/oliver006/redis_exporter</span><br><span class="line">go build</span><br></pre></td></tr></table></figure>
+<p>启动redis_exporter进程获取redis数据(默认进程端口号位9121)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./redis_exporter -redis.addr redis://127.0.0.1:6379 -redis.password test</span><br></pre></td></tr></table></figure></p>
+<p>启动端口默认为9001,登录<a href="http://localhost:9121，查看是否正常" target="_blank" rel="noopener">http://localhost:9121，查看是否正常</a><br><img src="https://i.imgur.com/Xaokb9P.png" alt=""><br>修改prometheus.yml，添加redis参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- job_name: redis</span><br><span class="line">  static_configs:</span><br><span class="line">     - targets: [&apos;127.0.0.1:9121&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>重启premetheus,登录premetheus控制台查看获取redis是否正常<br><img src="https://i.imgur.com/FzmeelO.png" alt=""><br>登录grafana添加模板，可以添加模板id或者导入代码,点击<a href="https://github.com/oliver006/redis_exporter/blob/master/contrib/grafana_prometheus_redis_dashboard_alias.json">此处</a>跳转到redis_exporter链接<br>，导入完成之后界面如下图所示：<br><img src="https://i.imgur.com/4M5y84Y.png" alt=""></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a><a href="/tags/mongodb/">mongodb</a><a href="/tags/redis/">redis</a><a href="/tags/grafana/">grafana</a><a href="/tags/prometheus/">prometheus</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/29/grafana+prometheus安装配置监控mysql、redis、mongodb/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/28/解决zabbix中文乱码/"><span>[Zabbix] 解决zabbix中文乱码问题</span></a></h3>
     
   
@@ -775,84 +870,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/08/17/zabbix监控redis/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/17/samba配置/"><span>[linux] suse_11_sp4安装samba-server</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/17/samba配置/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-17T09:16:24.000Z">
-          2018-08-17
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h2 id="0、当前系统版本"><a href="#0、当前系统版本" class="headerlink" title="0、当前系统版本"></a>0、当前系统版本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/issue</span><br><span class="line">Welcome to SUSE Linux Enterprise Server 11 SP4  (x86_64) - Kernel \r (\l).</span><br></pre></td></tr></table></figure>
-<h2 id="1、查看samba是否安装"><a href="#1、查看samba是否安装" class="headerlink" title="1、查看samba是否安装"></a>1、查看samba是否安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">localhost:~ # rpm -q samba</span><br><span class="line">samba-3.6.3-0.58.1</span><br></pre></td></tr></table></figure>
-<p>如果没有安装，使用以下命令安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost:~ # zypper install samba</span><br></pre></td></tr></table></figure></p>
-<h2 id="2、新建共享目录"><a href="#2、新建共享目录" class="headerlink" title="2、新建共享目录"></a>2、新建共享目录</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost:~ # mkdir -p /data/share</span><br></pre></td></tr></table></figure>
-<h2 id="3、开始配置共享目录"><a href="#3、开始配置共享目录" class="headerlink" title="3、开始配置共享目录"></a>3、开始配置共享目录</h2><p>yast进入控制台,network services-samba server<br><img src="https://i.imgur.com/LZWt4Tz.png" alt=""><br>第一次启用samba server会做一些初始化，操作如下（也可根据自己需求自定义）：<br><img src="https://i.imgur.com/xFQrJwS.png" alt=""><br><img src="https://i.imgur.com/BUT6kUS.png" alt=""><br><img src="https://i.imgur.com/G06GBBG.png" alt=""><br>初始化完成之后，再一次进入samba server,会显示如下：<br><img src="https://i.imgur.com/P74w0YP.png" alt=""><br>点击add,开始新增共享目录<br><img src="https://i.imgur.com/e0OSaZ3.png" alt=""><br>修改完成之后保存，会显示新的share目录<br><img src="https://i.imgur.com/r0ueNn5.png" alt=""></p>
-<h2 id="4、添加smbuser系统用户"><a href="#4、添加smbuser系统用户" class="headerlink" title="4、添加smbuser系统用户"></a>4、添加smbuser系统用户</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">localhost:~ # useradd smbuser</span><br><span class="line">localhost:~ # passwd smbuser</span><br><span class="line">Changing password for smbuser.</span><br><span class="line">New Password: </span><br><span class="line">Bad password: too simple</span><br><span class="line">Reenter New Password: </span><br><span class="line">Password changed.</span><br></pre></td></tr></table></figure>
-<h2 id="5、为samba服务添加访问用户，设置访问用的密码："><a href="#5、为samba服务添加访问用户，设置访问用的密码：" class="headerlink" title="5、为samba服务添加访问用户，设置访问用的密码："></a>5、为samba服务添加访问用户，设置访问用的密码：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">localhost:~ # smbpasswd -a smbuser</span><br><span class="line">New SMB password:</span><br><span class="line">Retype new SMB password:</span><br><span class="line">Added user smbuser.</span><br></pre></td></tr></table></figure>
-<h2 id="6、修改共享目录权限"><a href="#6、修改共享目录权限" class="headerlink" title="6、修改共享目录权限"></a>6、修改共享目录权限</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chown smbuser /data/share</span><br><span class="line">chmod 777 /data/share</span><br></pre></td></tr></table></figure>
-<p>**如果不修改目录权限，访问预览都是正常的，但是没有写权限，创建目录会报错</p>
-<h2 id="7、修改配置配置文件-添加读写权限"><a href="#7、修改配置配置文件-添加读写权限" class="headerlink" title="7、修改配置配置文件,添加读写权限"></a>7、修改配置配置文件,添加读写权限</h2><p>vim /etc/samba/smb.conf<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[share]</span></span><br><span class="line">        <span class="string">comment</span> <span class="string">=</span> <span class="string">share</span></span><br><span class="line">        <span class="string">inherit</span> <span class="string">acls</span> <span class="string">=</span> <span class="literal">Yes</span></span><br><span class="line">        <span class="string">path</span> <span class="string">=</span> <span class="string">/data/share</span></span><br><span class="line">        <span class="string">read</span> <span class="string">only</span> <span class="string">=</span> <span class="literal">No</span></span><br><span class="line">        <span class="string">Valid</span> <span class="string">users</span> <span class="string">=smbuser</span></span><br><span class="line">        <span class="string">Writable</span> <span class="string">=</span> <span class="literal">Yes</span></span><br><span class="line">　      <span class="string">Browsable</span> <span class="string">=</span> <span class="literal">Yes</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="8、重启samba服务器"><a href="#8、重启samba服务器" class="headerlink" title="8、重启samba服务器"></a>8、重启samba服务器</h2><p>/etc/rc.d/smb restart</p>
-<h2 id="9、suse默认防火墙是开启的，客户端要访问samba-需要开启139和445端口"><a href="#9、suse默认防火墙是开启的，客户端要访问samba-需要开启139和445端口" class="headerlink" title="9、suse默认防火墙是开启的，客户端要访问samba,需要开启139和445端口"></a>9、suse默认防火墙是开启的，客户端要访问samba,需要开启139和445端口</h2><p>vim /etc/sysconfig/SuSEfirewall2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FW_SERVICES_EXT_TCP=&quot;22 1521 139 445&quot;</span><br></pre></td></tr></table></figure></p>
-<p>重新启动防火墙<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rcSuSEfirewall2 restart</span><br></pre></td></tr></table></figure></p>
-<h2 id="10、windows10之后微软默认已放弃安装smbv1客户端，使用windows访问会报如下错误："><a href="#10、windows10之后微软默认已放弃安装smbv1客户端，使用windows访问会报如下错误：" class="headerlink" title="10、windows10之后微软默认已放弃安装smbv1客户端，使用windows访问会报如下错误："></a>10、windows10之后微软默认已放弃安装smbv1客户端，使用windows访问会报如下错误：</h2><p><img src="https://i.imgur.com/XPOeklf.png" alt=""><br>因此修改sambaserver服务器端的协议，启用smbv2协议<br>vim /etc/samba/smb.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">min protocol = SMB2</span><br><span class="line">max protocol = SMB2</span><br><span class="line">client min protocol = SMB2</span><br><span class="line">client max protocol = SMB2</span><br></pre></td></tr></table></figure></p>
-<p>重启samba服务器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/rc.d/smb restart</span><br></pre></td></tr></table></figure></p>
-<h2 id="11、在sambaserver本地服务器测试的时候，哪怕指定了smb2协议，也会报如下错误"><a href="#11、在sambaserver本地服务器测试的时候，哪怕指定了smb2协议，也会报如下错误" class="headerlink" title="11、在sambaserver本地服务器测试的时候，哪怕指定了smb2协议，也会报如下错误"></a>11、在sambaserver本地服务器测试的时候，哪怕指定了smb2协议，也会报如下错误</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">smbclient -U smbuser //10.0.30.180/share -m smb2</span><br><span class="line">Unrecognised protocol level smb2</span><br><span class="line">WARNING: Ignoring invalid value &apos;SMB3&apos; for parameter &apos;max protocol&apos;</span><br><span class="line">Unknown parameter encountered: &quot;client min protocol&quot;</span><br><span class="line">Ignoring unknown parameter &quot;client min protocol&quot;</span><br><span class="line">Unknown parameter encountered: &quot;client max protocol&quot;</span><br><span class="line">Ignoring unknown parameter &quot;client max protocol&quot;</span><br></pre></td></tr></table></figure>
-<p>该问题为suse 11版本的问题，默认只支持smbv1协议，suse12版本之后才开始支持smbv2.</p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/linux/">linux</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/17/samba配置/"><span>点击阅读</span></a></h3>
     
   
 </article>
