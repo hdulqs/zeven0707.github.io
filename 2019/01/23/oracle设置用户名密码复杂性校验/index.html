@@ -1,0 +1,317 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Oracle] oracle设置用户名密码复杂性校验 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、在$ORACLE_HOME/rdbms/admin/目录下存在一个文件utlpwdmg.sql,里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本：1sql&amp;gt;@?/rdbms/admin/utlpwdmg.sql
+2、执行完成之后，再次修改密码使用简单的密码，将提示2">
+  
+
+  
+  
+  <meta name="keywords" content="oracle">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Oracle] oracle设置用户名密码复杂性校验"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Oracle] oracle设置用户名密码复杂性校验</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/01/23/oracle设置用户名密码复杂性校验/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-01-23T08:02:00.000Z">
+          2019-01-23
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、在-ORACLE-HOME-rdbms-admin-目录下存在一个文件utlpwdmg-sql-里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本："><a href="#1、在-ORACLE-HOME-rdbms-admin-目录下存在一个文件utlpwdmg-sql-里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本：" class="headerlink" title="1、在$ORACLE_HOME/rdbms/admin/目录下存在一个文件utlpwdmg.sql,里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本："></a>1、在$ORACLE_HOME/rdbms/admin/目录下存在一个文件utlpwdmg.sql,里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sql&gt;@?/rdbms/admin/utlpwdmg.sql</span><br></pre></td></tr></table></figure>
+<h4 id="2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误："><a href="#2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误：" class="headerlink" title="2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误："></a>2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">14:16:23 SYS@ boston&gt; alter user test identified by oracle;</span><br><span class="line">alter user test identified by oracle</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28003: password verification for the specified password failed</span><br><span class="line">ORA-20001: Password length less than 8</span><br></pre></td></tr></table></figure>
+<h4 id="3、查看修改后的概要文件下的参数"><a href="#3、查看修改后的概要文件下的参数" class="headerlink" title="3、查看修改后的概要文件下的参数"></a>3、查看修改后的概要文件下的参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line"></span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br></pre></td></tr></table></figure>
+<h4 id="4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD-REUSE-TIME和PASSWORD-REUSE-MAX参数没有限制："><a href="#4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD-REUSE-TIME和PASSWORD-REUSE-MAX参数没有限制：" class="headerlink" title="4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD_REUSE_TIME和PASSWORD_REUSE_MAX参数没有限制："></a>4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD_REUSE_TIME和PASSWORD_REUSE_MAX参数没有限制：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">15:04:58 SYS@ boston&gt; alter user test identified by Testdb123</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.11</span><br><span class="line">15:06:04 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">User altered.</span><br></pre></td></tr></table></figure>
+<h4 id="5、下面修改PASSWORD-REUSE-TIME-用户名可以在多长时间之后可以复用-或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD-REUSE-MAX）"><a href="#5、下面修改PASSWORD-REUSE-TIME-用户名可以在多长时间之后可以复用-或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD-REUSE-MAX）" class="headerlink" title="5、下面修改PASSWORD_REUSE_TIME(用户名可以在多长时间之后可以复用)或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD_REUSE_MAX）"></a>5、下面修改PASSWORD_REUSE_TIME(用户名可以在多长时间之后可以复用)或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD_REUSE_MAX）</h4><p>，官方文档提示，只修改两个参数中的任意一个，另一个参数为unlimited，结果是用户永远不能复用密码：</p>
+<h5 id="5-1、只单独修改PASSWORD-REUSE-TIME"><a href="#5-1、只单独修改PASSWORD-REUSE-TIME" class="headerlink" title="5.1、只单独修改PASSWORD_REUSE_TIME"></a>5.1、只单独修改PASSWORD_REUSE_TIME</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">15:13:17 SYS@ boston&gt; ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME 1;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.08</span><br><span class="line">15:13:18 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line"></span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">再次修改用户已经提示</span><br><span class="line">15:13:22 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">alter user test identified by Testdb123</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28007: the password cannot be reused</span><br><span class="line">Elapsed: 00:00:00.02</span><br></pre></td></tr></table></figure>
+<h5 id="5-2、只单独修改PASSWORD-REUSE-MAX"><a href="#5-2、只单独修改PASSWORD-REUSE-MAX" class="headerlink" title="5.2、只单独修改PASSWORD_REUSE_MAX"></a>5.2、只单独修改PASSWORD_REUSE_MAX</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME UNLIMITED;</span><br><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_MAX 5;</span><br><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME UNLIMITED;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.05</span><br><span class="line">15:19:26 SYS@ boston&gt; ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_MAX 5;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">15:19:26 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD 5</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">6 rows selected.</span><br><span class="line">Elapsed: 00:00:00.01</span><br><span class="line">15:19:29 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">alter user test identified by Testdb123</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28007: the password cannot be reused</span><br></pre></td></tr></table></figure>
+<h5 id="5-3、下面同时修改这两个参数："><a href="#5-3、下面同时修改这两个参数：" class="headerlink" title="5.3、下面同时修改这两个参数："></a>5.3、下面同时修改这两个参数：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">15:21:45 SYS@ boston&gt; ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME 1;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.05</span><br><span class="line">15:21:46 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line"></span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD 5</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">设置一天之后，并且修改5次不同密码之后才能复用之前的密码，下面为了满足要求，修改系统时间：</span><br><span class="line">15:23:00 SYS@ boston&gt; select sysdate from dual;</span><br><span class="line">SYSDATE</span><br><span class="line">-------------------</span><br><span class="line">2019:01:23 15:23:04</span><br><span class="line">[oracle@dax-mysql-slave admin]$ date -s 20190125</span><br><span class="line">date: 无法设置日期: 不允许的操作</span><br><span class="line">2019年 01月 25日 星期五 00:00:00 CST</span><br><span class="line">[oracle@dax-mysql-slave admin]$ exit</span><br><span class="line">登出</span><br><span class="line">[root@dax-mysql-slave ~]# date -s 20190125</span><br><span class="line">2019年 01月 25日 星期五 00:00:00 CST</span><br><span class="line">[root@dax-mysql-slave ~]# su - oracle</span><br><span class="line">上一次登录：三 1月 23 13:44:53 CST 2019pts/2 上</span><br><span class="line">[oracle@dax-mysql-slave ~]$ date</span><br><span class="line">2019年 01月 25日 星期五 00:00:06 CST</span><br><span class="line">[oracle@dax-mysql-slave ~]$ sql</span><br><span class="line">00:00:26 SYS@ boston&gt; select sysdate from dual;</span><br><span class="line">SYSDATE</span><br><span class="line">-------------------</span><br><span class="line">2019:01:25 00:00:34</span><br><span class="line">Elapsed: 00:00:00.00</span><br><span class="line">00:00:34 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD 5</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">6 rows selected.</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">修改5次不同的密码：</span><br><span class="line">00:04:17 SYS@ boston&gt; alter user test identified by Testdb128;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.08</span><br><span class="line">00:04:29 SYS@ boston&gt; alter user test identified by Testdb129;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">00:04:33 SYS@ boston&gt; alter user test identified by Testdb130;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.04</span><br><span class="line">00:04:37 SYS@ boston&gt; alter user test identified by Testdb131;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.04</span><br><span class="line">00:04:39 SYS@ boston&gt; alter user test identified by Testdb132;</span><br><span class="line">User altered.</span><br><span class="line">修改5次之后再次修改为以前的密码，修改正常：</span><br><span class="line">Elapsed: 00:00:00.04</span><br><span class="line">00:04:40 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">User altered.</span><br><span class="line">再次修改为上面修改的新的密码，提示不能复用：</span><br><span class="line">Elapsed: 00:00:00.05</span><br><span class="line">00:04:46 SYS@ boston&gt; alter user test identified by Testdb130;</span><br><span class="line">alter user test identified by Testdb130</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28007: the password cannot be reused</span><br><span class="line">Elapsed: 00:00:00.02</span><br><span class="line">00:04:56 SYS@ boston&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令："><a href="#6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令：" class="headerlink" title="6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令："></a>6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sql&gt;@?/rdbms/admin/undopwd.sql</span><br></pre></td></tr></table></figure>
+<p>上面的脚本把PASSWORD_LIFE_TIME、PASSWORD_REUSE_TIME等参数改为了unlimitd，但是PASSWORD_VERIFY_FUNCTION的限制函数VERIFY_FUNCTION_11G仍然存在，如果不把这个清空，密码的复杂度校验仍然存在，清空密码复杂度校验执行下面操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sql&gt;alter profile default limit PASSWORD_VERIFY_FUNCTION null;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、在-ORACLE-HOME-rdbms-admin-目录下存在一个文件utlpwdmg-sql-里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本："><span class="toc-number">1.</span> <span class="toc-text">1、在$ORACLE_HOME/rdbms/admin/目录下存在一个文件utlpwdmg.sql,里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误："><span class="toc-number">2.</span> <span class="toc-text">2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、查看修改后的概要文件下的参数"><span class="toc-number">3.</span> <span class="toc-text">3、查看修改后的概要文件下的参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD-REUSE-TIME和PASSWORD-REUSE-MAX参数没有限制："><span class="toc-number">4.</span> <span class="toc-text">4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD_REUSE_TIME和PASSWORD_REUSE_MAX参数没有限制：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、下面修改PASSWORD-REUSE-TIME-用户名可以在多长时间之后可以复用-或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD-REUSE-MAX）"><span class="toc-number">5.</span> <span class="toc-text">5、下面修改PASSWORD_REUSE_TIME(用户名可以在多长时间之后可以复用)或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD_REUSE_MAX）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1、只单独修改PASSWORD-REUSE-TIME"><span class="toc-number">5.1.</span> <span class="toc-text">5.1、只单独修改PASSWORD_REUSE_TIME</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2、只单独修改PASSWORD-REUSE-MAX"><span class="toc-number">5.2.</span> <span class="toc-text">5.2、只单独修改PASSWORD_REUSE_MAX</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-3、下面同时修改这两个参数："><span class="toc-number">5.3.</span> <span class="toc-text">5.3、下面同时修改这两个参数：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令："><span class="toc-number">6.</span> <span class="toc-text">6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令：</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Oracle] oracle设置用户名密码复杂性校验'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2019 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>

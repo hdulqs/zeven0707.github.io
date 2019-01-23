@@ -112,6 +112,154 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/03/mongdob4.0/"><span>[Mongodb] mongdob-enterprise-4.0安装</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/03/mongdob4.0/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-03T08:50:24.000Z">
+          2018-08-03
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、Yum方式安装"><a href="#1、Yum方式安装" class="headerlink" title="1、Yum方式安装"></a>1、Yum方式安装</h3><p>  1.1配置yum源<br> cat /etc/yum.repos.d/mongodb-enterprise.repo<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[mongodb-enterprise]</span></span><br><span class="line"><span class="string">name=MongoDB</span> <span class="string">Enterprise</span> <span class="string">Repository</span></span><br><span class="line"><span class="string">baseurl=https://repo.mongodb.com/yum/redhat/$releasever/mongodb-enterprise/4.0/$basearch/</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">enabled=1</span></span><br><span class="line"><span class="string">gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc</span></span><br></pre></td></tr></table></figure></p>
+<p>  1.2执行安装命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y mongodb-enterprise</span><br></pre></td></tr></table></figure></p>
+<p> 如果想要指定安装某一个版本的mongodb,需要指定每一个组件的安装版本,如下所示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y mongodb-enterprise-4.0.0 mongodb-enterprise-server-4.0.0 mongodb-enterprise-shell-4.0.0 mongodb-enterprise-mongos-4.0.0 mongodb-enterprise-tools-4.0.0</span><br></pre></td></tr></table></figure></p>
+<p>  1.3mongodb启动、关闭命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo service mongod start</span><br><span class="line">sudo service mongod stop</span><br><span class="line">sudo service mongod restart</span><br></pre></td></tr></table></figure></p>
+<p>  1.4通过yum方式安装完之后，配置文件所在为/etc/mongod.conf</p>
+<h3 id="2、tar包方式安装"><a href="#2、tar包方式安装" class="headerlink" title="2、tar包方式安装"></a>2、tar包方式安装</h3><p> 2.1安装之前需要，安装依赖包：<br> linux-6:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y cyrus-sasl cyrus-sasl-plain cyrus-sasl-gssapi krb5-libs libcurl libpcap net-snmp openldap openssl</span><br></pre></td></tr></table></figure></p>
+<p> linux-7<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y cyrus-sasl cyrus-sasl-gssapi cyrus-sasl-plain krb5-libs libcurl libpcap lm_sensors-libs net-snmp net-snmp-agent-libs openldap openssl rpm-libs tcp_wrappers-libs</span><br></pre></td></tr></table></figure></p>
+<p> 2.2下载mongodb-enterprise软件包<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://downloads.mongodb.com/linux/mongodb-linux-x86_64-enterprise-rhel70-4.0.0.tgz</span><br></pre></td></tr></table></figure></p>
+<p> 2.3解压软件包，修改目录名称，配置环境变量<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> tar -zxvf mongodb-linux-x86_64-enterprise-rhel70-4.0.0.tgz -C /data/</span><br><span class="line"> mv /data/mongodb-linux-x86_64-enterprise-rhel70-4.0.0 /data/mongodb</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"export PATH=/data/mongodb/bin:\$PATH"</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<p> 2.4修改配置文件<br> cat /data/mongodb/mongodb.conf<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mongod.conf</span></span><br><span class="line"><span class="comment"># for documentation of all options, see:</span></span><br><span class="line"><span class="comment">#   http://docs.mongodb.org/manual/reference/configuration-options/</span></span><br><span class="line"><span class="comment"># where to write logging data.</span></span><br><span class="line"><span class="attr">systemLog:</span></span><br><span class="line"><span class="attr">  destination:</span> <span class="string">file</span></span><br><span class="line"><span class="attr">  logAppend:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  path:</span> <span class="string">/data/mongodb/log/mongod.log</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Where and how to store data.</span></span><br><span class="line"><span class="attr">storage:</span></span><br><span class="line"><span class="attr">  dbPath:</span> <span class="string">/data/mongodb/data/</span></span><br><span class="line"><span class="attr">  journal:</span></span><br><span class="line"><span class="attr">    enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment">#  engine:</span></span><br><span class="line"><span class="comment">#  mmapv1:</span></span><br><span class="line"><span class="comment">#  wiredTiger:</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># how the process runs</span></span><br><span class="line"><span class="attr">processManagement:</span></span><br><span class="line"><span class="attr">  fork:</span> <span class="literal">true</span>  <span class="comment"># fork and run in background</span></span><br><span class="line"><span class="attr">  pidFilePath:</span> <span class="string">/data/mongodb/log/mongod.pid</span>  <span class="comment"># location of pidfile</span></span><br><span class="line"><span class="attr">  timeZoneInfo:</span> <span class="string">/usr/share/zoneinfo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># network interfaces</span></span><br><span class="line"><span class="attr">net:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">30000</span></span><br><span class="line"><span class="attr">  bindIp:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">,10.0.7.51</span>  <span class="comment"># Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting.</span></span><br><span class="line"><span class="comment">#security:</span></span><br><span class="line"><span class="comment">#operationProfiling:</span></span><br><span class="line"><span class="comment">#replication:</span></span><br><span class="line"><span class="comment">#sharding:</span></span><br><span class="line"><span class="comment">## Enterprise-Only Options</span></span><br><span class="line"><span class="comment">#auditLog:</span></span><br><span class="line"><span class="comment">#snmp:</span></span><br></pre></td></tr></table></figure></p>
+<p> 2.5修改的配置文件中，如果数据目录，日志目录不存在会报错，需要手动配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mongodb/&#123;log,data&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 2.6启动mongodb<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shell&gt;/data/mongodb/bin/mongod -f /data/mongodb/mongodb.conf</span><br><span class="line"> --------</span><br><span class="line"> 2018-08-03T08:42:19.873+0000 I CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols <span class="string">'none'</span></span><br><span class="line">about to fork child process, waiting until server is ready <span class="keyword">for</span> connections.</span><br><span class="line">forked process: 41022</span><br><span class="line">child process started successfully, parent exiting</span><br></pre></td></tr></table></figure></p>
+<p> 2.7查看mongodb进程：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> netstat -tunlp|grep 30000</span><br><span class="line">---------</span><br><span class="line">tcp        0      0 10.0.7.51:30000         0.0.0.0:*               LISTEN      41022/mongod        </span><br><span class="line">tcp        0      0 127.0.0.1:30000         0.0.0.0:*               LISTEN      41022/mongod</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mongodb/">mongodb</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/03/mongdob4.0/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><a href="/2018/08/03/zabbix-nginx/"><span>[Zabbix] zabbix3.4监控nginx性能</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/03/zabbix-nginx/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-03T07:30:24.000Z">
+          2018-08-03
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="1、查看nginx安装HTTP-Stub-Status"><a href="#1、查看nginx安装HTTP-Stub-Status" class="headerlink" title="1、查看nginx安装HTTP Stub Status"></a>1、查看nginx安装HTTP Stub Status</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openresty -V</span><br></pre></td></tr></table></figure>
+<p>如果”–with-http_stub_status_module”参数，表示没有安装，要手动添加：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">在编译nginx</span> <span class="string">的时候要加上参数</span> <span class="string">–with-http_stub_status_module，</span></span><br><span class="line"><span class="string">执行./configure</span> <span class="string">&amp;&amp;</span> <span class="string">make就可以了，不用make</span> <span class="string">install。不过，一般情况下都是安装了的。</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="2、nginx服务器添加配置"><a href="#2、nginx服务器添加配置" class="headerlink" title="2、nginx服务器添加配置"></a>2、nginx服务器添加配置</h2><p>   2.1添加配置文件nginx_status.conf<br>cat /usr/local/openresty/nginx/conf/conf.d/nginx_status.conf<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 127.0.0.1;</span><br><span class="line"></span><br><span class="line">    location /basic_status &#123;</span><br><span class="line">        stub_status;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>   2.2重新加载配置文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openresty -s reload</span><br></pre></td></tr></table></figure></p>
+<p>   2.3获取nginx监控状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl http://127.0.0.1/basic_status</span><br><span class="line">-------------</span><br><span class="line">Active connections: 1 </span><br><span class="line">server accepts handled requests</span><br><span class="line"> 572 572 764 </span><br><span class="line">Reading: 0 Writing: 1 Waiting: 0</span><br></pre></td></tr></table></figure></p>
+<p>   nginx监控参数详解<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Active connections: 对后端发起的活动连接数</span></span><br><span class="line"><span class="comment">## Server accepts handled requests: Nginx 总共处理了 572 个连接，成功创建了 572 次握手（没有失败次数），总共处理了 764 个请求</span></span><br><span class="line"><span class="comment">## Reading: Nginx 读取到客户端的 Header 信息数</span></span><br><span class="line"><span class="comment">## Writing: Nginx 返回给客户端的 Header 信息数</span></span><br><span class="line"><span class="comment">## Waiting: 开启 keep-alive 的情况下，这个值等于 active - ( reading + writing ), 意思是 Nginx 已经处理完成，正在等待下一次请求指令的驻留连接</span></span><br><span class="line"><span class="comment">## 在访问效率很高，请求很快被处理完毕的情况下，Waiting 数比较多是正常的。如果 reading + writing 数较多，则说明并发访问量很大，正在处理过程中</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="3、配置zabbix"><a href="#3、配置zabbix" class="headerlink" title="3、配置zabbix"></a>3、配置zabbix</h2><p>创建存放脚本目录，（我的zabbix安装路径为 /usr/local/zabbix）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/<span class="built_in">local</span>/zabbix/script</span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/zabbix/script</span><br></pre></td></tr></table></figure></p>
+<p>创建存放数据文件（可自行定义）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch .status.txt</span><br></pre></td></tr></table></figure></p>
+<p>编辑脚本用于获取nginx监控状态参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span>  <span class="string">"</span></span><br><span class="line"><span class="string">#!/bin/bash</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">server_hostname=127.0.0.1</span></span><br><span class="line"><span class="string">data_file=/usr/local/zabbix/script/.status.txt</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">status_data=\`curl -o \$data_file -s http://\$server_hostname/basic_status\`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Active() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Active/&#123;print \$4&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Reading() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Reading/ &#123;print \$3&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Writing() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Writing/ &#123;print \$6&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Waiting() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Waiting/ &#123;print \$9&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">\$1"</span> &gt; /usr/<span class="built_in">local</span>/zabbix/script/nginx_connection.sh</span><br></pre></td></tr></table></figure></p>
+<p>修改目录下所有文件的权限，否则脚本写入文件会有权限问题<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown -R zabbix.zabbix /usr/<span class="built_in">local</span>/zabbix/script</span><br></pre></td></tr></table></figure></p>
+<p>添加zabbix参数到agent配置文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> \<span class="string">"UserParameter=nginx.Active,sh /usr/local/zabbix/script/nginx_connection.sh Active</span></span><br><span class="line"><span class="string">UserParameter=nginx.Writing,sh /usr/local/zabbix/script/nginx_connection.sh Writing</span></span><br><span class="line"><span class="string">UserParameter=nginx.Reading,sh /usr/local/zabbix/script/nginx_connection.sh Reading</span></span><br><span class="line"><span class="string">UserParameter=nginx.Waiting,sh /usr/local/zabbix/script/nginx_connection.sh Waiting\" &gt;&gt; /usr/local/zabbix/etc/zabbix_agentd.conf</span></span><br></pre></td></tr></table></figure></p>
+<p>重新启动agent客户端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/zabbix_agentd restart</span><br></pre></td></tr></table></figure></p>
+<p>在server端测试是否能获取到参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/zabbix/bin/zabbix_get -s 10.1.130.47  -k nginx.Active</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a><a href="/tags/zabbix/">zabbix</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/03/zabbix-nginx/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/02/redis-cluster集群部署/"><span>[Redis] redis-cluster集群部署</span></a></h3>
     
   

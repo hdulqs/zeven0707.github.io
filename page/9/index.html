@@ -112,6 +112,145 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/14/mysql-innodb buffer pool size调整/"><span>[Mysql] mysql-innodb buffer pool size调整</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/14/mysql-innodb buffer pool size调整/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-14T05:03:24.000Z">
+          2018-08-14
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="1、查看当前数据库innodb-buffer-pool参数"><a href="#1、查看当前数据库innodb-buffer-pool参数" class="headerlink" title="1、查看当前数据库innodb_buffer_pool参数"></a>1、查看当前数据库innodb_buffer_pool参数</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_buffer_pool_size'</span>;</span><br></pre></td></tr></table></figure>
+<p>##2、查看page_size大小<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_page_size'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>官方文档参数详解<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Innodb_page_size</span></span><br><span class="line"><span class="string">InnoDB</span> <span class="string">page</span> <span class="string">size</span> <span class="string">(default</span> <span class="number">16</span><span class="string">KB).</span> <span class="string">Many</span> <span class="string">values</span> <span class="string">are</span> <span class="string">counted</span> <span class="string">in</span> <span class="string">pages;</span> <span class="string">the</span> <span class="string">page</span> <span class="string">size</span> <span class="string">enables</span> <span class="string">them</span> <span class="string">to</span> <span class="string">be</span></span><br><span class="line"><span class="string">easily</span> <span class="string">converted</span> <span class="string">to</span> <span class="string">bytes</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="3、查看当前内存innodb页的总数量和包含数据的页的数量"><a href="#3、查看当前内存innodb页的总数量和包含数据的页的数量" class="headerlink" title="3、查看当前内存innodb页的总数量和包含数据的页的数量"></a>3、查看当前内存innodb页的总数量和包含数据的页的数量</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'Innodb_buffer_pool_pages_data'</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'Innodb_buffer_pool_pages_total'</span>;</span><br></pre></td></tr></table></figure>
+<p>官方文档参数详解：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Innodb_buffer_pool_pages_data</span></span><br><span class="line"><span class="string">The</span> <span class="string">number</span> <span class="string">of</span> <span class="string">pages</span> <span class="string">in</span> <span class="string">the</span> <span class="string">InnoDB</span> <span class="string">buffer</span> <span class="string">pool</span> <span class="string">containing</span> <span class="string">data.</span> <span class="string">The</span> <span class="string">number</span> <span class="string">includes</span> <span class="string">both</span> <span class="string">dirty</span> <span class="string">and</span></span><br><span class="line"><span class="string">clean</span> <span class="string">pages.</span></span><br><span class="line"></span><br><span class="line"><span class="string">Innodb_buffer_pool_pages_total</span></span><br><span class="line"><span class="string">The</span> <span class="string">total</span> <span class="string">size</span> <span class="string">of</span> <span class="string">the</span> <span class="string">InnoDB</span> <span class="string">buffer</span> <span class="string">pool,</span> <span class="string">in</span> <span class="string">pages.</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="4、调优参考计算方法："><a href="#4、调优参考计算方法：" class="headerlink" title="4、调优参考计算方法："></a>4、调优参考计算方法：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val = Innodb_buffer_pool_pages_data / Innodb_buffer_pool_pages_total * 100%</span><br><span class="line">val &gt; 95% 则考虑增大 innodb_buffer_pool_size， 建议使用物理内存的75%</span><br><span class="line">val &lt; 95% 则考虑减小 innodb_buffer_pool_size， 建议设置为：Innodb_buffer_pool_pages_data * Innodb_page_size * 1.05 / (1024*1024*1024)</span><br></pre></td></tr></table></figure>
+<h2 id="5、设置innodb-buffer-pool-siz大小"><a href="#5、设置innodb-buffer-pool-siz大小" class="headerlink" title="5、设置innodb_buffer_pool_siz大小"></a>5、设置innodb_buffer_pool_siz大小</h2><p>设置命令：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> innodb_buffer_pool_size = <span class="number">17179869184</span>;</span><br></pre></td></tr></table></figure></p>
+<p>缓冲池字节大小，单位kb，如果不设置，默认为128M<br>5.7版本以后可以动态修改参数，但是也要修改配置文件参数，防止重启之后，参数又变成配置文件内的参数,5.7以下的版本为静态参数，需要修改配置文件，并重新启动mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/my.cnf</span><br><span class="line">---------</span><br><span class="line">innodb_buffer_pool_size = 17179869184  #设置16G</span><br><span class="line">---------</span><br></pre></td></tr></table></figure></p>
+<h2 id="6、配置参数也可使用M、G等参数，内容如下："><a href="#6、配置参数也可使用M、G等参数，内容如下：" class="headerlink" title="6、配置参数也可使用M、G等参数，内容如下："></a>6、配置参数也可使用M、G等参数，内容如下：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/etc/my.cnf：</span><br><span class="line">-------------------</span><br><span class="line">innodb_buffer_pool_size = 16G  #设置16G</span><br><span class="line">innodb_buffer_pool_size = 500M  #设置500M</span><br><span class="line">--------------------------</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/14/mysql-innodb buffer pool size调整/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><a href="/2018/08/12/mongodb4.0定时备份并邮件告知备份情况/"><span>[Mongodb] mongodb4.0定时备份并邮件告知备份情况</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/12/mongodb4.0定时备份并邮件告知备份情况/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-12T07:05:24.000Z">
+          2018-08-12
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="1、mongodb全量备份脚本，内容如下："><a href="#1、mongodb全量备份脚本，内容如下：" class="headerlink" title="1、mongodb全量备份脚本，内容如下："></a>1、mongodb全量备份脚本，内容如下：</h2><p>cat /data/soft/mongodb_backup.sh<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"><span class="comment">#认证用户名</span></span><br><span class="line"><span class="string">authuser=admin1</span></span><br><span class="line"><span class="comment">#认证用户对应密码</span></span><br><span class="line"><span class="string">authpass=admin123</span></span><br><span class="line"><span class="comment">#备份的服务器地址</span></span><br><span class="line"><span class="string">servername=testrepl/127.0.0.1:30000</span></span><br><span class="line"><span class="comment">#备份的数据库实例名称</span></span><br><span class="line"><span class="string">instancename=test</span></span><br><span class="line"><span class="comment">#认证数据库实例名称</span></span><br><span class="line"><span class="string">authdbname=admin</span></span><br><span class="line"><span class="comment">#备份脚本运行获取到的时间戳</span></span><br><span class="line"><span class="string">stamp=`date</span> <span class="string">+"%Y-%m-%d"`</span></span><br><span class="line"><span class="comment">#项目名称</span></span><br><span class="line"><span class="string">programname=bulingbuling</span></span><br><span class="line"><span class="comment">#备份文件目录</span></span><br><span class="line"><span class="string">backuppath=/data/backup</span></span><br><span class="line"><span class="comment">#备份文件绝对路径名称</span></span><br><span class="line"><span class="string">backname=$&#123;backuppath&#125;/$&#123;instancename&#125;</span></span><br><span class="line"><span class="comment">#需要删除的备份文件绝对路径名称</span></span><br><span class="line"><span class="string">oldstamp=`date</span> <span class="string">+"%Y-%m-%d"</span> <span class="bullet">-d</span> <span class="string">"-5 day"</span><span class="string">`</span></span><br><span class="line"><span class="string">oldbackname=$&#123;backname&#125;-$&#123;oldstamp&#125;.dump</span></span><br><span class="line"><span class="comment">#数据库安装路径</span></span><br><span class="line"><span class="string">dbpath=/data/mongodb/bin</span></span><br><span class="line"><span class="comment">#备份操作log目录</span></span><br><span class="line"><span class="string">backuplogname=/tmp/mongodb_bakcup_$&#123;stamp&#125;.log</span></span><br><span class="line"><span class="comment">#当前服务器主机名</span></span><br><span class="line"><span class="string">localname=`hostname`</span></span><br><span class="line"><span class="comment">#当前服务器ip地址</span></span><br><span class="line"><span class="string">localip=`ip</span> <span class="string">a</span> <span class="string">|grep</span> <span class="string">global|</span> <span class="string">head</span> <span class="bullet">-1</span><span class="string">| awk '&#123;print $2&#125;'|awk -F'/' '&#123;print $1&#125;'`</span></span><br><span class="line"><span class="string">#localip='65.52.165.104'</span></span><br><span class="line"><span class="string">#目标邮箱</span></span><br><span class="line"><span class="string">dest_mail='test@qq.com'</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#判断指定log文件是否存在，如果存在将其删除</span></span><br><span class="line"><span class="string">if [ -e $&#123;backuplogname&#125; ];then</span></span><br><span class="line"><span class="string">   sudo rm -rf $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">   :</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#备份执行失败发送错误邮件</span></span><br><span class="line"><span class="string">send_fail_mail()&#123;</span></span><br><span class="line"><span class="string">	echo "$&#123;programname&#125;备份失败,登录服务器$&#123;localname&#125;-$&#123;localip&#125;的日志$&#123;backuplogname&#125;下查看报错！！！" |mail -s $&#123;programname&#125;数据库备份情况 $&#123;dest_mail&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#备份执行成功发送成功邮件 </span></span><br><span class="line"><span class="string">send_success_mail()&#123;</span></span><br><span class="line"><span class="string">	echo "$&#123;programname&#125;备份成功,可登录服务器$&#123;localname&#125;-$&#123;localip&#125;的日志$&#123;backuplogname&#125;下查看备份信息。" |mail -s $&#123;programname&#125;数据库备份情况 $&#123;dest_mail&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#创建备份时间函数</span></span><br><span class="line"><span class="string">date_func()&#123;</span></span><br><span class="line"><span class="string">   dateresult=$(($&#123;afterstamp&#125;-$&#123;beforstamp&#125;))</span></span><br><span class="line"><span class="string">   hour=$(($&#123;dateresult&#125;/3600))</span></span><br><span class="line"><span class="string">   min=$((($&#123;dateresult&#125;-$&#123;hour&#125;*3600)/60))</span></span><br><span class="line"><span class="string">   sec=$(($&#123;dateresult&#125;-$&#123;hour&#125;*3600-$&#123;min&#125;*60))</span></span><br><span class="line"><span class="string">   echo "6、本次备份运行时间为:"$&#123;hour&#125;时$&#123;min&#125;分$&#123;sec&#125;秒 &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#创建一个删除五天前的备份数据的函数</span></span><br><span class="line"><span class="string">del_old_bakdata()&#123;</span></span><br><span class="line"><span class="string">   if [ -e $&#123;oldbackname&#125; ];then</span></span><br><span class="line"><span class="string">   	 sudo echo "7、五天前的备份数据$&#123;oldbackname&#125;存在，进行删除"  &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">   	 rm -rf $&#123;oldbackname&#125;</span></span><br><span class="line"><span class="string">   	 if [ $? == 0 ];then</span></span><br><span class="line"><span class="string">   	 	sudo echo "7.1、备份数据删除成功" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">   	 else</span></span><br><span class="line"><span class="string">   	 	sudo echo "7.1、备份数据删除失败，注意查看失败原因" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">   	 fi</span></span><br><span class="line"><span class="string">   else</span></span><br><span class="line"><span class="string">     sudo echo "7、五天前的备份数据$&#123;oldbackname&#125;不存在，不需要再删除。" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">   fi </span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#因为mongodbdump只能指定路径，不能自定义备份文件名称，因此需要对备份完成的目录重命名</span></span><br><span class="line"><span class="string">rename_backname_func()&#123;</span></span><br><span class="line"><span class="string">	if [ -e $&#123;backname&#125;-$&#123;stamp&#125; ];then</span></span><br><span class="line"><span class="string">	  mv $&#123;backname&#125;-$&#123;stamp&#125; $&#123;backname&#125;-$&#123;stamp&#125;-old</span></span><br><span class="line"><span class="string">	  mv $&#123;backname&#125; $&#123;backname&#125;-$&#123;stamp&#125;</span></span><br><span class="line"><span class="string">	  if [ $? == 0 ];then</span></span><br><span class="line"><span class="string">	    echo "5、备份目录重命名成功" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">	  else</span></span><br><span class="line"><span class="string">	    echo "5、备份目录重命名失败,查看命名失败原因！" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">	  fi</span></span><br><span class="line"><span class="string">	else</span></span><br><span class="line"><span class="string">	  mv $&#123;backname&#125; $&#123;backname&#125;-$&#123;stamp&#125;</span></span><br><span class="line"><span class="string">	  if [ $? == 0 ];then</span></span><br><span class="line"><span class="string">	    echo "5、备份目录重命名成功" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">	  else</span></span><br><span class="line"><span class="string">	    echo "5、备份目录重命名失败,查看命名失败原因！" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">	  fi</span></span><br><span class="line"><span class="string">	fi</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#备份之前判断备份目录是否存在</span></span><br><span class="line"><span class="string">if [ -d $&#123;backuppath&#125; ];then</span></span><br><span class="line"><span class="string">	sudo echo "1、备份目录存在,可执行备份操作" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">	sudo echo "1、备份目录不存在,手动创建" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">	sudo mkdir -p $&#123;backuppath&#125;</span></span><br><span class="line"><span class="string">	if [ $? == 0 ];then</span></span><br><span class="line"><span class="string">	   sudo echo "1.1、备份目录创建成功，可进行下面操作" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">	else</span></span><br><span class="line"><span class="string">	   sudo echo "1.1、备份目录不存在，且创建失败，无法进行下面操作，退出备份" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">	   exit</span></span><br><span class="line"><span class="string">	fi</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#备份之前判断备份文件是否已经存在</span></span><br><span class="line"><span class="string">if [ -d $&#123;backname&#125; ];then</span></span><br><span class="line"><span class="string">	sudo echo "2、指定的备份实例目录$&#123;backname&#125;已存在，对其进行重命名" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">    mv $&#123;backname&#125; $&#123;backuppath&#125;/bak-$&#123;fullbackupname&#125;-$&#123;stamp&#125;.dump</span></span><br><span class="line"><span class="string">    if [ $? == 0 ];then</span></span><br><span class="line"><span class="string">    	sudo echo "2.1、文件已重新命名为$&#123;backuppath&#125;/bak-$&#123;fullbackupname&#125;-$&#123;stamp&#125;.dump,可继续备份" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">    else</span></span><br><span class="line"><span class="string">    	sudo echo "2.1、文件重命名失败，退出备份操作" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">    	exit</span></span><br><span class="line"><span class="string">    fi</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">	sudo echo "2、指定的备份文件不存在，开始进行备份" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#备份之前时间戳</span></span><br><span class="line"><span class="string">beforstamp=`date +%s`</span></span><br><span class="line"><span class="string">#开始全量备份数据库</span></span><br><span class="line"><span class="string">sudo echo "3、开始全量备份数据库" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">$&#123;dbpath&#125;/mongodump -h $&#123;servername&#125; -u $&#123;authuser&#125; -p $&#123;authpass&#125; -d $&#123;instancename&#125; -o $&#123;backuppath&#125; --authenticationDatabase $&#123;authdbname&#125;</span></span><br><span class="line"><span class="string">backupresult=$?</span></span><br><span class="line"><span class="string">afterstamp=`date +%s`</span></span><br><span class="line"><span class="string">if [ $&#123;backupresult&#125; == 0 ];then</span></span><br><span class="line"><span class="string">    	sudo echo "4、$&#123;programname&#125;-$&#123;instancename&#125;数据库备份成功,文件名称为$&#123;backname&#125;，重命名备份文件" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">    	rename_backname_func</span></span><br><span class="line"><span class="string">    	date_func</span></span><br><span class="line"><span class="string">        del_old_bakdata</span></span><br><span class="line"><span class="string">        send_success_mail</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">    	sudo echo "4、$&#123;programname&#125;-$&#123;instancename&#125;数据库备份失败,注意查看备份失败原因并重新备份" &gt;&gt; $&#123;backuplogname&#125;</span></span><br><span class="line"><span class="string">    	send_fail_mail</span></span><br><span class="line"><span class="string">    	exit</span></span><br><span class="line"><span class="string">fi</span></span><br></pre></td></tr></table></figure></p>
+<p>使用该脚本需要修改自己数据库对应的用户名authuser,密码authpass,邮箱dest_mail,项目名称programname,服务器名称servername,数据库实例名称instancename,mongodb数据库安装路径dbpath。其他参数可使用脚本内默认的，也可自行修改</p>
+<h2 id="2、配置邮件发送功能"><a href="#2、配置邮件发送功能" class="headerlink" title="2、配置邮件发送功能"></a>2、配置邮件发送功能</h2><p>2.1、安装mailx软件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y mailx</span><br></pre></td></tr></table></figure></p>
+<p>2.2、修改配置文件/etc/mail.rc,在行尾添加一下信息：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">set</span> <span class="string">from=test@qq.com</span> <span class="string">smtp=smtp.qq.com</span></span><br><span class="line"><span class="string">set</span> <span class="string">smtp-auth-user=test@qq.com</span> <span class="string">smtp-auth-password=testpassword</span> <span class="string">smtp-auth=login</span></span><br></pre></td></tr></table></figure></p>
+<p>参数详解：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">from:</span><span class="string">指定发送邮件的发件人</span></span><br><span class="line"><span class="attr">smtp:</span><span class="string">指定smtp服务器信息</span></span><br><span class="line"><span class="attr">smtp-auth-user:</span><span class="string">允许第三方登录的用户名</span></span><br><span class="line"><span class="string">smtp-auth-password：允许第三方登录的密码</span></span><br></pre></td></tr></table></figure></p>
+<p>2.3、发送测试邮件：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">echo</span> <span class="string">'test email'</span> <span class="string">|mail</span> <span class="bullet">-s</span> <span class="string">'title'</span> <span class="string">test@qq.com</span></span><br></pre></td></tr></table></figure></p>
+<p>title:指定发送文件的标题，可自行定义</p>
+<h2 id="3、修改备份脚本权限"><a href="#3、修改备份脚本权限" class="headerlink" title="3、修改备份脚本权限"></a>3、修改备份脚本权限</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /data/soft/mongodb_backup.sh</span><br></pre></td></tr></table></figure>
+<h2 id="4、将脚本添加到定时任务"><a href="#4、将脚本添加到定时任务" class="headerlink" title="4、将脚本添加到定时任务"></a>4、将脚本添加到定时任务</h2><p>如：每天凌晨一点备份<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; crontab -e</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 * * * sh /data/soft/mongodb_backup.sh</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mongodb/">mongodb</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/12/mongodb4.0定时备份并邮件告知备份情况/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/12/mongdob4.0 备份与恢复/"><span>[Mongodb] mongodb4.0备份与恢复</span></a></h3>
     
   
@@ -696,154 +835,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/08/05/mongodb-集群/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/03/mongdob4.0/"><span>[Mongodb] mongdob-enterprise-4.0安装</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/03/mongdob4.0/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-03T08:50:24.000Z">
-          2018-08-03
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、Yum方式安装"><a href="#1、Yum方式安装" class="headerlink" title="1、Yum方式安装"></a>1、Yum方式安装</h3><p>  1.1配置yum源<br> cat /etc/yum.repos.d/mongodb-enterprise.repo<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[mongodb-enterprise]</span></span><br><span class="line"><span class="string">name=MongoDB</span> <span class="string">Enterprise</span> <span class="string">Repository</span></span><br><span class="line"><span class="string">baseurl=https://repo.mongodb.com/yum/redhat/$releasever/mongodb-enterprise/4.0/$basearch/</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">enabled=1</span></span><br><span class="line"><span class="string">gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc</span></span><br></pre></td></tr></table></figure></p>
-<p>  1.2执行安装命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y mongodb-enterprise</span><br></pre></td></tr></table></figure></p>
-<p> 如果想要指定安装某一个版本的mongodb,需要指定每一个组件的安装版本,如下所示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y mongodb-enterprise-4.0.0 mongodb-enterprise-server-4.0.0 mongodb-enterprise-shell-4.0.0 mongodb-enterprise-mongos-4.0.0 mongodb-enterprise-tools-4.0.0</span><br></pre></td></tr></table></figure></p>
-<p>  1.3mongodb启动、关闭命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo service mongod start</span><br><span class="line">sudo service mongod stop</span><br><span class="line">sudo service mongod restart</span><br></pre></td></tr></table></figure></p>
-<p>  1.4通过yum方式安装完之后，配置文件所在为/etc/mongod.conf</p>
-<h3 id="2、tar包方式安装"><a href="#2、tar包方式安装" class="headerlink" title="2、tar包方式安装"></a>2、tar包方式安装</h3><p> 2.1安装之前需要，安装依赖包：<br> linux-6:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y cyrus-sasl cyrus-sasl-plain cyrus-sasl-gssapi krb5-libs libcurl libpcap net-snmp openldap openssl</span><br></pre></td></tr></table></figure></p>
-<p> linux-7<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y cyrus-sasl cyrus-sasl-gssapi cyrus-sasl-plain krb5-libs libcurl libpcap lm_sensors-libs net-snmp net-snmp-agent-libs openldap openssl rpm-libs tcp_wrappers-libs</span><br></pre></td></tr></table></figure></p>
-<p> 2.2下载mongodb-enterprise软件包<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://downloads.mongodb.com/linux/mongodb-linux-x86_64-enterprise-rhel70-4.0.0.tgz</span><br></pre></td></tr></table></figure></p>
-<p> 2.3解压软件包，修改目录名称，配置环境变量<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> tar -zxvf mongodb-linux-x86_64-enterprise-rhel70-4.0.0.tgz -C /data/</span><br><span class="line"> mv /data/mongodb-linux-x86_64-enterprise-rhel70-4.0.0 /data/mongodb</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"export PATH=/data/mongodb/bin:\$PATH"</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
-<p> 2.4修改配置文件<br> cat /data/mongodb/mongodb.conf<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mongod.conf</span></span><br><span class="line"><span class="comment"># for documentation of all options, see:</span></span><br><span class="line"><span class="comment">#   http://docs.mongodb.org/manual/reference/configuration-options/</span></span><br><span class="line"><span class="comment"># where to write logging data.</span></span><br><span class="line"><span class="attr">systemLog:</span></span><br><span class="line"><span class="attr">  destination:</span> <span class="string">file</span></span><br><span class="line"><span class="attr">  logAppend:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  path:</span> <span class="string">/data/mongodb/log/mongod.log</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Where and how to store data.</span></span><br><span class="line"><span class="attr">storage:</span></span><br><span class="line"><span class="attr">  dbPath:</span> <span class="string">/data/mongodb/data/</span></span><br><span class="line"><span class="attr">  journal:</span></span><br><span class="line"><span class="attr">    enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment">#  engine:</span></span><br><span class="line"><span class="comment">#  mmapv1:</span></span><br><span class="line"><span class="comment">#  wiredTiger:</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># how the process runs</span></span><br><span class="line"><span class="attr">processManagement:</span></span><br><span class="line"><span class="attr">  fork:</span> <span class="literal">true</span>  <span class="comment"># fork and run in background</span></span><br><span class="line"><span class="attr">  pidFilePath:</span> <span class="string">/data/mongodb/log/mongod.pid</span>  <span class="comment"># location of pidfile</span></span><br><span class="line"><span class="attr">  timeZoneInfo:</span> <span class="string">/usr/share/zoneinfo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># network interfaces</span></span><br><span class="line"><span class="attr">net:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">30000</span></span><br><span class="line"><span class="attr">  bindIp:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">,10.0.7.51</span>  <span class="comment"># Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting.</span></span><br><span class="line"><span class="comment">#security:</span></span><br><span class="line"><span class="comment">#operationProfiling:</span></span><br><span class="line"><span class="comment">#replication:</span></span><br><span class="line"><span class="comment">#sharding:</span></span><br><span class="line"><span class="comment">## Enterprise-Only Options</span></span><br><span class="line"><span class="comment">#auditLog:</span></span><br><span class="line"><span class="comment">#snmp:</span></span><br></pre></td></tr></table></figure></p>
-<p> 2.5修改的配置文件中，如果数据目录，日志目录不存在会报错，需要手动配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mongodb/&#123;log,data&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 2.6启动mongodb<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shell&gt;/data/mongodb/bin/mongod -f /data/mongodb/mongodb.conf</span><br><span class="line"> --------</span><br><span class="line"> 2018-08-03T08:42:19.873+0000 I CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols <span class="string">'none'</span></span><br><span class="line">about to fork child process, waiting until server is ready <span class="keyword">for</span> connections.</span><br><span class="line">forked process: 41022</span><br><span class="line">child process started successfully, parent exiting</span><br></pre></td></tr></table></figure></p>
-<p> 2.7查看mongodb进程：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> netstat -tunlp|grep 30000</span><br><span class="line">---------</span><br><span class="line">tcp        0      0 10.0.7.51:30000         0.0.0.0:*               LISTEN      41022/mongod        </span><br><span class="line">tcp        0      0 127.0.0.1:30000         0.0.0.0:*               LISTEN      41022/mongod</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mongodb/">mongodb</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/03/mongdob4.0/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/03/zabbix-nginx/"><span>[Zabbix] zabbix3.4监控nginx性能</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/03/zabbix-nginx/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-03T07:30:24.000Z">
-          2018-08-03
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h2 id="1、查看nginx安装HTTP-Stub-Status"><a href="#1、查看nginx安装HTTP-Stub-Status" class="headerlink" title="1、查看nginx安装HTTP Stub Status"></a>1、查看nginx安装HTTP Stub Status</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openresty -V</span><br></pre></td></tr></table></figure>
-<p>如果”–with-http_stub_status_module”参数，表示没有安装，要手动添加：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">在编译nginx</span> <span class="string">的时候要加上参数</span> <span class="string">–with-http_stub_status_module，</span></span><br><span class="line"><span class="string">执行./configure</span> <span class="string">&amp;&amp;</span> <span class="string">make就可以了，不用make</span> <span class="string">install。不过，一般情况下都是安装了的。</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="2、nginx服务器添加配置"><a href="#2、nginx服务器添加配置" class="headerlink" title="2、nginx服务器添加配置"></a>2、nginx服务器添加配置</h2><p>   2.1添加配置文件nginx_status.conf<br>cat /usr/local/openresty/nginx/conf/conf.d/nginx_status.conf<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 127.0.0.1;</span><br><span class="line"></span><br><span class="line">    location /basic_status &#123;</span><br><span class="line">        stub_status;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>   2.2重新加载配置文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openresty -s reload</span><br></pre></td></tr></table></figure></p>
-<p>   2.3获取nginx监控状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl http://127.0.0.1/basic_status</span><br><span class="line">-------------</span><br><span class="line">Active connections: 1 </span><br><span class="line">server accepts handled requests</span><br><span class="line"> 572 572 764 </span><br><span class="line">Reading: 0 Writing: 1 Waiting: 0</span><br></pre></td></tr></table></figure></p>
-<p>   nginx监控参数详解<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Active connections: 对后端发起的活动连接数</span></span><br><span class="line"><span class="comment">## Server accepts handled requests: Nginx 总共处理了 572 个连接，成功创建了 572 次握手（没有失败次数），总共处理了 764 个请求</span></span><br><span class="line"><span class="comment">## Reading: Nginx 读取到客户端的 Header 信息数</span></span><br><span class="line"><span class="comment">## Writing: Nginx 返回给客户端的 Header 信息数</span></span><br><span class="line"><span class="comment">## Waiting: 开启 keep-alive 的情况下，这个值等于 active - ( reading + writing ), 意思是 Nginx 已经处理完成，正在等待下一次请求指令的驻留连接</span></span><br><span class="line"><span class="comment">## 在访问效率很高，请求很快被处理完毕的情况下，Waiting 数比较多是正常的。如果 reading + writing 数较多，则说明并发访问量很大，正在处理过程中</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="3、配置zabbix"><a href="#3、配置zabbix" class="headerlink" title="3、配置zabbix"></a>3、配置zabbix</h2><p>创建存放脚本目录，（我的zabbix安装路径为 /usr/local/zabbix）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/<span class="built_in">local</span>/zabbix/script</span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/zabbix/script</span><br></pre></td></tr></table></figure></p>
-<p>创建存放数据文件（可自行定义）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch .status.txt</span><br></pre></td></tr></table></figure></p>
-<p>编辑脚本用于获取nginx监控状态参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span>  <span class="string">"</span></span><br><span class="line"><span class="string">#!/bin/bash</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">server_hostname=127.0.0.1</span></span><br><span class="line"><span class="string">data_file=/usr/local/zabbix/script/.status.txt</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">status_data=\`curl -o \$data_file -s http://\$server_hostname/basic_status\`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Active() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Active/&#123;print \$4&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Reading() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Reading/ &#123;print \$3&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Writing() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Writing/ &#123;print \$6&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function Waiting() &#123;</span></span><br><span class="line"><span class="string">    awk -F \"[: ]\" '/Waiting/ &#123;print \$9&#125;' \$data_file</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">\$1"</span> &gt; /usr/<span class="built_in">local</span>/zabbix/script/nginx_connection.sh</span><br></pre></td></tr></table></figure></p>
-<p>修改目录下所有文件的权限，否则脚本写入文件会有权限问题<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown -R zabbix.zabbix /usr/<span class="built_in">local</span>/zabbix/script</span><br></pre></td></tr></table></figure></p>
-<p>添加zabbix参数到agent配置文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> \<span class="string">"UserParameter=nginx.Active,sh /usr/local/zabbix/script/nginx_connection.sh Active</span></span><br><span class="line"><span class="string">UserParameter=nginx.Writing,sh /usr/local/zabbix/script/nginx_connection.sh Writing</span></span><br><span class="line"><span class="string">UserParameter=nginx.Reading,sh /usr/local/zabbix/script/nginx_connection.sh Reading</span></span><br><span class="line"><span class="string">UserParameter=nginx.Waiting,sh /usr/local/zabbix/script/nginx_connection.sh Waiting\" &gt;&gt; /usr/local/zabbix/etc/zabbix_agentd.conf</span></span><br></pre></td></tr></table></figure></p>
-<p>重新启动agent客户端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/zabbix_agentd restart</span><br></pre></td></tr></table></figure></p>
-<p>在server端测试是否能获取到参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/zabbix/bin/zabbix_get -s 10.1.130.47  -k nginx.Active</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/linux/">linux</a><a href="/tags/zabbix/">zabbix</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/03/zabbix-nginx/"><span>点击阅读</span></a></h3>
     
   
 </article>
