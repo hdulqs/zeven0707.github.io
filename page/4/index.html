@@ -112,6 +112,79 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/11/01/mysql使用备份的.frm文件恢复表结构/"><span>[Mysql] mysql使用备份的.frm文件恢复表结构</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/11/01/mysql使用备份的.frm文件恢复表结构/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-11-01T06:04:00.000Z">
+          2018-11-01
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="0、例如备份的表为test-order-则备份出来的-frm文件为test-order-frm"><a href="#0、例如备份的表为test-order-则备份出来的-frm文件为test-order-frm" class="headerlink" title="0、例如备份的表为test_order,则备份出来的.frm文件为test_order.frm"></a>0、例如备份的表为test_order,则备份出来的.frm文件为test_order.frm</h4><h4 id="1、在只知道表名的情况下，随意创建一个表名为test-order的表："><a href="#1、在只知道表名的情况下，随意创建一个表名为test-order的表：" class="headerlink" title="1、在只知道表名的情况下，随意创建一个表名为test_order的表："></a>1、在只知道表名的情况下，随意创建一个表名为test_order的表：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create table test_order (id1 int(2));</span><br></pre></td></tr></table></figure>
+<p>替换test_order.frm文件，替换完成之后重启mysql数据库,查看表信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@db 11:29:  [test]&gt; desc test_order;</span><br><span class="line">ERROR 1146 (42S02): Table &apos;test.test_order&apos; doesn&apos;t exist</span><br><span class="line">root@db 11:29:  [test]&gt; show create table test_order;</span><br><span class="line">ERROR 1146 (42S02): Table &apos;test.test_order&apos; doesn&apos;t exist</span><br></pre></td></tr></table></figure></p>
+<p>报错提示表不存在，之后查看error.log：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">2018-11-01T11:29:10.359514Z 2 [Warning] InnoDB: Table test/test_order contains 1 user defined columns in InnoDB, but 25 columns in MySQL. Please check INFORMATION_SCHEMA.INNODB_SYS_COLUMNS and http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.</span><br><span class="line">2018-11-01T11:29:10.359631Z 2 [Warning] InnoDB: Cannot open table test/test_order from the internal data dictionary of InnoDB though the .frm file for the table exists. Please refer to http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.</span><br><span class="line">2018-11-01T11:29:25.514189Z 2 [Note] InnoDB: Table `test`.`test_order` is corrupted. Please drop the table and recreate it</span><br><span class="line">2018-11-01T11:29:25.514313Z 2 [Warning] InnoDB: Cannot open table test/test_order from the internal data dictionary of InnoDB though the .frm file for the table exists. Please refer to http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.</span><br></pre></td></tr></table></figure></p>
+<p>报错提示手动创建的表只有1列，但是mysql中记录的表有25列</p>
+<h4 id="2、删除test-order表，并创建一个25列的test-order表："><a href="#2、删除test-order表，并创建一个25列的test-order表：" class="headerlink" title="2、删除test_order表，并创建一个25列的test_order表："></a>2、删除test_order表，并创建一个25列的test_order表：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@db 11:40:  [test]&gt; drop table test_order;</span><br><span class="line">Query OK, 0 rows affected (0.06 sec)</span><br><span class="line">root@db 11:40:  [test]&gt; create table test_order (id1 int(2),id2 int(2),id3 int(2),id4 int(2),id5 int(2),id6 int(2),id7 int(2),id8 int(2),id9 int(2),id10 int(2),id11 int(2),id12 int(2),id13 int(2),id14 int(2),id15 int(2),id16 int(2),id17 int(2),id18 int(2),id19 int(2),id20 int(2),id21 int(2),id22 int(2),id23 int(2),id24 int(2),id25  int(2));</span><br></pre></td></tr></table></figure>
+<p>替换test_order.frm文件，替换完成之后重启mysql数据库,查看表信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">root@db 11:41:  [test]&gt; desc test_order;</span><br><span class="line">ERROR 2013 (HY000): Lost connection to MySQL server during query</span><br><span class="line">root@db 11:42:  [test]&gt; show create table test_order;</span><br><span class="line">ERROR 2006 (HY000): MySQL server has gone away</span><br><span class="line">No connection. Trying to reconnect...</span><br><span class="line">Connection id:    2</span><br><span class="line">Current database: test</span><br><span class="line">ERROR 2013 (HY000): Lost connection to MySQL server during query</span><br></pre></td></tr></table></figure></p>
+<p>查看error.log：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">2018-11-01T11:42:25.566095Z 2 [ERROR] Build InnoDB index translation table for Table ./test/test_order failed</span><br><span class="line">2018-11-01T11:42:25.566445Z 2 [ERROR] Table ./test/test_order has no primary key in InnoDB data dictionary, but has one in MySQL! If you created the table with a MySQL version &lt; 3.23.54 and did not define a primary key, but defined a unique key with all non-NULL columns, then MySQL internally treats that key as the primary key. You can fix this error by dump + DROP + CREATE + reimport of the table.</span><br><span class="line">2018-11-01T11:42:25.566519Z 2 [Warning] Table ./test/test_order key_used_on_scan is 0 even though there is no primary key inside InnoDB.</span><br><span class="line">2018-11-01T11:42:25.566576Z 2 [ERROR] InnoDB could not find key no 0 with name PRIMARY from dict cache for table test/test_order</span><br><span class="line">11:42:25 UTC - mysqld got signal 11 ;</span><br><span class="line">This could be because you hit a bug. It is also possible that this binary</span><br><span class="line">or one of the libraries it was linked against is corrupt, improperly built,</span><br><span class="line">or misconfigured. This error can also be caused by malfunctioning hardware.</span><br><span class="line">Attempting to collect some information that could help diagnose the problem.</span><br><span class="line">As this is a crash and something is definitely wrong, the information</span><br><span class="line">collection process might fail.</span><br></pre></td></tr></table></figure></p>
+<p>报错提示test_order表没有主键</p>
+<h4 id="3、删除test-order表，并创建一个25列的带有主键的test-order表："><a href="#3、删除test-order表，并创建一个25列的带有主键的test-order表：" class="headerlink" title="3、删除test_order表，并创建一个25列的带有主键的test_order表："></a>3、删除test_order表，并创建一个25列的带有主键的test_order表：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@db 11:45:  [test]&gt; drop table test_order;</span><br><span class="line">Query OK, 0 rows affected (0.06 sec)</span><br><span class="line">root@db 11:45:  [test]&gt; create table test_order (id1 int(2) primary key,id2 int(2),id3 int(2),id4 int(2),id5 int(2),id6 int(2),id7 int(2),id8 int(2),id9 int(2),id10 int(2),id11 int(2),id12 int(2),id13 int(2),id14 int(2),id15 int(2),id16 int(2),id17 int(2),id18 int(2),id19 int(2),id20 int(2),id21 int(2),id22 int(2),id23 int(2),id24 int(2),id25  int(2));</span><br></pre></td></tr></table></figure>
+<p>替换test_order.frm文件，替换完成之后重启mysql数据库,查看表信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">root@db 11:46:  [test]&gt; desc test_order;</span><br><span class="line">+-----------------+----------------+------+-----+---------+----------------+</span><br><span class="line">| Field           | Type           | Null | Key | Default | Extra          |</span><br><span class="line">+-----------------+----------------+------+-----+---------+----------------+</span><br><span class="line">| id              | bigint(20)     | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| order_no        | varchar(24)    | NO   | UNI | NULL    |                |</span><br><span class="line">| broker_id       | varchar(24)    | NO   | MUL | NULL    |                |</span><br><span class="line">| broker_uid      | bigint(20)     | NO   |     | NULL    |                |</span><br><span class="line">| plat_id         | varchar(24)    | NO   |     | NULL    |                |</span><br><span class="line">| price_asset     | varchar(8)     | NO   |     | NULL    |                |</span><br><span class="line">| test_type      | varchar(16)    | NO   |     | NULL    |                |</span><br><span class="line">| order_type      | varchar(16)    | NO   |     | NULL    |                |</span><br><span class="line">| price           | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| number          | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| test_asset     | varchar(8)     | NO   | MUL | NULL    |                |</span><br><span class="line">| testd_number   | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| over_number     | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| testd_money    | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| fee_asset       | varchar(8)     | NO   |     | NULL    |                |</span><br><span class="line">| fee             | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| broker_fee      | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| cloud_fee       | decimal(32,20) | NO   |     | NULL    |                |</span><br><span class="line">| client_order_no | varchar(36)    | NO   |     | NULL    |                |</span><br><span class="line">| state           | varchar(16)    | NO   |     | NULL    |                |</span><br><span class="line">| send_state      | varchar(16)    | NO   |     | NULL    |                |</span><br><span class="line">| error_code      | varchar(24)    | YES  |     | NULL    |                |</span><br><span class="line">| error_msg       | varchar(64)    | YES  |     | NULL    |                |</span><br><span class="line">| create_time     | datetime       | NO   |     | NULL    |                |</span><br><span class="line">| update_time     | datetime       | NO   |     | NULL    |                |</span><br><span class="line">+-----------------+----------------+------+-----+---------+----------------+</span><br><span class="line">25 rows in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">root@db 11:46:  [test]&gt; show create table test_order\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">       Table: test_order</span><br><span class="line">Create Table: CREATE TABLE `test_order` (</span><br><span class="line">  `id` bigint(20) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `order_no` varchar(24) NOT NULL,</span><br><span class="line">  `broker_id` varchar(24) NOT NULL,</span><br><span class="line">  `broker_uid` bigint(20) NOT NULL,</span><br><span class="line">  `plat_id` varchar(24) NOT NULL,</span><br><span class="line">  `price_asset` varchar(8) NOT NULL,</span><br><span class="line">  `test_type` varchar(16) NOT NULL,</span><br><span class="line">  `order_type` varchar(16) NOT NULL,</span><br><span class="line">  `price` decimal(32,20) NOT NULL,</span><br><span class="line">  `number` decimal(32,20) NOT NULL,</span><br><span class="line">  `test_asset` varchar(8) NOT NULL,</span><br><span class="line">  `testd_number` decimal(32,20) NOT NULL,</span><br><span class="line">  `over_number` decimal(32,20) NOT NULL,</span><br><span class="line">  `testd_money` decimal(32,20) NOT NULL,</span><br><span class="line">  `fee_asset` varchar(8) NOT NULL,</span><br><span class="line">  `fee` decimal(32,20) NOT NULL,</span><br><span class="line">  `broker_fee` decimal(32,20) NOT NULL,</span><br><span class="line">  `cloud_fee` decimal(32,20) NOT NULL,</span><br><span class="line">  `client_order_no` varchar(36) NOT NULL,</span><br><span class="line">  `state` varchar(16) NOT NULL,</span><br><span class="line">  `send_state` varchar(16) NOT NULL,</span><br><span class="line">  `error_code` varchar(24) DEFAULT NULL,</span><br><span class="line">  `error_msg` varchar(64) DEFAULT NULL,</span><br><span class="line">  `create_time` datetime NOT NULL,</span><br><span class="line">  `update_time` datetime NOT NULL,</span><br><span class="line">  PRIMARY KEY (`id`),</span><br><span class="line">  UNIQUE KEY `test_order_order_no_uindex` (`order_no`),</span><br><span class="line">  UNIQUE KEY `test_order_broker_id_client_order_no_uindex` (`broker_id`,`client_order_no`),</span><br><span class="line">  KEY `multi_price_test_id_uid_state_index` (`test_asset`,`price_asset`,`broker_uid`,`broker_id`,`state`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure></p>
+<p>查看error.log有无其他报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2018-11-01T11:45:09.272752Z 2 [ERROR] Build InnoDB index translation table for Table ./test/test_order failed</span><br><span class="line">2018-11-01T11:45:09.272904Z 2 [ERROR] InnoDB: MySQL and InnoDB data dictionaries are out of sync. Unable to find the AUTOINC column id in the InnoDB table `test`.`test_order`. We set the next AUTOINC column value to 0, in effect disabling the AUTOINC next value generation.</span><br><span class="line">2018-11-01T11:45:09.272935Z 2 [Note] InnoDB: You can either set the next AUTOINC value explicitly using ALTER TABLE or fix the data dictionary by recreating the table.</span><br><span class="line">2018-11-01T11:45:09.272959Z 2 [ERROR] InnoDB: Table test/test_order contains 1 indexes inside InnoDB, which is different from the number of indexes 4 defined in MySQL</span><br><span class="line">2018-11-01T11:45:09.272976Z 2 [ERROR] InnoDB could not find key no 1 with name test_order_order_no_uindex from dict cache for table test/test_order</span><br><span class="line">2018-11-01T11:45:09.272988Z 2 [ERROR] Table test/test_order contains fewer indexes inside InnoDB than are defined in the MySQL .frm file. Have you mixed up .frm files from different installations? Please refer to http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.</span><br></pre></td></tr></table></figure></p>
+<p>log日志依旧有报错，提示innodb只有一个索引，但mysql下存在4个索引，但是已经通过show create table test_order获取到了建表的语句，因此可以通过上面的建表语句，重新创建test_order表了。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/11/01/mysql使用备份的.frm文件恢复表结构/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/31/nginx https证书配置/"><span>[Linux] 使用certbot为域名生成免费证书(nginx版)</span></a></h3>
     
   
@@ -502,6 +575,69 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
+          2018-10-25
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>[Mysql] mysql数据库使用innobackupex和mysqldump备份恢复的对比</span></a></h3>
     
   
@@ -568,69 +704,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
-          2018-10-25
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
@@ -790,73 +863,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/25/一台服务器安装多个mysql数据库程序/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/24/hp交换机启用snmp，并添加到zabbix监控/"><span>[Zabbix] zabbix监控hp-switch</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/24/hp交换机启用snmp，并添加到zabbix监控/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-24T07:51:00.000Z">
-          2018-10-24
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、通过console口、telnet、ssh连接到switch的命令行，登录具有管理员权限的用户。使用system-view进入特权模式"><a href="#1、通过console口、telnet、ssh连接到switch的命令行，登录具有管理员权限的用户。使用system-view进入特权模式" class="headerlink" title="1、通过console口、telnet、ssh连接到switch的命令行，登录具有管理员权限的用户。使用system-view进入特权模式"></a>1、通过console口、telnet、ssh连接到switch的命令行，登录具有管理员权限的用户。使用system-view进入特权模式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># system-view</span><br></pre></td></tr></table></figure>
-<h4 id="2、配置snmp服务，设置版本、联系人信息、设备位置、团体名"><a href="#2、配置snmp服务，设置版本、联系人信息、设备位置、团体名" class="headerlink" title="2、配置snmp服务，设置版本、联系人信息、设备位置、团体名"></a>2、配置snmp服务，设置版本、联系人信息、设备位置、团体名</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># snmp-agent</span><br><span class="line"># snmp-agent sys-info version v2c</span><br><span class="line"># snmp-agent sys-info contact Zamasu &lt;zamasu@dbsuper.com&gt;</span><br><span class="line"># snmp-agent sys-info location Universe10 - IT Room</span><br><span class="line"># snmp-agent community read GokuBlack</span><br></pre></td></tr></table></figure>
-<h4 id="3、保存配置信息："><a href="#3、保存配置信息：" class="headerlink" title="3、保存配置信息："></a>3、保存配置信息：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#save</span><br></pre></td></tr></table></figure>
-<h4 id="4、保存完成之后hp交换机snmp服务已经配置完成，下面测试zabbix服务器和hp交换机之间的snmp团体名。在zabbix安装snmp测试snmp服务："><a href="#4、保存完成之后hp交换机snmp服务已经配置完成，下面测试zabbix服务器和hp交换机之间的snmp团体名。在zabbix安装snmp测试snmp服务：" class="headerlink" title="4、保存完成之后hp交换机snmp服务已经配置完成，下面测试zabbix服务器和hp交换机之间的snmp团体名。在zabbix安装snmp测试snmp服务："></a>4、保存完成之后hp交换机snmp服务已经配置完成，下面测试zabbix服务器和hp交换机之间的snmp团体名。在zabbix安装snmp测试snmp服务：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># yum install snmp(apt-get install snmp)</span><br><span class="line"># snmpwalk -v2c -c GokuBlack 192.168.0.200</span><br></pre></td></tr></table></figure>
-<p>192.168.0.200为hp交换机的地址<br>下面为snmpwalk输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SNMPv2-MIB::sysDescr.0 = STRING: HPE V1910-48G Switch Software Version 5.20, Release 1519P03</span><br><span class="line">Copyright(c) 2010-2017 Hewlett Packard Enterprise Development, L.P.</span><br><span class="line">SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.25506.11.1.85</span><br><span class="line">DISMAN-EVENT-MIB::sysUpTimeInstance = Timeticks: (197804302) 22 days, 21:27:23.02</span><br><span class="line">SNMPv2-MIB::sysContact.0 = STRING: Zamasu &lt;zamasu@dbsuper.com&gt;</span><br><span class="line">SNMPv2-MIB::sysName.0 = STRING: TECH-SW01</span><br><span class="line">SNMPv2-MIB::sysLocation.0 = STRING: Universe10 - IT Room</span><br></pre></td></tr></table></figure></p>
-<h4 id="5、配置zabbix仪表板："><a href="#5、配置zabbix仪表板：" class="headerlink" title="5、配置zabbix仪表板："></a>5、配置zabbix仪表板：</h4><p>创建主机<br><img src="https://i.imgur.com/zOCoL44.png" alt=""><br><img src="https://i.imgur.com/wknK4aG.jpg" alt=""><br>下面配置snmp团体名用于zabbix连接hp交换机<br><img src="https://i.imgur.com/THDB2A8.jpg" alt=""><br>根据对应的交换机型号，去zabbix官网下载对应得模板：<br><a href="http://www.zabbix.org/wiki/Zabbix_Templates，点击[跳转](http://www.zabbix.org/wiki/Zabbix_Templates)" target="_blank" rel="noopener">http://www.zabbix.org/wiki/Zabbix_Templates，点击[跳转](http://www.zabbix.org/wiki/Zabbix_Templates)</a></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/zabbix/">zabbix</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/24/hp交换机启用snmp，并添加到zabbix监控/"><span>点击阅读</span></a></h3>
     
   
 </article>
