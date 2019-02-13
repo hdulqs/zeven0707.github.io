@@ -112,6 +112,70 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/28/解决zabbix中文乱码/"><span>[Zabbix] 解决zabbix中文乱码问题</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/28/解决zabbix中文乱码/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-28T02:23:10.000Z">
+          2018-08-28
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、在windows机器上查找simkai-ttf文件，在windows下拷贝simkai字体到zabbix-server端，并拷贝到相应目录"><a href="#1、在windows机器上查找simkai-ttf文件，在windows下拷贝simkai字体到zabbix-server端，并拷贝到相应目录" class="headerlink" title="1、在windows机器上查找simkai.ttf文件，在windows下拷贝simkai字体到zabbix server端，并拷贝到相应目录"></a>1、在windows机器上查找simkai.ttf文件，在windows下拷贝simkai字体到zabbix server端，并拷贝到相应目录</h3><p>可在c盘路径下搜索simkai.ttf，本地机器的路径为‘C:\Windows\WinSxS\amd64_microsoft-windows-font-truetype-simkai_31bf3856ad364e35_10.0.17134.1_none_d7e1e1a5de638405’，每台机器对应的目录会有差异，但‘C:\Windows\WinSxS’路径一致。</p>
+<h3 id="2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下"><a href="#2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下" class="headerlink" title="2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下"></a>2、将找到的simkai文件上传到zabbix-server端nginx的安装目录下</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv simkai.ttf /data/nginx-1.9.15/html/zabbix/fonts/</span><br></pre></td></tr></table></figure>
+<h3 id="3、修改nginx配置文件"><a href="#3、修改nginx配置文件" class="headerlink" title="3、修改nginx配置文件"></a>3、修改nginx配置文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;s/DejaVuSans/simkai/g&apos; /data/nginx-1.9.15/html/zabbix/include/defines.inc.php</span><br></pre></td></tr></table></figure>
+<h3 id="4、重启php-fpm、nginx"><a href="#4、重启php-fpm、nginx" class="headerlink" title="4、重启php-fpm、nginx"></a>4、重启php-fpm、nginx</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop</span><br><span class="line">service php-fpm stop</span><br><span class="line">service php-fpm start</span><br><span class="line">nginx</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/zabbix/">zabbix</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/28/解决zabbix中文乱码/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/27/zabbix监控磁盘io总吞吐量/"><span>[Zabbix] zabbix监控磁盘io总吞吐量批量安装配置</span></a></h3>
     
   
@@ -427,7 +491,7 @@ var _hmt = _hmt || [];
 
     <span class="post-tags">
       <i class="icon-tags"></i>
-        <a href="/tags/zabbix/">zabbix</a><a href="/tags/cassandra/">cassandra</a>
+        <a href="/tags/cassandra/">cassandra</a><a href="/tags/zabbix/">zabbix</a>
     </span>
     
 
@@ -789,90 +853,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/08/17/samba配置/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/17/mysql lock table && unlock tables实验/"><span>[Mysql] mysql lock table &amp;&amp; unlock tables实验</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/17/mysql lock table && unlock tables实验/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-17T04:03:24.000Z">
-          2018-08-17
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h2 id="0、mysql版本"><a href="#0、mysql版本" class="headerlink" title="0、mysql版本"></a>0、mysql版本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@db 04:12:  [aaaa]&gt; select @@version;</span><br><span class="line">+------------+</span><br><span class="line">| @@version  |</span><br><span class="line">+------------+</span><br><span class="line">| 5.7.22-log |</span><br><span class="line">+------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<h2 id="1、创建实验表，内容如下："><a href="#1、创建实验表，内容如下：" class="headerlink" title="1、创建实验表，内容如下："></a>1、创建实验表，内容如下：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:11:  [aaaa]&gt; show tables;</span><br><span class="line">+----------------+</span><br><span class="line">| Tables_in_aaaa |</span><br><span class="line">+----------------+</span><br><span class="line">| aaa            |</span><br><span class="line">| bbb            |</span><br><span class="line">+----------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br><span class="line">root@db 15:15:  [aaaa]&gt; select * from aaa;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | a    | 11111111111 |</span><br><span class="line">|  2 | b    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line">root@db 15:15:  [aaaa]&gt; select * from bbb;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | a    | 11111111111 |</span><br><span class="line">|  2 | b    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<h2 id="2、开启两个会话，session1、session2-对表aaa进行read表锁"><a href="#2、开启两个会话，session1、session2-对表aaa进行read表锁" class="headerlink" title="2、开启两个会话，session1、session2,对表aaa进行read表锁"></a>2、开启两个会话，session1、session2,对表aaa进行read表锁</h2><p>session1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:16:  [aaaa]&gt; lock table aaa read;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line">root@db 15:17:  [aaaa]&gt; select * from aaa;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | a    | 11111111111 |</span><br><span class="line">|  2 | b    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line">root@db 15:17:  [aaaa]&gt; select * from bbb;</span><br><span class="line">ERROR 1100 (HY000): Table &apos;bbb&apos; was not locked with LOCK TABLES</span><br><span class="line">root@db 15:17:  [aaaa]&gt; </span><br><span class="line">root@db 15:18:  [aaaa]&gt; update aaa set name=&apos;e&apos; where id=1;</span><br><span class="line">ERROR 1099 (HY000): Table &apos;aaa&apos; was locked with a READ lock and can&apos;t be updated</span><br></pre></td></tr></table></figure></p>
-<p>session 2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:18:  [aaaa]&gt; select * from aaa;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | a    | 11111111111 |</span><br><span class="line">|  2 | b    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line">root@db 15:18:  [aaaa]&gt; update aaa set name=&apos;e&apos; where id=1;</span><br><span class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</span><br><span class="line">root@db 15:20:  [aaaa]&gt; show OPEN TABLES where In_use &gt; 0;</span><br><span class="line">+----------+-------+--------+-------------+</span><br><span class="line">| Database | Table | In_use | Name_locked |</span><br><span class="line">+----------+-------+--------+-------------+</span><br><span class="line">| aaaa     | aaa   |      1 |           0 |</span><br><span class="line">+----------+-------+--------+-------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>session 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:21:  [aaaa]&gt; unlock tables;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>结论：在session1对表aaa进行read锁表，session1只能对表aaa进行读操作，对其他表没有任何操作权限，session2对表aaa有读权限，没有写权限。</p>
-<h2 id="3、开启两个会话，session1、session2-对表aaa进行write表锁"><a href="#3、开启两个会话，session1、session2-对表aaa进行write表锁" class="headerlink" title="3、开启两个会话，session1、session2,对表aaa进行write表锁"></a>3、开启两个会话，session1、session2,对表aaa进行write表锁</h2><p>session 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:21:  [aaaa]&gt; lock table aaa write;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line">root@db 15:26:  [aaaa]&gt; select * from aaa;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | a    | 11111111111 |</span><br><span class="line">|  2 | b    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line">root@db 15:26:  [aaaa]&gt; select * from bbb;</span><br><span class="line">ERROR 1100 (HY000): Table &apos;bbb&apos; was not locked with LOCK TABLES</span><br><span class="line">root@db 15:27:  [aaaa]&gt;  update aaa set name=&apos;e&apos; where id=1;</span><br><span class="line">Query OK, 1 row affected (0.01 sec)</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line">root@db 15:29:  [aaaa]&gt; update bbb set name=&apos;e&apos; where id=1;</span><br><span class="line">ERROR 1100 (HY000): Table &apos;bbb&apos; was not locked with LOCK TABLES</span><br></pre></td></tr></table></figure></p>
-<p>session 2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:20:  [aaaa]&gt; select * from aaa;</span><br><span class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</span><br><span class="line">root@db 15:28:  [aaaa]&gt;  update aaa set name=&apos;e&apos; where id=1;</span><br><span class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</span><br></pre></td></tr></table></figure></p>
-<p>session 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:31:  [aaaa]&gt; unlock  tables;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>结论：在session1对表aaa进行write锁表，session1对表aaa有读写权限，对其他表没有任何操作权限，session2对表aaa即没有读权限，又没有写权限。</p>
-<h2 id="4、开启两个会话，session1、session2-对表aaa进行write-amp-read表锁"><a href="#4、开启两个会话，session1、session2-对表aaa进行write-amp-read表锁" class="headerlink" title="4、开启两个会话，session1、session2,对表aaa进行write&amp;read表锁"></a>4、开启两个会话，session1、session2,对表aaa进行write&amp;read表锁</h2><p>session1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">root@db 15:32:  [aaaa]&gt; lock table aaa write , aaa as t1 read;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line">root@db 15:32root@db 04:01:  [aaaa]&gt; select * from aaa;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | e    | 11111111111 |</span><br><span class="line">|  2 | e    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">root@db 04:01:  [aaaa]&gt; select * from aaa as t1;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | e    | 11111111111 |</span><br><span class="line">|  2 | e    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">root@db 04:02:  [aaaa]&gt; update aaa as t1 set name=&apos;e&apos; where id =1;</span><br><span class="line">ERROR 1099 (HY000): Table &apos;t1&apos; was locked with a READ lock and can&apos;t be updated</span><br><span class="line">root@db 04:04:  [aaaa]&gt; update aaa  set name=&apos;e&apos; where id =1;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line">Rows matched: 1  Changed: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">root@db 04:04:  [aaaa]&gt; insert into aaa select * from aaa;</span><br><span class="line">ERROR 1100 (HY000): Table &apos;aaa&apos; was not locked with LOCK TABLES</span><br><span class="line">root@db 04:04:  [aaaa]&gt; insert into aaa select * from aaa as t1;</span><br><span class="line">ERROR 1062 (23000): Duplicate entry &apos;1&apos; for key &apos;PRIMARY&apos;</span><br></pre></td></tr></table></figure></p>
-<p>session2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@db 04:05:  [aaaa]&gt; select * from aaa;</span><br><span class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</span><br><span class="line">root@db 04:06:  [aaaa]&gt; update aaa set name=&apos;e&apos; where id=2;</span><br><span class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</span><br></pre></td></tr></table></figure></p>
-<p>session1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 04:07:  [aaaa]&gt; unlock tables;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>结论：session1对表aaa同时进行read，write锁，需要使用别名。对表进行select,update操作正常，如果使用insert into aaa select * from aaa as t1;需要加上别名。session 2对表aaa即没有读权限，又没有写权限。</p>
-<h2 id="5、对表aaa进行read表锁，并使用别名"><a href="#5、对表aaa进行read表锁，并使用别名" class="headerlink" title="5、对表aaa进行read表锁，并使用别名"></a>5、对表aaa进行read表锁，并使用别名</h2><p>session 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">root@db 03:47:  [aaaa]&gt;  LOCK TABLE aaa AS t1 READ;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">root@db 03:47:  [aaaa]&gt; select * from aaa;</span><br><span class="line">ERROR 1100 (HY000): Table &apos;aaa&apos; was not locked with LOCK TABLES</span><br><span class="line">root@db 03:47:  [aaaa]&gt; select * from aaa as t1;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | e    | 11111111111 |</span><br><span class="line">|  2 | e    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">|  5 | f    | 5555555     |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>session 2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> select * from aaa;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | e    | 11111111111 |</span><br><span class="line">|  2 | e    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">|  5 | f    | 5555555     |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>session 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 03:48:  [aaaa]&gt; unlock tables;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>结论：session 1对表aaa加别名read表锁，session1查询需要使用别名，直接查询无效，session2对表aaa有读权限，无写权限</p>
-<h2 id="6、对表aaa使用write表锁，并添加别名"><a href="#6、对表aaa使用write表锁，并添加别名" class="headerlink" title="6、对表aaa使用write表锁，并添加别名"></a>6、对表aaa使用write表锁，并添加别名</h2><p>session 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">root@db 03:51:  [aaaa]&gt; LOCK TABLE aaa AS t1 write;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">root@db 03:53:  [aaaa]&gt; </span><br><span class="line">root@db 03:53:  [aaaa]&gt; select * from aaa;</span><br><span class="line">ERROR 1100 (HY000): Table &apos;aaa&apos; was not locked with LOCK TABLES</span><br><span class="line">root@db 03:53:  [aaaa]&gt; select * from aaa as t1;</span><br><span class="line">+----+------+-------------+</span><br><span class="line">| id | name | telephone   |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">|  1 | e    | 11111111111 |</span><br><span class="line">|  2 | e    | 22222222222 |</span><br><span class="line">|  3 | c    | 33333333333 |</span><br><span class="line">|  4 | d    | 44444444    |</span><br><span class="line">|  5 | f    | 5555555     |</span><br><span class="line">+----+------+-------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">root@db 03:53:  [aaaa]&gt; update aaa set name=&apos;e&apos; where id =1;</span><br><span class="line">ERROR 1100 (HY000): Table &apos;aaa&apos; was not locked with LOCK TABLES</span><br><span class="line">root@db 03:54:  [aaaa]&gt; update aaa as t1 set name=&apos;e&apos; where id =1;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line">Rows matched: 1  Changed: 0  Warnings: 0</span><br></pre></td></tr></table></figure></p>
-<p>session 2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 03:55:  [aaaa]&gt; select * from aaa;</span><br><span class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</span><br></pre></td></tr></table></figure></p>
-<p>session 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 03:55:  [aaaa]&gt; unlock tables;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<p>结论：session 1对表aaa加别名write表锁，session1查询和更改需要使用别名，直接查询和更改无效，session2对表aaa无读权限，无写权限</p>
-<p>##7、额外提示：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">LOCK</span> <span class="string">TABLES或者UNLOCK</span> <span class="string">TABLES，当应用于分区表时，始终锁定或解锁整个表;</span> <span class="string">这些语句不支持分区锁定修剪</span></span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/17/mysql lock table && unlock tables实验/"><span>点击阅读</span></a></h3>
     
   
 </article>
