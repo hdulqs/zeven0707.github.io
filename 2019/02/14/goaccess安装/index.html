@@ -1,0 +1,331 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Linux] nginx日志分析工具goaccess | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="0、yum安装依赖包123yum install GeoIP-devel gcc ncurses* glib2 glib2-devel zlib zlib-devel bzip2-devel -yrpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-">
+  
+
+  
+  
+  <meta name="keywords" content="linux">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Linux] nginx日志分析工具goaccess"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Linux] nginx日志分析工具goaccess</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/02/14/goaccess安装/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-14T08:12:00.000Z">
+          2019-02-14
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="0、yum安装依赖包"><a href="#0、yum安装依赖包" class="headerlink" title="0、yum安装依赖包"></a>0、yum安装依赖包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install GeoIP-devel gcc ncurses* glib2 glib2-devel zlib zlib-devel bzip2-devel -y</span><br><span class="line">rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm</span><br><span class="line">yum -y install GeoIP-update</span><br></pre></td></tr></table></figure>
+<h4 id="1、下载安装goaccess（需科学上网）"><a href="#1、下载安装goaccess（需科学上网）" class="headerlink" title="1、下载安装goaccess（需科学上网）"></a>1、下载安装goaccess（需科学上网）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wget https://tar.goaccess.io/goaccess-1.3.tar.gz</span><br><span class="line">tar -xzvf goaccess-1.3.tar.gz</span><br><span class="line">cd goaccess-1.3/</span><br><span class="line">./configure --enable-utf8 --enable-geoip=legacy</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<h4 id="2、修改配置文件（可根据自己需求配置），也可以在启动命令是单独指定："><a href="#2、修改配置文件（可根据自己需求配置），也可以在启动命令是单独指定：" class="headerlink" title="2、修改配置文件（可根据自己需求配置），也可以在启动命令是单独指定："></a>2、修改配置文件（可根据自己需求配置），也可以在启动命令是单独指定：</h4><p>more /etc/goaccess.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">time-format %H:%M:%S</span><br><span class="line">date-format %d/%b/%Y</span><br><span class="line">log-format %h %^[%d:%t %^] &quot;%r&quot; %s %b &quot;%R&quot; &quot;%u&quot;</span><br><span class="line"></span><br><span class="line">real-time-html true</span><br><span class="line">ssl-cert &lt;cert.crt&gt;</span><br><span class="line">ssl-key &lt;priv.key&gt;</span><br><span class="line">ws-url wss://&lt;your-domain&gt;</span><br><span class="line">port &lt;port&gt;</span><br><span class="line">output /var/www/&lt;xxx&gt;/stat/index.html</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、安装tokyocabinet用于持久化数据（如果不需要持久化数据到磁盘可不必安装）"><a href="#3、安装tokyocabinet用于持久化数据（如果不需要持久化数据到磁盘可不必安装）" class="headerlink" title="3、安装tokyocabinet用于持久化数据（如果不需要持久化数据到磁盘可不必安装）"></a>3、安装tokyocabinet用于持久化数据（如果不需要持久化数据到磁盘可不必安装）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd /data/soft</span><br><span class="line">wget http://fallabs.com/tokyocabinet/tokyocabinet-1.4.48.tar.gz</span><br><span class="line">tar -zxvf tokyocabinet-1.4.48.tar.gz</span><br><span class="line">cd tokyocabinet-1.4.48</span><br><span class="line">./configure --prefix=/usr/local --enable-off64 --enable-fastest</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<p>将生成的模块加入/lib64下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /data/soft/tokyocabinet-1.4.48/libtokyocabinet.so.9 /lib64/</span><br></pre></td></tr></table></figure></p>
+<p>如果没有这个模块会，重新编译goaccess会报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/goaccess: error while loading shared libraries: libtokyocabinet.so.9: cannot open shared object file: No such file or directory</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、安装完tokyocabinet，配置goaccess加入btree"><a href="#4、安装完tokyocabinet，配置goaccess加入btree" class="headerlink" title="4、安装完tokyocabinet，配置goaccess加入btree"></a>4、安装完tokyocabinet，配置goaccess加入btree</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure --enable-utf8 --enable-geoip=legacy --enable-tcb=btree</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<h4 id="5、增加打印日志功能（可选）"><a href="#5、增加打印日志功能（可选）" class="headerlink" title="5、增加打印日志功能（可选）"></a>5、增加打印日志功能（可选）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./configure --enable-utf8 --enable-geoip=legacy --enable-tcb=btree --enable-debug</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<p>指定输出日志文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--debug-file=/tmp/goaccess.log</span><br></pre></td></tr></table></figure></p>
+<h4 id="6、添加定时任务生成月度的日志分析表（月度报表）"><a href="#6、添加定时任务生成月度的日志分析表（月度报表）" class="headerlink" title="6、添加定时任务生成月度的日志分析表（月度报表）"></a>6、添加定时任务生成月度的日志分析表（月度报表）</h4><p>添加到定时任务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/crontab |grep sh</span><br><span class="line">00 01 * * * root source /etc/profile &amp;&amp; sh /root/test.sh</span><br></pre></td></tr></table></figure></p>
+<p>cat /root/test.sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#!bin/bash</span><br><span class="line">#前一天的日期</span><br><span class="line">prestamp=`date -d &apos;1 day ago&apos; +&apos;%Y%m%d&apos;`</span><br><span class="line">#指定需要分析的前一天的日志的文件名称</span><br><span class="line">prelogname=/usr/local/openresty/nginx/logs/go_access$&#123;prestamp&#125;.log</span><br><span class="line">#prelogname=/usr/local/openresty/nginx/logs/go_access.log</span><br><span class="line">#每个月1号不生成</span><br><span class="line">premonstamp=`echo $&#123;prestamp:0:6&#125;`</span><br><span class="line">#月度报表名称</span><br><span class="line">monreportname=/data/web/oldreport/report$&#123;premonstamp&#125;.html</span><br><span class="line">#持久化磁盘路径</span><br><span class="line">disk_db_path=/tmp/goaccess$&#123;premonstamp&#125;</span><br><span class="line">#将前一天生成日志文件追加到月度持久化磁盘里，并生成新的报表</span><br><span class="line">/usr/local/bin/goaccess $&#123;prelogname&#125; -o $&#123;monreportname&#125; --load-from-disk --db-path=$&#123;disk_db_path&#125;  --keep-db-files --date-format=&apos;%d/%b/%Y&apos; --log-format=&apos;%h %^[%d:%t %^] &quot;%r&quot; %s %b&apos; --time-format=&apos;%H:%M:%S&apos;</span><br></pre></td></tr></table></figure></p>
+<p>生成的报表样式如下：<br><img src="https://i.imgur.com/riWKoHG.png" alt=""></p>
+<h4 id="7、每天凌晨定时生成新一天的报表，但是不建议持久化到磁盘，因为一旦中途进程挂掉，需要清空日志文件，如果不清空日志文件再次启动的话，会重复加载已经存在的数据。"><a href="#7、每天凌晨定时生成新一天的报表，但是不建议持久化到磁盘，因为一旦中途进程挂掉，需要清空日志文件，如果不清空日志文件再次启动的话，会重复加载已经存在的数据。" class="headerlink" title="7、每天凌晨定时生成新一天的报表，但是不建议持久化到磁盘，因为一旦中途进程挂掉，需要清空日志文件，如果不清空日志文件再次启动的话，会重复加载已经存在的数据。"></a>7、每天凌晨定时生成新一天的报表，但是不建议持久化到磁盘，因为一旦中途进程挂掉，需要清空日志文件，如果不清空日志文件再次启动的话，会重复加载已经存在的数据。</h4><p>cat /etc/crontab |grep sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00 00 * * * root source /etc/profile &amp;&amp; sh /root/test.sh</span><br></pre></td></tr></table></figure></p>
+<p>每天定时关闭goaccess并重新启动，将数据持久化到磁盘<br>cat /root/test.sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">stamp=`date +&apos;%Y%m%d&apos;`</span><br><span class="line">logname=/usr/local/openresty/nginx/logs/go_access.log</span><br><span class="line">reportname=/data/web/report/report$&#123;stamp&#125;.html</span><br><span class="line">ps -ef|grep &apos;/usr/local/bin/goaccess&apos;|grep -v grep |awk  &apos;&#123;print $2&#125;&apos; |xargs kill</span><br><span class="line">/usr/local/bin/goaccess $&#123;logname&#125; -o $&#123;reportname&#125; --log-format=COMBINED  --real-time-html --daemonize</span><br></pre></td></tr></table></figure></p>
+<h4 id="8、生成前一天的历史报表-在日志文件每天定时切割的情况下，如果不按天切割将无法生成前一天的报表"><a href="#8、生成前一天的历史报表-在日志文件每天定时切割的情况下，如果不按天切割将无法生成前一天的报表" class="headerlink" title="8、生成前一天的历史报表(在日志文件每天定时切割的情况下，如果不按天切割将无法生成前一天的报表)"></a>8、生成前一天的历史报表(在日志文件每天定时切割的情况下，如果不按天切割将无法生成前一天的报表)</h4><p>cat /etc/crontab |grep sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00 01 * * * root source /etc/profile &amp;&amp; sh /root/test.sh</span><br></pre></td></tr></table></figure></p>
+<p>cat /root/test.sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">prestamp=`date -d &apos;1 day ago&apos; +&apos;%Y%m%d&apos;` </span><br><span class="line">prelogname=/usr/local/openresty/nginx/logs/go_access$&#123;prestamp&#125;.log</span><br><span class="line">#prelogname=/usr/local/openresty/nginx/logs/go_access.log</span><br><span class="line">prereportname=/data/web/report/report$&#123;prestamp&#125;.html</span><br><span class="line">/usr/local/bin/goaccess $&#123;prelogname&#125; -o $&#123;prereportname&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="9、下面列举一些单独的命令生成自己需要的报表"><a href="#9、下面列举一些单独的命令生成自己需要的报表" class="headerlink" title="9、下面列举一些单独的命令生成自己需要的报表"></a>9、下面列举一些单独的命令生成自己需要的报表</h4><p>实时报表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/goaccess /usr/local/openresty/nginx/logs/go_access.log -o /data/web/report/report20181204.html --log-format=COMBINED  --real-time-html  --daemonize</span><br></pre></td></tr></table></figure></p>
+<p>增量追加持久化数据，将日志加载到磁盘，不使用配置文件（命令行指定）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/goaccess /tmp/api_access.log --load-from-disk --db-path=/tmp/goaccess  --keep-db-files --debug-file=/tmp/goaccess.log --date-format=&apos;%d/%b/%Y&apos; --log-format=&apos;%h %^[%d:%t %^] &quot;%r&quot; %s %b&apos; --time-format=&apos;%H:%M:%S&apos;</span><br></pre></td></tr></table></figure></p>
+<p>增量追加持久化数据，将日志加载到磁盘，同时输出到html表（添加-o 参数，指定输出html）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/goaccess /tmp/api_access.log -o /data/web/oldreport/oldreport20181205.html --load-from-disk --db-path=/tmp/goaccess  --keep-db-files --debug-file=/tmp/goaccess.log --date-format=&apos;%d/%b/%Y&apos; --log-format=&apos;%h %^[%d:%t %^] &quot;%r&quot; %s %b&apos; --time-format=&apos;%H:%M:%S&apos;</span><br></pre></td></tr></table></figure></p>
+<p>添加到后台运行（因为没有–real-time-html使用–daemonize是不生效的）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/goaccess /tmp/api_access.log -o /data/web/oldreport/oldreport20181205.html --load-from-disk --db-path=/tmp/goaccess  --keep-db-files --debug-file=/tmp/goaccess.log --date-format=&apos;%d/%b/%Y&apos; --log-format=&apos;%h %^[%d:%t %^] &quot;%r&quot; %s %b&apos; --time-format=&apos;%H:%M:%S&apos; &amp;</span><br></pre></td></tr></table></figure></p>
+<p>对已经持久化的数据，使用-o参数生成报表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/goaccess -o /data/web/oldreport/oldreport20181205.html --log-format=COMBINED  --keep-db-files --db-path=/tmp/goaccess --load-from-disk</span><br></pre></td></tr></table></figure></p>
+<h4 id="10、使用过程遇到的问题"><a href="#10、使用过程遇到的问题" class="headerlink" title="10、使用过程遇到的问题"></a>10、使用过程遇到的问题</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、在goaccess后台运行并且开启持久化的情况下，不能使用kill -9 pid方法，使用这种方法杀掉进程会毁坏数据，可以使用kill pid的方法</span><br><span class="line">2、使用持久化功能，进程宕掉之后，重启进程需要清空日志文件中的数据，否则会把日志文件中的旧数据重复加载一遍。</span><br><span class="line">3、--daemonize添加守护进程，只用--real-time-html可用时生效</span><br><span class="line">4、使用real_time_html适时生效需要开启goaccess的端口默认为7890</span><br></pre></td></tr></table></figure>
+<h4 id="11、goaccess-html参数详解"><a href="#11、goaccess-html参数详解" class="headerlink" title="11、goaccess html参数详解"></a>11、goaccess html参数详解</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">General Statistics：此面板提供了几个指标的摘要，其中一些包括：有效和无效请求的数量，分析数据集所花费的时间，唯一访问者，请求的文件，静态文件（CSS，ICO，JPG等）HTTP引用，404s，已解析日志文件的大小和带宽消耗。</span><br><span class="line">Unique visitors（每日独立访客 - 包括网络机器人）：此面板显示点击次数，唯一身份访问者和每个日期的累积带宽等指标。包含相同IP，相同日期和相同用户代理的HTTP请求被视为唯一访问者。默认情况下，它包括网络爬虫/蜘蛛。 可以使用--date-spec = hr将日期特异性设置为小时级别，这将显示日期，例如05 / Jun / 2016：16。如果您想跟踪小时级别的每日流量，这非常棒。</span><br><span class="line">Requested files（请求的文件）：此面板显示Web服务器上请求最多的文件。它显示了匹配，唯一身份访问者和百分比，以及累积带宽，协议和使用的请求方法。</span><br><span class="line">Requested static files（请求的文件）：列出了最常用静态文件，如：JPG，CSS，SWF，JS，GIF，和PNG文件类型，使用相同的指标作为最后的面板一起。可以将其他静态文件添加到配置文件中。</span><br><span class="line">404 or Not Found（未找到的URLS）：显示与先前请求面板相同的指标，但是，其数据包含在服务器上找不到的所有页面，或通常称为404状态代码。</span><br><span class="line">Hosts（未找到的URLS）：此面板包含有关主机本身的详细信息。这非常适合发现×××性爬虫，并确定谁在吃你的带宽。 扩展面板可以显示更多信息，例如主机的反向DNS查找结果，原产国和城市。如果-a启用了参数，则可以通过选择所需的IP地址，然后按Enter来显示用户代理列表。</span><br><span class="line">Operating Systems（操作系统）：此面板将报告主机在到达服务器时使用的操作系统。它试图提供每个操作系统的最具体版本。</span><br><span class="line">Browsers（操作系统）：此面板将报告主机在访问服务器时使用的浏览器。它试图提供每个浏览器的最具体版本。</span><br><span class="line">Visit Times（时间分配）：此面板将显示每小时报告。此选项显示24个数据点，每天一小时一个。 可选地，可以使用--hour-spec = min将小时特异性设置为十分之一水平，这将显示小时为16：4如果您想要发现服务器上的流量峰值，这很好。</span><br><span class="line">Virtual Hosts：此面板将显示从访问日志中解析的所有不同虚拟主机。如果在日志格式字符串中使用％v，则会显示此面板。</span><br><span class="line">Referrers URLs：如果相关主机通过其他资源访问了网站，或者是从其他主机链接转移给您，则会在此面板中提供引用它们的网址。请参阅`--ignore-panel`配置文件以启用它。 （默认禁用）</span><br><span class="line">Referring Sites（推荐网站）：此面板仅显示主机部分，但不显示整个URL。请求来自的URL。</span><br><span class="line">Keyphrases（谷歌搜索关键字）：它报告了用于Google搜索，Google缓存和Google翻译的关键字，这些关键字已导致您的网络服务器。目前，它仅通过HTTP支持Google搜索查询。请参阅`--ignore-panel`配置文件以启用它。 （默认禁用）</span><br><span class="line">Geo Location（地理位置）：确定IP地址在地理位置的位置。统计数据按大陆和国家分列。它需要使用GeoLocation支持进行编译。</span><br><span class="line">HTTP Status Codes（HTTP状态码）：HTTP请求的数字状态代码的值。</span><br><span class="line">Remote User (HTTP authentication)：这是HTTP身份验证确定的请求文档的人员的用户ID。如果文档没有密码保护，则此部分将为“ - ”，就像前一个部分一样。除非%e在log-format变量中给出，否则不会启用此面板。</span><br><span class="line">--real-os</span><br><span class="line">展示真实的操作系统。在Operation System模块中，是否展示更详细的操作系统信息。</span><br></pre></td></tr></table></figure>
+<h4 id="12、goaccess与nginx日志格式日常转换表"><a href="#12、goaccess与nginx日志格式日常转换表" class="headerlink" title="12、goaccess与nginx日志格式日常转换表"></a>12、goaccess与nginx日志格式日常转换表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">nginx               goaccess</span><br><span class="line">$time_local         %d:%t %^</span><br><span class="line">$host               %v</span><br><span class="line">$http_host          %v</span><br><span class="line">$remote_addr        %h</span><br><span class="line">$request_time       %T</span><br><span class="line">$request_method     %m</span><br><span class="line">$request_uri        %U</span><br><span class="line">$server_protocol    %H</span><br><span class="line">$request            %r</span><br><span class="line">$status             %s</span><br><span class="line">$body_bytes_sent    %b</span><br><span class="line">$bytes_sent         %b</span><br><span class="line">$http_referer       %R</span><br><span class="line">$http_user_agent    %u</span><br></pre></td></tr></table></figure>
+<p>如果找不到对应的格式可以使用“%^”–Ignore this field，来忽略那一部分</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#0、yum安装依赖包"><span class="toc-number">1.</span> <span class="toc-text">0、yum安装依赖包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1、下载安装goaccess（需科学上网）"><span class="toc-number">2.</span> <span class="toc-text">1、下载安装goaccess（需科学上网）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、修改配置文件（可根据自己需求配置），也可以在启动命令是单独指定："><span class="toc-number">3.</span> <span class="toc-text">2、修改配置文件（可根据自己需求配置），也可以在启动命令是单独指定：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、安装tokyocabinet用于持久化数据（如果不需要持久化数据到磁盘可不必安装）"><span class="toc-number">4.</span> <span class="toc-text">3、安装tokyocabinet用于持久化数据（如果不需要持久化数据到磁盘可不必安装）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、安装完tokyocabinet，配置goaccess加入btree"><span class="toc-number">5.</span> <span class="toc-text">4、安装完tokyocabinet，配置goaccess加入btree</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、增加打印日志功能（可选）"><span class="toc-number">6.</span> <span class="toc-text">5、增加打印日志功能（可选）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、添加定时任务生成月度的日志分析表（月度报表）"><span class="toc-number">7.</span> <span class="toc-text">6、添加定时任务生成月度的日志分析表（月度报表）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7、每天凌晨定时生成新一天的报表，但是不建议持久化到磁盘，因为一旦中途进程挂掉，需要清空日志文件，如果不清空日志文件再次启动的话，会重复加载已经存在的数据。"><span class="toc-number">8.</span> <span class="toc-text">7、每天凌晨定时生成新一天的报表，但是不建议持久化到磁盘，因为一旦中途进程挂掉，需要清空日志文件，如果不清空日志文件再次启动的话，会重复加载已经存在的数据。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8、生成前一天的历史报表-在日志文件每天定时切割的情况下，如果不按天切割将无法生成前一天的报表"><span class="toc-number">9.</span> <span class="toc-text">8、生成前一天的历史报表(在日志文件每天定时切割的情况下，如果不按天切割将无法生成前一天的报表)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9、下面列举一些单独的命令生成自己需要的报表"><span class="toc-number">10.</span> <span class="toc-text">9、下面列举一些单独的命令生成自己需要的报表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10、使用过程遇到的问题"><span class="toc-number">11.</span> <span class="toc-text">10、使用过程遇到的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11、goaccess-html参数详解"><span class="toc-number">12.</span> <span class="toc-text">11、goaccess html参数详解</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12、goaccess与nginx日志格式日常转换表"><span class="toc-number">13.</span> <span class="toc-text">12、goaccess与nginx日志格式日常转换表</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Linux] nginx日志分析工具goaccess'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2019 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
