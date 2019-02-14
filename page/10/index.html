@@ -112,6 +112,79 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/08/10/mysql定时备份及邮件告知备份情况/"><span>[Mysql] mysql定时备份及邮件告知备份情况</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/08/10/mysql定时备份及邮件告知备份情况/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-08-10T06:05:24.000Z">
+          2018-08-10
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h2 id="1、mysql全量备份脚本，内容如下："><a href="#1、mysql全量备份脚本，内容如下：" class="headerlink" title="1、mysql全量备份脚本，内容如下："></a>1、mysql全量备份脚本，内容如下：</h2><p>cat /data/soft/mysql_backup.sh<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment">#数据库用户名</span></span><br><span class="line">dbuser=<span class="built_in">test</span></span><br><span class="line"><span class="comment">#数据库密码</span></span><br><span class="line">dbpass=<span class="built_in">test</span></span><br><span class="line"><span class="comment">#备份脚本运行获取到的时间戳</span></span><br><span class="line">stamp=`date +<span class="string">"%Y-%m-%d"</span>`</span><br><span class="line"><span class="comment">#项目名称</span></span><br><span class="line">programname=mw</span><br><span class="line"><span class="comment">#备份文件名称前缀</span></span><br><span class="line">fullbackupname=<span class="variable">$&#123;programname&#125;</span>-dbfullbak</span><br><span class="line"><span class="comment">#备份文件目录</span></span><br><span class="line">backuppath=/data/backup</span><br><span class="line"><span class="comment">#备份文件绝对路径名称</span></span><br><span class="line">backname=<span class="variable">$backuppath</span>/<span class="variable">$&#123;fullbackupname&#125;</span>-<span class="variable">$&#123;stamp&#125;</span>.dump</span><br><span class="line"><span class="comment">#需要删除的备份文件绝对路径名称</span></span><br><span class="line">oldstamp=`date +<span class="string">"%Y-%m-%d"</span> -d <span class="string">"-5 day"</span>`</span><br><span class="line">oldbackname=<span class="variable">$backuppath</span>/<span class="variable">$&#123;fullbackupname&#125;</span>-<span class="variable">$&#123;oldstamp&#125;</span>.dump</span><br><span class="line"><span class="comment">#数据库安装路径</span></span><br><span class="line">dbpath=/data/mysql/bin</span><br><span class="line"><span class="comment">#备份操作log目录</span></span><br><span class="line">backuplogname=/tmp/backup_<span class="variable">$&#123;stamp&#125;</span>.<span class="built_in">log</span></span><br><span class="line"><span class="comment">#当前服务器主机名</span></span><br><span class="line">localname=`hostname`</span><br><span class="line"><span class="comment">#当前服务器ip地址</span></span><br><span class="line">localip=`ip a |grep global| head -1| awk <span class="string">'&#123;print $2&#125;'</span>|awk -F<span class="string">'/'</span> <span class="string">'&#123;print $1&#125;'</span>`</span><br><span class="line"><span class="comment">#localip='65.52.165.104'</span></span><br><span class="line"><span class="comment">#目标邮箱</span></span><br><span class="line">dest_mail=<span class="string">'test@qq.com'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#判断指定log文件是否存在，如果存在将其删除</span></span><br><span class="line"><span class="keyword">if</span> [ -e <span class="variable">$&#123;backuplogname&#125;</span> ];<span class="keyword">then</span></span><br><span class="line">   sudo rm -rf <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">   :</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#备份执行失败发送错误邮件</span></span><br><span class="line"><span class="function"><span class="title">send_fail_mail</span></span>()&#123;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"<span class="variable">$&#123;programname&#125;</span>备份失败,登录服务器<span class="variable">$&#123;localname&#125;</span>-<span class="variable">$&#123;localip&#125;</span>的日志<span class="variable">$&#123;backuplogname&#125;</span>下查看报错！！！"</span> |mail -s <span class="variable">$&#123;programname&#125;</span>数据库备份情况 <span class="variable">$&#123;dest_mail&#125;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#备份执行成功发送成功邮件 </span></span><br><span class="line"><span class="function"><span class="title">send_success_mail</span></span>()&#123;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"<span class="variable">$&#123;programname&#125;</span>备份成功,可登录服务器<span class="variable">$&#123;localname&#125;</span>-<span class="variable">$&#123;localip&#125;</span>的日志<span class="variable">$&#123;backuplogname&#125;</span>下查看备份信息。"</span> |mail -s <span class="variable">$&#123;programname&#125;</span>数据库备份情况 <span class="variable">$&#123;dest_mail&#125;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#创建备份时间函数</span></span><br><span class="line"><span class="function"><span class="title">date_func</span></span>()&#123;</span><br><span class="line">   dateresult=$((<span class="variable">$&#123;afterstamp&#125;</span>-<span class="variable">$&#123;beforstamp&#125;</span>))</span><br><span class="line">   hour=$((<span class="variable">$&#123;dateresult&#125;</span>/3600))</span><br><span class="line">   min=$(((<span class="variable">$&#123;dateresult&#125;</span>-<span class="variable">$&#123;hour&#125;</span>*3600)/60))</span><br><span class="line">   sec=$((<span class="variable">$&#123;dateresult&#125;</span>-<span class="variable">$&#123;hour&#125;</span>*3600-<span class="variable">$&#123;min&#125;</span>*60))</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"5、本次备份运行时间为:"</span><span class="variable">$&#123;hour&#125;</span>时<span class="variable">$&#123;min&#125;</span>分<span class="variable">$&#123;sec&#125;</span>秒 &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#创建一个删除五天前的备份数据的函数</span></span><br><span class="line"><span class="function"><span class="title">del_old_bakdata</span></span>()&#123;</span><br><span class="line">   <span class="keyword">if</span> [ -e <span class="variable">$&#123;oldbackname&#125;</span> ];<span class="keyword">then</span></span><br><span class="line">   	 sudo <span class="built_in">echo</span> <span class="string">"6、五天前的备份数据<span class="variable">$&#123;oldbackname&#125;</span>存在，进行删除"</span>  &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">   	 rm -rf <span class="variable">$&#123;oldbackname&#125;</span></span><br><span class="line">   	 <span class="keyword">if</span> [ $? == 0 ];<span class="keyword">then</span></span><br><span class="line">   	 	sudo <span class="built_in">echo</span> <span class="string">"6.1、备份数据删除成功"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">   	 <span class="keyword">else</span></span><br><span class="line">   	 	sudo <span class="built_in">echo</span> <span class="string">"6.1、备份数据删除失败，注意查看失败原因"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">   	 <span class="keyword">fi</span></span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">     sudo <span class="built_in">echo</span> <span class="string">"6、五天前的备份数据<span class="variable">$&#123;oldbackname&#125;</span>不存在，不需要再删除。"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">   <span class="keyword">fi</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#备份之前判断备份目录是否存在</span></span><br><span class="line"><span class="keyword">if</span> [ -d <span class="variable">$&#123;backuppath&#125;</span> ];<span class="keyword">then</span></span><br><span class="line">	sudo <span class="built_in">echo</span> <span class="string">"1、备份目录存在,可执行备份操作"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	sudo <span class="built_in">echo</span> <span class="string">"1、备份目录不存在,手动创建"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">	sudo mkdir -p <span class="variable">$&#123;backuppath&#125;</span></span><br><span class="line">	<span class="keyword">if</span> [ $? == 0 ];<span class="keyword">then</span></span><br><span class="line">	   sudo <span class="built_in">echo</span> <span class="string">"1.1、备份目录创建成功，可进行下面操作"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	   sudo <span class="built_in">echo</span> <span class="string">"1.1、备份目录不存在，且创建失败，无法进行下面操作，退出备份"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">	   <span class="built_in">exit</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#备份之前判断备份文件是否已经存在</span></span><br><span class="line"><span class="keyword">if</span> [ -e <span class="variable">$&#123;backname&#125;</span> ];<span class="keyword">then</span></span><br><span class="line">	sudo <span class="built_in">echo</span> <span class="string">"2、指定的备份文件<span class="variable">$&#123;backname&#125;</span>已存在，对其进行重命名"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">    mv <span class="variable">$&#123;backname&#125;</span> <span class="variable">$&#123;backuppath&#125;</span>/bak-<span class="variable">$&#123;fullbackupname&#125;</span>-<span class="variable">$&#123;stamp&#125;</span>.dump</span><br><span class="line">    <span class="keyword">if</span> [ $? == 0 ];<span class="keyword">then</span></span><br><span class="line">    	sudo <span class="built_in">echo</span> <span class="string">"2.1、文件已重新命名为<span class="variable">$&#123;backuppath&#125;</span>/bak-<span class="variable">$&#123;fullbackupname&#125;</span>-<span class="variable">$&#123;stamp&#125;</span>.dump,可继续备份"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    	sudo <span class="built_in">echo</span> <span class="string">"2.1、文件重命名失败，退出备份操作"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">    	<span class="built_in">exit</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	sudo <span class="built_in">echo</span> <span class="string">"2、指定的备份文件不存在，开始进行备份"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#备份之前时间戳</span></span><br><span class="line">beforstamp=`date +%s`</span><br><span class="line"><span class="comment">#开始全量备份数据库</span></span><br><span class="line">sudo <span class="built_in">echo</span> <span class="string">"3、开始全量备份数据库"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line"><span class="variable">$&#123;dbpath&#125;</span>/mysqldump -u<span class="variable">$&#123;dbuser&#125;</span> -p<span class="variable">$&#123;dbpass&#125;</span> --all-databases  --single-transaction --master-data=2 --quick --<span class="built_in">set</span>-gtid-purged=OFF &gt; <span class="variable">$&#123;backname&#125;</span></span><br><span class="line">backupresult=$?</span><br><span class="line">afterstamp=`date +%s`</span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$&#123;backupresult&#125;</span> == 0 ];<span class="keyword">then</span></span><br><span class="line">    	sudo <span class="built_in">echo</span> <span class="string">"4、<span class="variable">$&#123;programname&#125;</span>数据库备份成功,文件名称为<span class="variable">$&#123;backname&#125;</span>，准备删除五天前的备份数据"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">    	date_func</span><br><span class="line">        del_old_bakdata</span><br><span class="line">        send_success_mail</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    	sudo <span class="built_in">echo</span> <span class="string">"4、<span class="variable">$&#123;programname&#125;</span>数据库备份失败,注意查看备份失败原因并重新备份"</span> &gt;&gt; <span class="variable">$&#123;backuplogname&#125;</span></span><br><span class="line">    	send_fail_mail</span><br><span class="line">    	<span class="built_in">exit</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></p>
+<p>使用该脚本需要修改自己数据库对应的用户名dbuser,密码dbpass,邮箱dest_mail,项目名称programname,mysql数据库安装路径dbpath。其他参数可使用脚本内默认的，也可自行修改<br>其中–single-transaction：该参数在备份前将隔离模式设为repeatable read并启动start transaction语句。该参数只对innodb事物表有作用，当启动start transaction时开始备份数据库一致性状态，并不阻塞其他的应用。对于myisam和memory数据引擎使用这个参数备份的时候状态是实时改变的。另外该参数与–lock-tables参数是相互排斥的，lock-tables会是隐式吧提交的事物产生等待。<br>–master-data=2：使用该参数指备份执行时binglog开始的坐标，在输出结果中属于change master to语句，如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-- CHANGE MASTER TO MASTER_LOG_FILE=&apos;mysql-binlog.000036&apos;, MASTER_LOG_POS=79549;</span><br></pre></td></tr></table></figure></p>
+<p>如果使用该参数不指定值，默认值为1，语句不会以注释的形式写入，当dump文件被加载时该行参数会影响加载过程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CHANGE MASTER TO MASTER_LOG_FILE=&apos;mysql-binlog.000036&apos;, MASTER_LOG_POS=79549;</span><br></pre></td></tr></table></figure></p>
+<p>如果指定参数为2，会以注释的形式写入输出文件，dump文件被加载也不会受该行语句影响。</p>
+<p>–quick：对于备份大表比较有用，该参数强制mysqldump命令一次性从数据库中获取表的行，而不是先获取行集合，在写出之前把他们缓存到内存。</p>
+<h2 id="2、配置邮件发送功能"><a href="#2、配置邮件发送功能" class="headerlink" title="2、配置邮件发送功能"></a>2、配置邮件发送功能</h2><p>2.1、安装mailx软件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y mailx</span><br></pre></td></tr></table></figure></p>
+<p>2.2、修改配置文件/etc/mail.rc,在行尾添加一下信息：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">set</span> <span class="string">from=test@qq.com</span> <span class="string">smtp=smtp.qq.com</span></span><br><span class="line"><span class="string">set</span> <span class="string">smtp-auth-user=test@qq.com</span> <span class="string">smtp-auth-password=testpassword</span> <span class="string">smtp-auth=login</span></span><br></pre></td></tr></table></figure></p>
+<p>参数详解：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">from:</span><span class="string">指定发送邮件的发件人</span></span><br><span class="line"><span class="attr">smtp:</span><span class="string">指定smtp服务器信息</span></span><br><span class="line"><span class="attr">smtp-auth-user:</span><span class="string">允许第三方登录的用户名</span></span><br><span class="line"><span class="string">smtp-auth-password：允许第三方登录的密码</span></span><br></pre></td></tr></table></figure></p>
+<p>2.3、发送测试邮件：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">echo</span> <span class="string">'test email'</span> <span class="string">|mail</span> <span class="bullet">-s</span> <span class="string">'title'</span> <span class="string">test@qq.com</span></span><br></pre></td></tr></table></figure></p>
+<p>title:指定发送文件的标题，可自行定义</p>
+<h2 id="3、修改备份脚本权限"><a href="#3、修改备份脚本权限" class="headerlink" title="3、修改备份脚本权限"></a>3、修改备份脚本权限</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /data/soft/mysql_backup.sh</span><br></pre></td></tr></table></figure>
+<h2 id="4、将脚本添加到定时任务"><a href="#4、将脚本添加到定时任务" class="headerlink" title="4、将脚本添加到定时任务"></a>4、将脚本添加到定时任务</h2><p>如：每天凌晨一点备份<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; crontab -e</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 * * * sh /data/soft/mysql_backup.sh</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/08/10/mysql定时备份及邮件告知备份情况/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/08/09/mysqldump逻辑备份及恢复/"><span>[Mysql] mysqldump逻辑备份及恢复</span></a></h3>
     
   
@@ -789,82 +862,13 @@ var _hmt = _hmt || [];
 
 
 
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/07/30/python-2.7升级到python-3.7/"><span>[Python] python-2.7升级到python-3.7</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/07/30/python-2.7升级到python-3.7/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-07-30T15:40:24.000Z">
-          2018-07-30
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h1 id="下载、解压python3-7"><a href="#下载、解压python3-7" class="headerlink" title="[下载、解压python3.7]"></a>[下载、解压python3.7]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz</span><br><span class="line">tar -xvf Python-3.7.0.tar.xz</span><br></pre></td></tr></table></figure>
-<h1 id="安装编译"><a href="#安装编译" class="headerlink" title="[安装编译]"></a>[安装编译]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> Python-3.7.0/</span><br><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/python3.7</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
-<h1 id="安装报错"><a href="#安装报错" class="headerlink" title="[安装报错]"></a>[安装报错]</h1><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ModuleNotFoundError:</span> <span class="literal">No</span> <span class="string">module</span> <span class="string">named</span> <span class="string">'_ctypes'</span></span><br><span class="line"><span class="attr">make:</span> <span class="string">***</span> <span class="string">[install]</span> <span class="string">Error</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<p>解决方法：<br> 安装libffi-devel<br> yum install libffi-devel<br> 重新编译安装<br> make &amp;&amp; make install</p>
-<h1 id="备份旧版本的python"><a href="#备份旧版本的python" class="headerlink" title="[备份旧版本的python]"></a>[备份旧版本的python]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ll /usr/bin/python*</span><br><span class="line">lrwxrwxrwx. 1 root root    7 Apr 10 19:35 /usr/bin/python -&gt; python2</span><br><span class="line">lrwxrwxrwx. 1 root root    9 Apr 10 19:35 /usr/bin/python2 -&gt; python2.7</span><br><span class="line">-rwxr-xr-x. 1 root root 7136 Aug  4  2017 /usr/bin/python2.7</span><br><span class="line">-------------------------</span><br><span class="line">一般自带系统已经做好了python2.7的备份，直接替换掉python即可</span><br><span class="line"></span><br><span class="line">如果没有备份，使用一些命令备份：</span><br><span class="line">mv /usr/bin/python /usr/bin/python_old  <span class="comment">#备份旧的python</span></span><br></pre></td></tr></table></figure>
-<h1 id="新版本python软连接到python"><a href="#新版本python软连接到python" class="headerlink" title="[新版本python软连接到python]"></a>[新版本python软连接到python]</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/bin/python <span class="comment">#需要删除旧版的python,否则报错</span></span><br><span class="line">ln -s /usr/<span class="built_in">local</span>/python3.7/bin/python3.7 /usr/bin/python <span class="comment">#添加软连接</span></span><br><span class="line">python -V <span class="comment">#查看python版本</span></span><br><span class="line">2.7版本没有pip,升级到python3.7后，自带有pip,做一个pip的软连接即可</span><br><span class="line">ln -s /usr/<span class="built_in">local</span>/python3.7/bin/pip3 /usr/bin/pip</span><br></pre></td></tr></table></figure>
-<h1 id="升级完python之后，yum命令失效，需修改配置文件"><a href="#升级完python之后，yum命令失效，需修改配置文件" class="headerlink" title="[升级完python之后，yum命令失效，需修改配置文件]"></a>[升级完python之后，yum命令失效，需修改配置文件]</h1><p>使用yum命令报以下错误：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> <span class="string">yum</span> <span class="string">clean</span> <span class="string">all</span></span><br><span class="line">  <span class="string">File</span> <span class="string">"/usr/bin/yum"</span><span class="string">,</span> <span class="string">line</span> <span class="number">30</span></span><br><span class="line">    <span class="string">except</span> <span class="string">KeyboardInterrupt,</span> <span class="attr">e:</span></span><br><span class="line">                            <span class="string">^</span></span><br><span class="line"><span class="attr">SyntaxError:</span> <span class="string">invalid</span> <span class="string">syntax</span></span><br></pre></td></tr></table></figure></p>
-<p>解决 yum 不可用：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">修改/usr/bin/yum配置文件</span></span><br><span class="line"><span class="comment">#!/usr/bin/python    改成：    #!/usr/bin/python2.7</span></span><br><span class="line"><span class="string">重新测试yum是否正常：</span></span><br><span class="line"><span class="string">yum</span> <span class="string">clean</span> <span class="string">all</span></span><br></pre></td></tr></table></figure></p>
-<h1 id="升级完python之后，yum使用过程中，额外问题："><a href="#升级完python之后，yum使用过程中，额外问题：" class="headerlink" title="[升级完python之后，yum使用过程中，额外问题：]"></a>[升级完python之后，yum使用过程中，额外问题：]</h1><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">tree</span> <span class="bullet">-y</span> </span><br><span class="line"><span class="bullet">-</span><span class="bullet">---------------------------------</span></span><br><span class="line"><span class="string">报错：</span></span><br><span class="line"><span class="string">File</span> <span class="string">"/usr/libexec/urlgrabber-ext-down"</span><span class="string">,</span> <span class="string">line</span> <span class="number">28</span></span><br><span class="line">    <span class="string">except</span> <span class="string">OSError,</span> <span class="attr">e:</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">--------------------------------</span></span><br></pre></td></tr></table></figure>
-<p>解决方法：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">修改/usr/libexec/urlgrabber-ext-down配置文件</span><br><span class="line"><span class="comment">#!/usr/bin/python    改成：    #!/usr/bin/python2.7</span></span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/python/">python</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/07/30/python-2.7升级到python-3.7/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
 
 <nav class="pagination">
   
   <a href="/page/9/" class="pagination-prev">上一页</a>
   
+  
+  <a href="/page/11/" class="pagination-next">下一页</a>
   
 </nav>
             </main>

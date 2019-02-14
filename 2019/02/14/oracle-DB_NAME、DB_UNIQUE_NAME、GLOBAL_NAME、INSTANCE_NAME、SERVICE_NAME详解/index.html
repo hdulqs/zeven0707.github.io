@@ -1,0 +1,323 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Oracle] oracle-DB_NAME、DB_UNIQUE_NAME、GLOBAL_NAME、INSTANCE_NAME、SERVICE_NAME详解 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、DB_NAMEDB_NAME:指定最多8个字符的数据库连接标识符。rac环境每个实例都要配置该值，且每个实例的值必须相同。如果存在从库，主库和从库的db_name要相同。
+2、DB_UNIQUE_NAMEdb_unique_name：数据库全局唯一名称。如果没有修改，默认情况下，数据库实例对应的">
+  
+
+  
+  
+  <meta name="keywords" content="oracle">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Oracle] oracle-DB_NAME、DB_UNIQUE_NAME、GLOBAL_NAME、INSTANCE_NAME、SERVICE_NAME详解"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Oracle] oracle-DB_NAME、DB_UNIQUE_NAME、GLOBAL_NAME、INSTANCE_NAME、SERVICE_NAME详解</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/02/14/oracle-DB_NAME、DB_UNIQUE_NAME、GLOBAL_NAME、INSTANCE_NAME、SERVICE_NAME详解/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-14T08:01:00.000Z">
+          2019-02-14
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、DB-NAME"><a href="#1、DB-NAME" class="headerlink" title="1、DB_NAME"></a>1、DB_NAME</h4><p>DB_NAME:指定最多8个字符的数据库连接标识符。rac环境每个实例都要配置该值，且每个实例的值必须相同。如果存在从库，主库和从库的db_name要相同。</p>
+<h4 id="2、DB-UNIQUE-NAME"><a href="#2、DB-UNIQUE-NAME" class="headerlink" title="2、DB_UNIQUE_NAME"></a>2、DB_UNIQUE_NAME</h4><p>db_unique_name：数据库全局唯一名称。如果没有修改，默认情况下，数据库实例对应的名称为db_name。<br>oracle asm实例对应的名称为：+ASM。<br>rac各实例的对应的该值必须相同。<br>对于adg环境，主从具有相同的db_name，db_domain，但是必须保证db_unique_name不同，主从库有自己唯一的db_unique_name。最多设置30个字符。</p>
+<h4 id="3、GLOBAL-NAME"><a href="#3、GLOBAL-NAME" class="headerlink" title="3、GLOBAL_NAME"></a>3、GLOBAL_NAME</h4><p>global_names：指定dblink是否需要和所要连接的远程库服务名称（service_names）一样，如果为false则不检查。<br>如果计划使用分布式处理，建议将该参数设为true，在一个网络环境下来确定数据库和连接的一致性命名规范。<br>该值为fasle|true影响的只是本机，远程库的global_names值为true|false对本机使用dblink的查询没有任何影响。<br>如果该值设置为true，dblink名称与service_name名称不一致则会报错ora-02085，实验如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">SYS@ boston&gt; alter system set global_names=true;</span><br><span class="line">SYS@ boston&gt; create database link oibs1 connect to test identified by oracle using &apos;oibs1&apos;;</span><br><span class="line">Database link created.</span><br><span class="line">SYS@ boston&gt; select * from t1@oibs1;</span><br><span class="line">	ID</span><br><span class="line">----------</span><br><span class="line">	 1</span><br><span class="line">	 2</span><br><span class="line">SYS@ boston&gt; create database link oibs connect to test identified by oracle using &apos;oibs1&apos;;</span><br><span class="line">Database link created.</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">SYS@ boston&gt; select * from t1@oibs;</span><br><span class="line">select * from t1@oibs</span><br><span class="line">             *</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-02085: database link OIBS connects to OIBS1</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、INSTANCE-NAME"><a href="#4、INSTANCE-NAME" class="headerlink" title="4、INSTANCE_NAME"></a>4、INSTANCE_NAME</h4><p>instance_name：实例名，rac环境下，多个实例可以关联一个单独的数据服务。客户端可以通过指定一个特殊的实例来做负载均衡。<br>一个单实例的数据系统，实例名与数据库名相同。<br>tnsname.ora下的连接如果使用SID时要与该值相同。</p>
+<h4 id="5、SERVICE-NAMES"><a href="#5、SERVICE-NAMES" class="headerlink" title="5、SERVICE_NAMES"></a>5、SERVICE_NAMES</h4><p>service_names：默认值为db_unique_name.db_domain。<br>在rac环境下不要通过sqlplus设置service_names参数，如果需要设置该参数，通过oracle EM和srvctl配置。<br>tnsname.ora下的连接如果使用SERVICE_NAME时要与该值相同。</p>
+<h5 id="5-1、默认db-domain值为空的情况下，测试修改service-names"><a href="#5-1、默认db-domain值为空的情况下，测试修改service-names" class="headerlink" title="5.1、默认db_domain值为空的情况下，测试修改service_names"></a>5.1、默认db_domain值为空的情况下，测试修改service_names</h5><p>因此service_names=db_unique_name，单实例手动设置service_names，检查service_names<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">18:50:14 SYS@ boston&gt; show parameter service_names</span><br><span class="line">NAME				     TYPE	 VALUE</span><br><span class="line">------------------------------------ ----------- ------------------------------</span><br><span class="line">service_names			     string	 boston</span><br></pre></td></tr></table></figure></p>
+<p>修改service_names<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">19:56:42 SYS@ boston&gt; alter system set service_names=&apos;chicago.us.oracle&apos;;</span><br><span class="line">System altered.</span><br><span class="line">Elapsed: 00:00:00.23</span><br></pre></td></tr></table></figure></p>
+<p>查看service_names已修改<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">19:56:56 SYS@ boston&gt; show parameter service_names</span><br><span class="line">NAME				     TYPE	 VALUE</span><br><span class="line">------------------------------------ ----------- ------------------------------</span><br><span class="line">service_names			     string	 chicago.us.oracle</span><br></pre></td></tr></table></figure></p>
+<p>此时查看监听，新增了chicago.us.oracle的服务，原来boston的服务名并没有被覆盖掉：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[oracle@dax-mysql-slave admin]$ lsnrctl status</span><br><span class="line">......</span><br><span class="line">  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=dax-mysql-slave)(PORT=1521)))</span><br><span class="line">Services Summary...</span><br><span class="line">Service &quot;boston&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;bostonXDB&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;chicago.us.oracle&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">The command completed successfully</span><br></pre></td></tr></table></figure></p>
+<p>再次修改service_names<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">19:56:59 SYS@ boston&gt; alter system set service_names=&apos;chicago.us.oracle.com&apos;;</span><br><span class="line">System altered.</span><br><span class="line">Elapsed: 00:00:00.12</span><br></pre></td></tr></table></figure></p>
+<p>查看监听<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[oracle@dax-mysql-slave admin]$ lsnrctl status</span><br><span class="line">......</span><br><span class="line">  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=dax-mysql-slave)(PORT=1521)))</span><br><span class="line">Services Summary...</span><br><span class="line">Service &quot;boston&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;bostonXDB&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;chicago.us.oracle.com&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">The command completed successfully</span><br></pre></td></tr></table></figure></p>
+<p>chicago.us.oracle的服务名被替代为chicago.us.oracle.com</p>
+<h5 id="5-2、在db-domain存在的情况下-如果没有，可以自己修改，修改该值需要重启库"><a href="#5-2、在db-domain存在的情况下-如果没有，可以自己修改，修改该值需要重启库" class="headerlink" title="5.2、在db_domain存在的情况下(如果没有，可以自己修改，修改该值需要重启库)"></a>5.2、在db_domain存在的情况下(如果没有，可以自己修改，修改该值需要重启库)</h5><p>先修改db_domain值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">22:18:05 SYS@ boston&gt; alter system set db_domain=&apos;us.oracle.cn&apos; scope=spfile;</span><br><span class="line">System altered.</span><br><span class="line">22:18:22 SYS@ boston&gt; shutdown immediate</span><br><span class="line">Database closed.</span><br><span class="line">Database dismounted.</span><br><span class="line">ORACLE instance shut down.</span><br><span class="line">22:18:38 SYS@ boston&gt; startup</span><br><span class="line">ORACLE instance started.</span><br><span class="line">Total System Global Area 1603411968 bytes</span><br><span class="line">Fixed Size		    2253664 bytes</span><br><span class="line">Variable Size		  503319712 bytes</span><br><span class="line">Database Buffers	 1090519040 bytes</span><br><span class="line">Redo Buffers		    7319552 bytes</span><br><span class="line">Database mounted.</span><br><span class="line">Database opened.</span><br><span class="line">22:19:36 SYS@ boston&gt; show parameter db_domain</span><br><span class="line">NAME				     TYPE	 VALUE</span><br><span class="line">------------------------------------ ----------- ------------------------------</span><br><span class="line">db_domain			     string	 us.oracle.cn</span><br></pre></td></tr></table></figure></p>
+<p>修改service_names，在不指定后缀的情况下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">22:45:57 SYS@ boston&gt; alter system set service_names=&apos;chicago&apos;;</span><br><span class="line">System altered.</span><br><span class="line">Elapsed: 00:00:00.11</span><br><span class="line">22:46:45 SYS@ boston&gt; show parameter name</span><br><span class="line">NAME				     TYPE	 VALUE</span><br><span class="line">------------------------------------ ----------- ------------------------------</span><br><span class="line">service_names			     string	 chicago</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ lsnrctl status</span><br><span class="line">......</span><br><span class="line">Services Summary...</span><br><span class="line">Service &quot;boston.us.oracle.cn&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;bostonXDB.us.oracle.cn&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;chicago.us.oracle.cn&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">The command completed successfully</span><br></pre></td></tr></table></figure></p>
+<p>监听的服务名自动添加了db_domain,服务名变为了chicago.us.oracle.cn<br>当修改的service_names自己添加了其他的domian，那么系统自带的db_domain就不会覆盖了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">22:46:49 SYS@ boston&gt; alter system set service_names=&apos;chicago.cn.oracle.com&apos;;</span><br><span class="line">System altered.</span><br><span class="line">Elapsed: 00:00:00.15</span><br><span class="line">22:48:40 SYS@ boston&gt; show parameter name</span><br><span class="line">NAME				     TYPE	 VALUE</span><br><span class="line">------------------------------------ ----------- ------------------------------</span><br><span class="line">service_names			     string	 chicago.cn.oracle.com</span><br><span class="line">[oracle@dax-mysql-slave admin]$ lsnrctl status</span><br><span class="line">.....</span><br><span class="line">Services Summary...</span><br><span class="line">Service &quot;boston.us.oracle.cn&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;bostonXDB.us.oracle.cn&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">Service &quot;chicago.cn.oracle.com&quot; has 1 instance(s).</span><br><span class="line">  Instance &quot;boston&quot;, status READY, has 1 handler(s) for this service...</span><br><span class="line">The command completed successfully</span><br></pre></td></tr></table></figure></p>
+<p>监听的service_names为chicago.cn.oracle.com，而不是chicago.us.oracle.com</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、DB-NAME"><span class="toc-number">1.</span> <span class="toc-text">1、DB_NAME</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、DB-UNIQUE-NAME"><span class="toc-number">2.</span> <span class="toc-text">2、DB_UNIQUE_NAME</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、GLOBAL-NAME"><span class="toc-number">3.</span> <span class="toc-text">3、GLOBAL_NAME</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、INSTANCE-NAME"><span class="toc-number">4.</span> <span class="toc-text">4、INSTANCE_NAME</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、SERVICE-NAMES"><span class="toc-number">5.</span> <span class="toc-text">5、SERVICE_NAMES</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1、默认db-domain值为空的情况下，测试修改service-names"><span class="toc-number">5.1.</span> <span class="toc-text">5.1、默认db_domain值为空的情况下，测试修改service_names</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2、在db-domain存在的情况下-如果没有，可以自己修改，修改该值需要重启库"><span class="toc-number">5.2.</span> <span class="toc-text">5.2、在db_domain存在的情况下(如果没有，可以自己修改，修改该值需要重启库)</span></a></li></ol></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Oracle] oracle-DB_NAME、DB_UNIQUE_NAME、GLOBAL_NAME、INSTANCE_NAME、SERVICE_NAME详解'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2019 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>

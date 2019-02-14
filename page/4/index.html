@@ -112,6 +112,77 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/11/06/centos安装vsftp/"><span>[Linux] centos安装vsftp</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/11/06/centos安装vsftp/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-11-06T14:49:30.000Z">
+          2018-11-06
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、检查vsftp是否安装，如果没有yum安装vsftp："><a href="#1、检查vsftp是否安装，如果没有yum安装vsftp：" class="headerlink" title="1、检查vsftp是否安装，如果没有yum安装vsftp："></a>1、检查vsftp是否安装，如果没有yum安装vsftp：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa| grep vsftpd</span><br><span class="line">yum install vsftpd -y</span><br></pre></td></tr></table></figure>
+<h4 id="2、创建用户："><a href="#2、创建用户：" class="headerlink" title="2、创建用户："></a>2、创建用户：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adduser -s /sbin/nologin -d /var/ftp/ftp1 ftp1 </span><br><span class="line">修改用户名：</span><br><span class="line">passwd ftp1</span><br></pre></td></tr></table></figure>
+<h4 id="3、修改配置文件："><a href="#3、修改配置文件：" class="headerlink" title="3、修改配置文件："></a>3、修改配置文件：</h4><p>cat /etc/vsftpd/vsftpd.conf |grep -v ‘^#’<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#禁止匿名用户登录</span><br><span class="line">anonymous_enable=NO</span><br><span class="line">local_enable=YES</span><br><span class="line">write_enable=YES</span><br><span class="line">local_umask=022</span><br><span class="line">dirmessage_enable=YES</span><br><span class="line">xferlog_enable=YES</span><br><span class="line">connect_from_port_20=YES</span><br><span class="line">xferlog_std_format=YES</span><br><span class="line">#不允许chroot_list下的用户访问其他目录：</span><br><span class="line">chroot_list_file=/etc/vsftpd/chroot_list</span><br><span class="line">chroot_local_user=YES</span><br><span class="line">chroot_list_enable=NO</span><br><span class="line">listen=NO</span><br><span class="line">listen_ipv6=YES</span><br><span class="line"></span><br><span class="line">pam_service_name=vsftpd</span><br><span class="line">#只允许vsftpd.user_list文件下的用户登录：</span><br><span class="line">userlist_enable=YES</span><br><span class="line">userlist_deny=NO</span><br><span class="line">userlist_file=/etc/vsftpd/vsftpd.user_list</span><br><span class="line">tcp_wrappers=YES</span><br><span class="line">allow_writeable_chroot=YES</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、添加访问用户："><a href="#4、添加访问用户：" class="headerlink" title="4、添加访问用户："></a>4、添加访问用户：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/vsftpd/vsftpd.user_list</span><br><span class="line">ftp1</span><br><span class="line"></span><br><span class="line">cat /etc/vsftpd/chroot_list</span><br><span class="line">ftp1</span><br></pre></td></tr></table></figure>
+<h4 id="5、启动，查看ftp服务状态"><a href="#5、启动，查看ftp服务状态" class="headerlink" title="5、启动，查看ftp服务状态"></a>5、启动，查看ftp服务状态</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">service vsftpd status</span><br><span class="line">service vsftpd start</span><br><span class="line">service vsftpd stop</span><br><span class="line">service vsftpd restart</span><br></pre></td></tr></table></figure>
+<h4 id="6、客户端安装ftp："><a href="#6、客户端安装ftp：" class="headerlink" title="6、客户端安装ftp："></a>6、客户端安装ftp：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install ftp</span><br></pre></td></tr></table></figure>
+<p>连接到ftp-server<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; ftp *.*.*.*</span><br></pre></td></tr></table></figure></p>
+<h4 id="7、配置过程遇到的问题："><a href="#7、配置过程遇到的问题：" class="headerlink" title="7、配置过程遇到的问题："></a>7、配置过程遇到的问题：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">500 OOPS: vsftpd: refusing to run with writable root inside chroot ()</span><br><span class="line">查看配置文件该行参数是否配置：</span><br><span class="line">allow_writeable_chroot=YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">500 OOPS: chroot</span><br><span class="line">Login failed.</span><br><span class="line">421 Service not available, remote server has closed connection</span><br><span class="line">检查selinux是否为enforcing状态，并修改：</span><br><span class="line">setenforce 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ftp vsftpd 530 login incorrect</span><br><span class="line">解决方法：</span><br><span class="line">1.检查密码是否正常。</span><br><span class="line">2.检查/etc/vsftpd/vsftpd.conf配置：</span><br><span class="line">pam_service_name=vsftpd</span><br><span class="line">userlist_enable=YES</span><br><span class="line">userlist_deny=NO</span><br><span class="line">userlist_file=/etc/vsftpd/vsftpd.user_list</span><br><span class="line">3.检查/etc/pam.d/vsftpd配置：</span><br><span class="line">#%PAM-1.0</span><br><span class="line">session    optional     pam_keyinit.so    force revoke</span><br><span class="line">auth       required	pam_listfile.so item=user sense=deny file=/etc/vsftpd/ftpusers onerr=succeed</span><br><span class="line">auth       required	pam_shells.so</span><br><span class="line">auth       include	password-auth</span><br><span class="line">account    include	password-auth</span><br><span class="line">session    required     pam_loginuid.so</span><br><span class="line">session    include	password-auth</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/11/06/centos安装vsftp/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/11/06/mysql意外drop表之后，使用innobackupex恢复/"><span>[Mysql] mysql意外drop表之后，使用innobackupex恢复</span></a></h3>
     
   
@@ -713,69 +784,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/28/Old incarnation found while trying to add node/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
-          2018-10-25
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
