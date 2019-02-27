@@ -112,6 +112,76 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/02/27/记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程/"><span>[Linux] 记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/02/27/记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-27T09:26:00.000Z">
+          2019-02-27
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、服务器收到cpu报警，cpu被占用达到100-，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示"><a href="#1、服务器收到cpu报警，cpu被占用达到100-，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示" class="headerlink" title="1、服务器收到cpu报警，cpu被占用达到100%，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示"></a>1、服务器收到cpu报警，cpu被占用达到100%，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示</h4><p><img src="https://i.imgur.com/dsX0Vyz.png" alt=""><br>该进程为被植入的挖矿程序，该程序会在cron下面写入脚本，定期去pastebin.com下载木马开始挖矿，如果删除不彻底仍然会不定期启动这个挖矿程序。</p>
+<h4 id="2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制："><a href="#2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制：" class="headerlink" title="2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制："></a>2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -s 104.20.209.21 -j DROP</span><br><span class="line">iptables -A OUTPUT -s 104.20.209.21 -j DROP</span><br><span class="line">iptables -A OUTPUT -j DROP -d 104.20.209.21</span><br></pre></td></tr></table></figure>
+<p>保存修改内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/sbin/service iptables save</span><br></pre></td></tr></table></figure></p>
+<p>为安全起见，同时修改本地hosts文件添加，将pastebin.com重定向到本地：<br>cat /etc/hosts|grep pastebin<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 pastebin.com</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒-如果确认病毒可以被彻底删除，这不无需操作"><a href="#3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒-如果确认病毒可以被彻底删除，这不无需操作" class="headerlink" title="3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒(如果确认病毒可以被彻底删除，这不无需操作)"></a>3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒(如果确认病毒可以被彻底删除，这不无需操作)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mv /usr/bin/curl /usr/bin/lruc</span><br><span class="line">mv /usr/bin/wget /usr/bin/tegw</span><br></pre></td></tr></table></figure>
+<h4 id="4、杀掉watchbog进程"><a href="#4、杀掉watchbog进程" class="headerlink" title="4、杀掉watchbog进程"></a>4、杀掉watchbog进程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep watchbog|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</span><br></pre></td></tr></table></figure>
+<h4 id="5、删掉cron里面的相关任务"><a href="#5、删掉cron里面的相关任务" class="headerlink" title="5、删掉cron里面的相关任务"></a>5、删掉cron里面的相关任务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br><span class="line">/etc/cron.d     </span><br><span class="line">/etc/cron.deny    </span><br><span class="line">/etc/cron.monthly  </span><br><span class="line">/etc/cron.daily  </span><br><span class="line">/etc/cron.hourly  </span><br><span class="line">/etc/crontab       </span><br><span class="line">/etc/cron.weekly</span><br></pre></td></tr></table></figure>
+<p>上面所有的文档一定要都仔细检查一边，有相关curl pastebin.com等信息要彻底删除</p>
+<h4 id="6、在cron的文件下还发现的其他脚本命令，-bin-httpntp、-bin-ftpsdns等，同时删除watchbog"><a href="#6、在cron的文件下还发现的其他脚本命令，-bin-httpntp、-bin-ftpsdns等，同时删除watchbog" class="headerlink" title="6、在cron的文件下还发现的其他脚本命令，/bin/httpntp、/bin/ftpsdns等，同时删除watchbog"></a>6、在cron的文件下还发现的其他脚本命令，/bin/httpntp、/bin/ftpsdns等，同时删除watchbog</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/bin/watchbog</span><br><span class="line">rm -rf /bin/httpntp</span><br><span class="line">rm -rf /bin/ftpsdns</span><br></pre></td></tr></table></figure>
+<h4 id="7、如果-tmp目录下存在文件-tmp-timesyncc-service，也要删除"><a href="#7、如果-tmp目录下存在文件-tmp-timesyncc-service，也要删除" class="headerlink" title="7、如果/tmp目录下存在文件/tmp/timesyncc.service，也要删除"></a>7、如果/tmp目录下存在文件/tmp/<em>timesyncc.service</em>，也要删除</h4><h4 id="8、参考链接"><a href="#8、参考链接" class="headerlink" title="8、参考链接"></a>8、<a href="http://sudhakarbellamkonda.blogspot.com/2018/11/blocking-watchbog-malwareransomware.html" target="_blank" rel="noopener">参考链接</a></h4>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/02/27/记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/02/26/ORA-00020 maximum number of processes (150) exceeded/"><span>[Oracle] oracle ORA-00020: maximum number of processes (150) exceeded</span></a></h3>
     
   
@@ -758,71 +828,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2019/01/23/修改oracle用户密码永不过期/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2019/01/22/mysql参数NO_AUTO_CREATE_USER/"><span>[Mysql] mysql参数NO_AUTO_CREATE_USER</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2019/01/22/mysql参数NO_AUTO_CREATE_USER/" rel="bookmark">
-        <time class="entry-date published" datetime="2019-01-22T06:34:00.000Z">
-          2019-01-22
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、sql-mode存在NO-AUTO-CREATE-USER情况下："><a href="#1、sql-mode存在NO-AUTO-CREATE-USER情况下：" class="headerlink" title="1、sql_mode存在NO_AUTO_CREATE_USER情况下："></a>1、sql_mode存在NO_AUTO_CREATE_USER情况下：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@db 01:05:  [(none)]&gt; show variables like &apos;%sql_mode%&apos;;</span><br><span class="line">+---------------+------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Variable_name | Value                                                                                                                  |</span><br><span class="line">+---------------+------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| sql_mode      | STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION |</span><br><span class="line">+---------------+------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">root@db 01:05:  [(none)]&gt; select host,user from mysql.user;</span><br><span class="line">+-----------+---------------+</span><br><span class="line">| host      | user          |</span><br><span class="line">+-----------+---------------+</span><br><span class="line">| %         | zabbix        |</span><br><span class="line">| localhost | mysql.session |</span><br><span class="line">| localhost | mysql.sys     |</span><br><span class="line">| localhost | root          |</span><br><span class="line">| localhost | zabbix        |</span><br><span class="line">+-----------+---------------+</span><br><span class="line">5 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
-<p>在包含NO_AUTO_CREATE_USER的情况下，使用grant去授权一个不存在的用户，必须要使用identified by参数或者identified with插件指定密码，才能够创建用户并授权成功：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@db 01:07:  [(none)]&gt; grant all privileges on *.* to testuser;</span><br><span class="line">ERROR 1133 (42000): Can&apos;t find any matching row in the user table</span><br><span class="line">root@db 01:07:  [(none)]&gt; grant all privileges on *.* to testuser identified by &apos;testuser&apos;;</span><br><span class="line">Query OK, 0 rows affected, 1 warning (0.01 sec)</span><br></pre></td></tr></table></figure></p>
-<h4 id="2、sql-mode不存在NO-AUTO-CREATE-USER情况下"><a href="#2、sql-mode不存在NO-AUTO-CREATE-USER情况下" class="headerlink" title="2、sql_mode不存在NO_AUTO_CREATE_USER情况下"></a>2、sql_mode不存在NO_AUTO_CREATE_USER情况下</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">root@db 01:14:  [(none)]&gt; set @@sql_mode=&quot;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION&quot;;</span><br><span class="line">Query OK, 0 rows affected, 1 warning (0.00 sec)</span><br><span class="line">root@db 01:17:  [(none)]&gt; show variables like &apos;%sql_mode%&apos;;</span><br><span class="line">+---------------+----------------------------------------------------------------------------------------------------+</span><br><span class="line">| Variable_name | Value                                                                                              |</span><br><span class="line">+---------------+----------------------------------------------------------------------------------------------------+</span><br><span class="line">| sql_mode      | STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION |</span><br><span class="line">+---------------+----------------------------------------------------------------------------------------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line">root@db 01:17:  [(none)]&gt; grant all privileges on *.* to testuser1;</span><br><span class="line">Query OK, 0 rows affected, 1 warning (0.01 sec)</span><br></pre></td></tr></table></figure>
-<p>没有密码也能够创建该用户，并授权成功，使用该用户没有密码可以直接登录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@db 01:17:  [(none)]&gt; select host,user from mysql.user;</span><br><span class="line">+-----------+---------------+</span><br><span class="line">| host      | user          |</span><br><span class="line">+-----------+---------------+</span><br><span class="line">| %         | testuser      |</span><br><span class="line">| %         | testuser1     |</span><br><span class="line">| %         | zabbix        |</span><br><span class="line">| localhost | mysql.session |</span><br><span class="line">| localhost | mysql.sys     |</span><br><span class="line">| localhost | root          |</span><br><span class="line">| localhost | zabbix        |</span><br><span class="line">+-----------+---------------+</span><br><span class="line">7 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
-<h4 id="3、总结："><a href="#3、总结：" class="headerlink" title="3、总结："></a>3、总结：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NO_AUTO_CREATE_USER参数在未来将会被弃用，被弃用的原因是基于对复制安全性的考虑。而基于复制安全性的考虑，对用户进行管理操作的更好方法是使用：CREATE USER IF NOT EXISTS, DROP USER IF EXISTS, 和ALTER USER IF EXISTS而不是grant命令。这些语句可以保证复制的安全性当从库存在和主库的不同权限。</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2019/01/22/mysql参数NO_AUTO_CREATE_USER/"><span>点击阅读</span></a></h3>
     
   
 </article>

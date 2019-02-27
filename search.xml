@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[[Linux] 记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程]]></title>
+    <url>%2F2019%2F02%2F27%2F%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%A4%8D%E5%85%A5watchbog%EF%BC%88%E5%B9%B6%E4%B8%8D%E6%98%AFlinux%E8%87%AA%E5%B8%A6%E7%9A%84watchdog%E8%BF%9B%E7%A8%8B%EF%BC%89%E6%8C%96%E5%9D%91%E7%97%85%E6%AF%92%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[1、服务器收到cpu报警，cpu被占用达到100%，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示该进程为被植入的挖矿程序，该程序会在cron下面写入脚本，定期去pastebin.com下载木马开始挖矿，如果删除不彻底仍然会不定期启动这个挖矿程序。 2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制：123iptables -A INPUT -s 104.20.209.21 -j DROPiptables -A OUTPUT -s 104.20.209.21 -j DROPiptables -A OUTPUT -j DROP -d 104.20.209.21 保存修改内容1/sbin/service iptables save 为安全起见，同时修改本地hosts文件添加，将pastebin.com重定向到本地：cat /etc/hosts|grep pastebin1127.0.0.1 pastebin.com 3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒(如果确认病毒可以被彻底删除，这不无需操作)12mv /usr/bin/curl /usr/bin/lrucmv /usr/bin/wget /usr/bin/tegw 4、杀掉watchbog进程1ps -ef|grep watchbog|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9 5、删掉cron里面的相关任务12345678crontab -l/etc/cron.d /etc/cron.deny /etc/cron.monthly /etc/cron.daily /etc/cron.hourly /etc/crontab /etc/cron.weekly 上面所有的文档一定要都仔细检查一边，有相关curl pastebin.com等信息要彻底删除 6、在cron的文件下还发现的其他脚本命令，/bin/httpntp、/bin/ftpsdns等，同时删除watchbog123rm -rf /usr/bin/watchbogrm -rf /bin/httpntprm -rf /bin/ftpsdns 7、如果/tmp目录下存在文件/tmp/timesyncc.service，也要删除8、参考链接]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[[Oracle] oracle ORA-00020: maximum number of processes (150) exceeded]]></title>
     <url>%2F2019%2F02%2F26%2FORA-00020%20maximum%20number%20of%20processes%20(150)%20exceeded%2F</url>
     <content type="text"><![CDATA[1、报错提示oracle的会话连接数达到上限，解决方法如下2、发生报错之后，使用sqlplus / as sysdba也不能登录，oracle不像mysql一样专门为超级管理员用户保留一个连接会话，oracle只能通过杀掉session连接才能再次登录。2.1、批量杀掉会话连接：1ps -ef|grep oracle|grep LOCAL|grep -v grep|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9 如果当前系统下存在多个实例(可以手动指定${ORACLE_SID}，不指定会使用当前环境变量默认下的值)1ps -ef|grep oracle$&#123;ORACLE_SID&#125;|grep LOCAL|grep -v grep|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9 2.2、单独杀掉会话连接12ps -ef|grep oracle$&#123;ORACLE_SID&#125;|grep LOCAL|awk &apos;&#123;print $2&#125;&apos;kill -9 *** 3、杀掉会话连接后，等待一段时间再次sqlplus / as sysdba登录显示正常。登录之后修改process进程数1alter system set processes=500 scope=spfile; 修改完该参数之后要重新启动db，才能生效,该参数不支持动态修改。]]></content>
