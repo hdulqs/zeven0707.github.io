@@ -112,6 +112,74 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/12/17/oracle安装rlwrap/"><span>[Oracle] 为oracle-sqlplus安装rlwrap</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/12/17/oracle安装rlwrap/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-12-17T07:49:00.000Z">
+          2018-12-17
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、安装rlwrap-0-42-1-1-x86-64-rpm方式"><a href="#1、安装rlwrap-0-42-1-1-x86-64-rpm方式" class="headerlink" title="1、安装rlwrap-0.42-1.1.x86_64.rpm方式"></a>1、安装rlwrap-0.42-1.1.x86_64.rpm方式</h4><p>下载rlwrap-0.42-1.1.x86_64.rpm<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/home%3A/Ledest%3A/misc/CentOS_7/src/rlwrap-0.42-1.1.x86_64.rpm</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、安装rlwarp"><a href="#2、安装rlwarp" class="headerlink" title="2、安装rlwarp"></a>2、安装rlwarp</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum localinstall rlwrap-0.42-1.1.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<h4 id="3、修改环境变量文件"><a href="#3、修改环境变量文件" class="headerlink" title="3、修改环境变量文件"></a>3、修改环境变量文件</h4><p>grep ‘rlwrap’ ~/.bash_profile<br>alias sql=’rlwrap sqlplus “/ as sysdba”‘<br>alias rman=’rlwrap rman’</p>
+<h4 id="4、如果找不到x86-64类型的文件，下载-rlwrap-0-42-1-1-src-rpm"><a href="#4、如果找不到x86-64类型的文件，下载-rlwrap-0-42-1-1-src-rpm" class="headerlink" title="4、如果找不到x86_64类型的文件，下载 rlwrap-0.42-1.1.src.rpm"></a>4、如果找不到x86_64类型的文件，下载 rlwrap-0.42-1.1.src.rpm</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/home%3A/Ledest%3A/misc/CentOS_7/src/rlwrap-0.42-1.1.src.rpm</span><br></pre></td></tr></table></figure>
+<h4 id="5、安装依赖"><a href="#5、安装依赖" class="headerlink" title="5、安装依赖"></a>5、安装依赖</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install rpm-build -y</span><br><span class="line">yum install readline* libtermcap-devel* -y</span><br></pre></td></tr></table></figure>
+<h4 id="6、安装rlwarp"><a href="#6、安装rlwarp" class="headerlink" title="6、安装rlwarp"></a>6、安装rlwarp</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; rpm -i rlwrap-0.42-1.1.src.rpm </span><br><span class="line">warning: rlwrap-0.42-1.1.src.rpm: Header V3 RSA/SHA1 Signature, key ID 93680782: NOKEY</span><br><span class="line"></span><br><span class="line">shell &gt; cd rpmbuild/SOURCES</span><br><span class="line">shell &gt; tar -zxvf rlwrap-0.42.tar.gz </span><br><span class="line">shell &gt; cd rlwrap-0.42</span><br><span class="line">shell &gt; ls</span><br><span class="line">aclocal.m4  BUGS       completions  configure     COPYING  filters  Makefile.am  NEWS  README  test  tools</span><br><span class="line">AUTHORS     ChangeLog  config.h.in  configure.ac  doc      INSTALL  Makefile.in  PLEA  src     TODO</span><br><span class="line"></span><br><span class="line">shell &gt; ./configure</span><br><span class="line">shell &gt; make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line">#### 7、之后修改环境变量</span><br></pre></td></tr></table></figure>
+<p>grep ‘rlwrap’ ~/.bash_profile<br>alias sql=’rlwrap sqlplus “/ as sysdba”‘<br>alias rman=’rlwrap rman’<br><code>`</code></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/12/17/oracle安装rlwrap/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/12/17/centos7安装rac报错ohasd failed to start/"><span>[Oracle] centos7安装rac报错ohasd failed to start</span></a></h3>
     
   
@@ -902,75 +970,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/11/14/mysql-show table status语法/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/11/12/vsftpd配置ssl/"><span>[Linux] vsftpd配置ssl</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/11/12/vsftpd配置ssl/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-11-12T11:09:30.000Z">
-          2018-11-12
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="0、如果还没有部署vsftp-server，请先跳转到此处"><a href="#0、如果还没有部署vsftp-server，请先跳转到此处" class="headerlink" title="0、如果还没有部署vsftp-server，请先跳转到此处"></a>0、如果还没有部署vsftp-server，请先跳转到<a href="https://zeven0707.github.io/2018/11/06/centos%E5%AE%89%E8%A3%85vsftp/" target="_blank" rel="noopener">此处</a></h4><h4 id="1、查询vsftpd软件是否支持SSL"><a href="#1、查询vsftpd软件是否支持SSL" class="headerlink" title="1、查询vsftpd软件是否支持SSL"></a>1、查询vsftpd软件是否支持SSL</h4><p>ldd /usr/sbin/vsftpd | grep ssl<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">libssl.so.10 =&gt; /lib64/libssl.so.10 (0x00007f6cfc4a6000)</span><br></pre></td></tr></table></figure></p>
-<h4 id="2、生成vsftpd-pem-证书"><a href="#2、生成vsftpd-pem-证书" class="headerlink" title="2、生成vsftpd.pem 证书"></a>2、生成vsftpd.pem 证书</h4><p>[root@localhost vsftpd]# openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Generating a 1024 bit RSA private key</span><br><span class="line">..................................++++++</span><br><span class="line">.........++++++</span><br><span class="line">writing new private key to &apos;/etc/vsftpd/vsftpd.pem&apos;</span><br><span class="line">-----</span><br><span class="line">You are about to be asked to enter information that will be incorporated</span><br><span class="line">into your certificate request.</span><br><span class="line">What you are about to enter is what is called a Distinguished Name or a DN.</span><br><span class="line">There are quite a few fields but you can leave some blank</span><br><span class="line">For some fields there will be a default value,</span><br><span class="line">If you enter &apos;.&apos;, the field will be left blank.</span><br><span class="line">-----</span><br><span class="line">Country Name (2 letter code) [XX]:cn</span><br><span class="line">State or Province Name (full name) []:beijing</span><br><span class="line">Locality Name (eg, city) [Default City]:beijing</span><br><span class="line">Organization Name (eg, company) [Default Company Ltd]:goopal</span><br><span class="line">Organizational Unit Name (eg, section) []:goopal</span><br><span class="line">Common Name (eg, your name or your server&apos;s hostname) []:zeven</span><br><span class="line">Email Address []:test@goopal.com</span><br></pre></td></tr></table></figure></p>
-<p>查看生成vsftpd.pem是否成功<br>ls -l /etc/vsftpd/|grep vsftpd.pem<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-rw-r--r-- 1 root root 1982 11月  9 14:20 vsftpd.pem</span><br></pre></td></tr></table></figure></p>
-<h4 id="3、修改主配置文件-etc-vsftpd-vsftpd-conf"><a href="#3、修改主配置文件-etc-vsftpd-vsftpd-conf" class="headerlink" title="3、修改主配置文件/etc/vsftpd/vsftpd.conf"></a>3、修改主配置文件/etc/vsftpd/vsftpd.conf</h4><p>下面是ssl参数一些定义，根据自己需求去修改<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ssl_enable=yes/no             是否启用 SSL,默认为no</span><br><span class="line">allow_anon_ssl=yes/no         是否允许匿名用户使用SSL,默认为no</span><br><span class="line">rsa_cert_file=/path/to/file       rsa证书的位置</span><br><span class="line">dsa_cert_file=/path/to/file      dsa证书的位置</span><br><span class="line">force_local_logins_ssl=yes/no    非匿名用户登陆时是否加密,默认为yes</span><br><span class="line">force_local_data_ssl=yes/no     非匿名用户传输数据时是否加密,默认为yes</span><br><span class="line">force_anon_logins_ssl=yes/no    匿名用户登录时是否加密,默认为no</span><br><span class="line">force_anon_data_ssl=yes/no     匿名用户数据传输时是否加密,默认为no</span><br><span class="line">ssl_sslv2=yes/no               是否激活sslv2加密,默认no</span><br><span class="line">ssl_sslv3=yes/no                是否激活sslv3加密,默认no</span><br><span class="line">ssl_tlsv1=yes/no                是否激活tls v1加密,默认yes</span><br><span class="line">ssl_ciphers=加密方法            默认是DES-CBC3-SHA</span><br><span class="line">require_ssl_reuse=no 需要数据与控制流使用相同的ssl通道，程序是另起一个ssl通道，选no</span><br><span class="line">#使用ftps的情况下，主动模式是不能用的，必须使用别动模式，为考虑安全问题，可以指定被动端口范围：</span><br><span class="line">pasv_enable=YES</span><br><span class="line">pasv_min_port=20000</span><br><span class="line">pasv_max_port=20001</span><br></pre></td></tr></table></figure></p>
-<p>修改vsftpd的主配置文件vsftpd.conf添加如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">ssl_enable=YES</span><br><span class="line">allow_anon_ssl=YES</span><br><span class="line">force_anon_logins_ssl=YES</span><br><span class="line">force_anon_data_ssl=YES</span><br><span class="line">force_local_logins_ssl=YES</span><br><span class="line">force_local_data_ssl=YES</span><br><span class="line">ssl_tlsv1=YES</span><br><span class="line">ssl_sslv2=NO</span><br><span class="line">ssl_sslv3=NO</span><br><span class="line">rsa_cert_file=/etc/vsftpd/vsftpd.pem</span><br><span class="line">require_ssl_reuse=no</span><br><span class="line">pasv_enable=YES</span><br><span class="line">pasv_min_port=20000</span><br><span class="line">pasv_max_port=20001</span><br></pre></td></tr></table></figure></p>
-<h4 id="4、重启vsftpd服务"><a href="#4、重启vsftpd服务" class="headerlink" title="4、重启vsftpd服务"></a>4、重启vsftpd服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart vsftpd</span><br></pre></td></tr></table></figure>
-<h4 id="5、默认linux自带的ftp-client不支持ssl协议，如果配置了ssl，使用ftp-client连接会报错"><a href="#5、默认linux自带的ftp-client不支持ssl协议，如果配置了ssl，使用ftp-client连接会报错" class="headerlink" title="5、默认linux自带的ftp client不支持ssl协议，如果配置了ssl，使用ftp client连接会报错"></a>5、默认linux自带的ftp client不支持ssl协议，如果配置了ssl，使用ftp client连接会报错</h4><p><img src="https://i.imgur.com/gklzknf.png" alt=""><br>可以使用第三方的surgeftp测试，下载方式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget ftp://ftp.netwinsite.com/pub/surgeftp/surgeftp_23f2_linux64.tar.gz</span><br></pre></td></tr></table></figure></p>
-<p>解压之后，测试连接是否正常：<br><img src="https://i.imgur.com/8blhpQc.png" alt=""><br>也可以使用windows下的ftp软件测试，如FileZilla，配置方法如下：<br><img src="https://i.imgur.com/UUcMQL8.png" alt=""></p>
-<h4 id="6、配置过程终于到的问题："><a href="#6、配置过程终于到的问题：" class="headerlink" title="6、配置过程终于到的问题："></a>6、配置过程终于到的问题：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">522 SSL connection failed; session reuse required: see require_ssl_reuse option in vsftpd.conf man page</span><br><span class="line">解决方法：</span><br><span class="line">查看vsftpd.conf配置文件是否配置了下面参数</span><br><span class="line">require_ssl_reuse=no</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/linux/">linux</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/11/12/vsftpd配置ssl/"><span>点击阅读</span></a></h3>
     
   
 </article>
