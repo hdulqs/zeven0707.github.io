@@ -112,6 +112,79 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/10/31/nginx https证书配置/"><span>[Linux] 使用certbot为域名生成免费证书(nginx版)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/31/nginx https证书配置/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-31T09:18:30.000Z">
+          2018-10-31
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、下载letencrypt-用于生产免费证书工具："><a href="#1、下载letencrypt-用于生产免费证书工具：" class="headerlink" title="1、下载letencrypt,用于生产免费证书工具："></a>1、下载letencrypt,用于生产免费证书工具：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /data/soft</span><br><span class="line">wget https://dl.eff.org/certbot-auto</span><br><span class="line">chmod a+x certbot-auto</span><br></pre></td></tr></table></figure>
+<h4 id="2、修改域名对应的配置文件，添加下面内容"><a href="#2、修改域名对应的配置文件，添加下面内容" class="headerlink" title="2、修改域名对应的配置文件，添加下面内容"></a>2、修改域名对应的配置文件，添加下面内容</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name  test.com;</span><br><span class="line">    ...</span><br><span class="line">    location ~ /.well-known &#123;</span><br><span class="line">        root /data/soft;</span><br><span class="line">        allow all;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面配置的 root /data/soft<br>信息目录最好不要与其他location指定的目录相同,且确保各个目录存在目录,如果目录相同的情况下可能会遇到以下问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[quote]Failed authorization procedure. test.com (http-01): urn:ietf:params:acme:error:unauthorized :: The client lacks sufficient authorization :: Invalid response from http://mydomain.fr/.well-known/acme-challenge/Xefe-sxGfexdcdezDEUJZRfexjfeeloekcdsesx [2001:1600:4:1::b]: 404</span><br><span class="line">IMPORTANT NOTES:</span><br><span class="line">The following errors were reported by the server:</span><br><span class="line">Domain: test.com</span><br><span class="line">Type: unauthorized</span><br><span class="line">Detail: Invalid response from</span><br><span class="line">http://mydomain.fr/.well-known/acme-challenge/Xefe-sxGfexdcdezDEUJZRfexjfeeloekcdsesx</span><br><span class="line">[2001:1600:4:1::b]: 404</span><br><span class="line">To fix these errors, please make sure that your domain name was</span><br><span class="line">entered correctly and the DNS A/AAAA record(s) for that domain</span><br><span class="line">contain(s) the right IP address.[/quote]</span><br></pre></td></tr></table></figure></p>
+<p>如果服务器的80端口被限制，会提示如下错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://demo.broker.masterdax.com/.well-known/acme-challenge/pIV-Rh1355xsh8xJFHhB0llri6HS8S2yOSYRE9N5D5I:</span><br><span class="line">   Timeout during connect (likely firewall problem)</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、执行生成证书命令："><a href="#3、执行生成证书命令：" class="headerlink" title="3、执行生成证书命令："></a>3、执行生成证书命令：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/soft/certbot-auto certonly --email 123456@qq.com --agree-tos --webroot -w /data/soft/ -d test.com --dry-run</span><br></pre></td></tr></table></figure>
+<p>第一次尝试生成证书最好加上–dry-run参数，如果le生成证书次数（包括报错的次数）每天有上限，添加–dry-run调试没有问题之后再真正生成证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/soft/certbot-auto certonly --email 123456@qq.com --agree-tos --webroot -w /data/soft/ -d test.com</span><br></pre></td></tr></table></figure></p>
+<h4 id="4、查看生成的证书"><a href="#4、查看生成的证书" class="headerlink" title="4、查看生成的证书"></a>4、查看生成的证书</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/soft/certbot-auto certificates</span><br></pre></td></tr></table></figure>
+<h4 id="5、修改nginx配置文件，添加https相关配置信息-http相关配置加上跳转到https："><a href="#5、修改nginx配置文件，添加https相关配置信息-http相关配置加上跳转到https：" class="headerlink" title="5、修改nginx配置文件，添加https相关配置信息,http相关配置加上跳转到https："></a>5、修改nginx配置文件，添加https相关配置信息,http相关配置加上跳转到https：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name  test.com;</span><br><span class="line">    rewrite ^(.*)$  https://$server_name$1 permanent;</span><br><span class="line">    ...</span><br><span class="line">    location ~ /.well-known &#123;</span><br><span class="line">        root /data/soft;</span><br><span class="line">        allow all;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl; </span><br><span class="line">    server_name test.com;</span><br><span class="line">    ....</span><br><span class="line">    ssl_certificate ssl/fullchain.pem;</span><br><span class="line">    ssl_certificate_key ssl/privkey.pem;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="6、将生成的证书添加软连接到nginx配置文件指定的路径："><a href="#6、将生成的证书添加软连接到nginx配置文件指定的路径：" class="headerlink" title="6、将生成的证书添加软连接到nginx配置文件指定的路径："></a>6、将生成的证书添加软连接到nginx配置文件指定的路径：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ln -s /etc/letsencrypt/live/test.com/fullchain.pem /usr/local/openresty/nginx/conf/ssl/fullchain.pem</span><br><span class="line">ln -s /etc/letsencrypt/live/test.com/privkey.pem /usr/local/openresty/nginx/conf/ssl/privkey.pem</span><br></pre></td></tr></table></figure>
+<h4 id="7、因为le生成的证书有效期为90天，需要添加定时任务，使其证书自动更新："><a href="#7、因为le生成的证书有效期为90天，需要添加定时任务，使其证书自动更新：" class="headerlink" title="7、因为le生成的证书有效期为90天，需要添加定时任务，使其证书自动更新："></a>7、因为le生成的证书有效期为90天，需要添加定时任务，使其证书自动更新：</h4><p>cat /data/soft/cron-cerbot.sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">/data/soft/certbot-auto renew</span><br></pre></td></tr></table></figure></p>
+<p>授权文件执行权限：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod a+x /data/soft/cron-cerbot.sh</span><br></pre></td></tr></table></figure></p>
+<p>添加到crontab,每周日凌晨定期更新<br>crontab -l<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0 * * 0 /data/soft/cron-cerbot.sh</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/31/nginx https证书配置/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/31/oracle 静默安装/"><span>[Oracle] oracle 静默安装</span></a></h3>
     
   
@@ -429,69 +502,6 @@ var _hmt = _hmt || [];
 
   
     
-    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
-          2018-10-25
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
     <h3 class="article-title"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>[Mysql] mysql数据库使用innobackupex和mysqldump备份恢复的对比</span></a></h3>
     
   
@@ -558,6 +568,69 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
+          2018-10-25
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
@@ -784,69 +857,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/24/hp交换机启用snmp，并添加到zabbix监控/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/22/oracle 定期删除trace文件/"><span>[Oracle] oracle 定期删除trace文件</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/22/oracle 定期删除trace文件/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-22T11:05:00.000Z">
-          2018-10-22
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="oracle-定期删除trace文件"><a href="#oracle-定期删除trace文件" class="headerlink" title="oracle 定期删除trace文件"></a>oracle 定期删除trace文件</h4><p>cat del_trace.sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#oracle 11gR2 rdbms</span><br><span class="line"></span><br><span class="line">#声明oracle环境变量</span><br><span class="line">export ORACLE_BASE=/u01/app/oracle</span><br><span class="line">export ORACLE_HOME=$ORACLE_BASE/product/11.2.0.4/dbhome_1</span><br><span class="line">#声明主机名</span><br><span class="line">export HOST_NAME=`hostname`</span><br><span class="line">#声明日期，用于删除几天前的文件</span><br><span class="line">export DAYS=7</span><br><span class="line"></span><br><span class="line">#一台服务器装有多个实例，可使用循环进行删除</span><br><span class="line">for dbname in instancea instanceb</span><br><span class="line">do</span><br><span class="line">export DB_NAME=$dbname</span><br><span class="line">export DB_UNIQUE_NAME=$&#123;DB_NAME&#125;</span><br><span class="line">export ORACLE_SID=$&#123;DB_NAME&#125;</span><br><span class="line">#当前实例为rac模式节点1，启用该变量</span><br><span class="line">#export ORACLE_SID=$&#123;DB_NAME&#125;1</span><br><span class="line">#当前实例为rac模式节点2，启用该变量</span><br><span class="line">#export ORACLE_SID=$&#123;DB_NAME&#125;2</span><br><span class="line"></span><br><span class="line">#指定存放日志的路径</span><br><span class="line">DIAGNOSTIC_DEST=$&#123;ORACLE_BASE&#125;</span><br><span class="line"></span><br><span class="line">#如果audit_trail_dest的一个默认值不生效，会使用下面第二个默认值：</span><br><span class="line">AUDIT_FILE_DEST=$&#123;ORACLE_BASE&#125;/admin/$&#123;DB_NAME&#125;/adump</span><br><span class="line"></span><br><span class="line">#删除audit_trail_dest第一个默认值下的审计日志，并删除7天前的日志</span><br><span class="line">find $&#123;ORACLE_HOME&#125;/rdbms/audit -name &quot;$&#123;ORACLE_SID&#125;_*.aud&quot; -mtime +$&#123;DAYS&#125; -exec rm -f &#123;&#125; \;</span><br><span class="line">#如果audit_trail_dest的一个默认值不生效，查找第二个默认值下的审计日志，并删除7天前的日志：</span><br><span class="line">find $&#123;AUDIT_FILE_DEST&#125; -name &quot;$&#123;ORACLE_SID&#125;_*.aud&quot; -mtime +$&#123;DAYS&#125; -exec rm -f &#123;&#125; \;</span><br><span class="line">#删除指定路径alert下的文件</span><br><span class="line">find $&#123;DIAGNOSTIC_DEST&#125;/diag/rdbms/$&#123;DB_UNIQUE_NAME&#125;/$&#123;ORACLE_SID&#125;/alert -name &quot;log_[0-9]*.xml&quot; -mtime +$&#123;DAYS&#125; -exec rm -f &#123;&#125; \;</span><br><span class="line">#删除指定路径trace下的文件</span><br><span class="line">find $&#123;DIAGNOSTIC_DEST&#125;/diag/rdbms/$&#123;DB_UNIQUE_NAME&#125;/$&#123;ORACLE_SID&#125;/trace -name &quot;$&#123;ORACLE_SID&#125;_*.tr[c|m]&quot; -mtime +$&#123;DAYS&#125; -exec rm -f &#123;&#125; \;</span><br><span class="line">find $&#123;DIAGNOSTIC_DEST&#125;/diag/rdbms/$&#123;DB_UNIQUE_NAME&#125;/$&#123;ORACLE_SID&#125;/trace -name &quot;cdmp_*&quot; -mtime +$&#123;DAYS&#125; -exec rm -rf &#123;&#125; \;</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
-<p>将该脚本，添加到cron下每日定期删除</p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/oracle/">oracle</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/22/oracle 定期删除trace文件/"><span>点击阅读</span></a></h3>
     
   
 </article>
