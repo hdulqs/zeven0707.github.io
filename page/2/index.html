@@ -112,6 +112,74 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/01/29/mysql create table ... 指定外部数据目录(File-per-table tablespace)/"><span>[Mysql] create table ... data directory指定外部数据目录(单表文件表空间)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/01/29/mysql create table ... 指定外部数据目录(File-per-table tablespace)/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-01-29T07:30:00.000Z">
+          2019-01-29
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、使用create-table-…-data-directory"><a href="#1、使用create-table-…-data-directory" class="headerlink" title="1、使用create table … data directory"></a>1、使用create table … data directory</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@db 18:15:  [(none)]&gt; use test</span><br><span class="line">Database changed</span><br><span class="line">root@db 18:16:  [test]&gt; show tables;</span><br><span class="line">+----------------+</span><br><span class="line">| Tables_in_test |</span><br><span class="line">+----------------+</span><br><span class="line">| t1             |</span><br><span class="line">| t4             |</span><br><span class="line">+----------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>指定的目录对于mysql的用户来说一定要有访问权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-master test]# ll -d /tmp/</span><br><span class="line">drwxrwxrwt. 10 root root 4096 2月  11 20:54 /tmp/</span><br></pre></td></tr></table></figure></p>
+<p>执行创建表语句<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 18:41:  [test]&gt; CREATE TABLE t2 (c1 INT PRIMARY KEY) DATA DIRECTORY = &apos;/tmp/&apos;;</span><br><span class="line">Query OK, 0 rows affected (0.60 sec)</span><br></pre></td></tr></table></figure></p>
+<p>表创建完成之后，会在directory对应的目录下创建表对应的schema的目录，并在schema的目录下生成.ibd表文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-master test]# ll /tmp/test/t2*</span><br><span class="line">-rw-r----- 1 mysql mysql 98304 2月  11 18:41 /tmp/test/t2.ibd</span><br></pre></td></tr></table></figure></p>
+<p>在mysql的数据目录下会生成.frm文件和.isl文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-master test]# ll /data/mysql/data/test/t2*</span><br><span class="line">-rw-r----- 1 mysql mysql 8556 2月  11 18:41 /data/mysql/data/test/t2.frm</span><br><span class="line">-rw-r----- 1 mysql mysql   16 2月  11 18:41 /data/mysql/data/test/t2.isl</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、使用create-table-…-tablespace-data-directory"><a href="#2、使用create-table-…-tablespace-data-directory" class="headerlink" title="2、使用create table … tablespace .. data directory"></a>2、使用create table … tablespace .. data directory</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@db 18:41:  [test]&gt;  CREATE TABLE t3 (c1 INT PRIMARY KEY) TABLESPACE = innodb_file_per_table DATA DIRECTORY = &apos;/tmp&apos;;</span><br><span class="line">Query OK, 0 rows affected (0.33 sec)</span><br><span class="line">[root@dax-mysql-master test]#  ll /tmp/test/t3*</span><br><span class="line">-rw-r----- 1 mysql mysql 98304 2月  11 22:16 /tmp/test/t3.ibd</span><br><span class="line">[root@dax-mysql-master test]#  ll /data/mysql/data/test/t3*</span><br><span class="line">-rw-r----- 1 mysql mysql 8556 2月  11 22:16 /data/mysql/data/test/t3.frm</span><br><span class="line">-rw-r----- 1 mysql mysql   16 2月  11 22:16 /data/mysql/data/test/t3.isl</span><br></pre></td></tr></table></figure>
+<p>执行结果与章节1相同。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/01/29/mysql create table ... 指定外部数据目录(File-per-table tablespace)/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/01/29/mysql-general tablespace/"><span>[Mysql] general-tablespace详解</span></a></h3>
     
   
@@ -761,73 +829,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/12/21/单实例rman备份异机恢复到rac环境/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/12/21/remote_login_passwordfile&SQLNET.AUTHENTICATION_SERVICES参数/"><span>[Oracle] remote_login_passwordfile&amp;SQLNET.AUTHENTICATION_SERVICES参数</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/12/21/remote_login_passwordfile&SQLNET.AUTHENTICATION_SERVICES参数/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-12-21T02:35:00.000Z">
-          2018-12-21
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、remote-login-passwordfile参数"><a href="#1、remote-login-passwordfile参数" class="headerlink" title="1、remote_login_passwordfile参数"></a>1、remote_login_passwordfile参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shared：一个或者多个库都能使用该password file。sys用户不能修改，如果尝试修改sys密码，会提示 &quot;ORA-28046: Password change for SYS disallowed.&quot; ;其他用户有（SYSDBA, SYSOPER, SYSASM, SYSBACKUP, SYSDG, SYSKM）权限的，密码不能更新，如果更新会提示&quot;ORA-01999: password file cannot be updated in SHARED mode.&quot; ;给个别用户授权（SYSDBA, SYSOPER, SYSASM, SYSBACKUP, SYSDG, SYSKM）是不被允许的，否则提示&quot;ORA-01999: password file cannot be updated in SHARED mode.&quot;;如果passwordfile文件不存在，等同于REMOTE_LOGIN_PASSWORDFILE=none.</span><br><span class="line"></span><br><span class="line">exclusive：password file只能被一个库使用，文件可以包含sys和非sys用户。如果password file文件不存在，等同于REMOTE_LOGIN_PASSWORDFILE=none. </span><br><span class="line">remote_login_passwordfile =exclusive时，启用口令文件，允许远程登录；</span><br><span class="line"></span><br><span class="line">none：忽略password file，只能通过本地操作系统验证。</span><br></pre></td></tr></table></figure>
-<p>修改值使用下面方法，因为该值为静态参数，修改完成之后，需要重新启动数据库才能生效：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter system set remote_login_passwordfile=&apos;exclusive&apos; scope=spfile sid=&apos;*&apos;;</span><br></pre></td></tr></table></figure></p>
-<h4 id="2、SQLNET-AUTHENTICATION-SERVICES参数详解"><a href="#2、SQLNET-AUTHENTICATION-SERVICES参数详解" class="headerlink" title="2、SQLNET.AUTHENTICATION_SERVICES参数详解"></a>2、SQLNET.AUTHENTICATION_SERVICES参数详解</h4><h5 id="2-1、值为none时"><a href="#2-1、值为none时" class="headerlink" title="2.1、值为none时"></a>2.1、值为none时</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#本地验证方式失效</span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus / as sysdba</span><br><span class="line">ERROR:</span><br><span class="line">ORA-01017: invalid username/password; logon denied</span><br><span class="line">#使用用户名密码方式登录正常：</span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus sys/oracle as sysdba</span><br><span class="line">22:51:21 SYS@ boston&gt; exit</span><br><span class="line">Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle@boston</span><br><span class="line">22:52:00 TEST@ boston&gt; exit</span><br><span class="line">Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production</span><br><span class="line">With the Partitioning, OLAP, Data Mining and Real Application Testing options</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle@192.168.168.177:1521/boston.us.oracle.com</span><br><span class="line">22:53:02 TEST@ 192.168.168.177:1521/boston.us.oracle.com&gt; exit</span><br><span class="line">Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production</span><br><span class="line">With the Partitioning, OLAP, Data Mining and Real Application Testing options</span><br></pre></td></tr></table></figure>
-<h5 id="2-2、值为all时"><a href="#2-2、值为all时" class="headerlink" title="2.2、值为all时"></a>2.2、值为all时</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">网络服务名方式和service_name方式失效</span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus / as sysdba</span><br><span class="line">22:54:21 SYS@ boston&gt; </span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus sys/oracle as sysdba</span><br><span class="line">22:54:45 SYS@ boston&gt; </span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle@boston</span><br><span class="line">ERROR:</span><br><span class="line">ORA-12641: Authentication service failed to initialize</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle@192.168.168.177:1521/boston.us.oracle.com</span><br><span class="line">ERROR:</span><br><span class="line">ORA-12641: Authentication service failed to initialize</span><br></pre></td></tr></table></figure>
-<h5 id="2-3、如果SQLNET-AUTHENTICATION-SERVICES-none-的情况下-修改remote-login-passwordfile的值从exclusive改为none-重启数据库使其生效-会报错提示权限不足："><a href="#2-3、如果SQLNET-AUTHENTICATION-SERVICES-none-的情况下-修改remote-login-passwordfile的值从exclusive改为none-重启数据库使其生效-会报错提示权限不足：" class="headerlink" title="2.3、如果SQLNET.AUTHENTICATION_SERVICES=(none)的情况下,修改remote_login_passwordfile的值从exclusive改为none,重启数据库使其生效,会报错提示权限不足："></a>2.3、如果SQLNET.AUTHENTICATION_SERVICES=(none)的情况下,修改remote_login_passwordfile的值从exclusive改为none,重启数据库使其生效,会报错提示权限不足：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">22:58:28 SYS@ boston&gt; alter system set remote_login_passwordfile=&apos;NONE&apos; scope=spfile;</span><br><span class="line">System altered.</span><br><span class="line">22:58:47 SYS@ boston&gt; shutdown immediate;</span><br><span class="line">Database closed.</span><br><span class="line">Database dismounted.</span><br><span class="line">ORACLE instance shut down.</span><br><span class="line">22:59:15 SYS@ boston&gt; startup </span><br><span class="line">ORA-01031: insufficient privileges</span><br><span class="line">22:59:34 SYS@ boston&gt; exit</span><br><span class="line">Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production</span><br><span class="line">With the Partitioning, OLAP, Data Mining and Real Application Testing options</span><br><span class="line">尝试重新登录启动数据库</span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus sys/oracle  as sysdba</span><br><span class="line">Connected to an idle instance.</span><br><span class="line">22:59:46 SYS@ boston&gt; startup</span><br><span class="line">ORA-01031: insufficient privileges</span><br><span class="line">22:59:48 SYS@ boston&gt; exit</span><br><span class="line">Disconnected</span><br></pre></td></tr></table></figure>
-<p>只能禁用sqlnet.ora文件中的SQLNET.AUTHENTICATION_SERVICES=(none)参数，否则无法启动数据库。</p>
-<h5 id="2-4、启动数据库之后，再次启用sqlnet-ora文件中的SQLNET-AUTHENTICATION-SERVICES-none-参数，如果在数据库开启的状态下，as-sysdba将无法登录，只能使用网络服务名和service-name登录"><a href="#2-4、启动数据库之后，再次启用sqlnet-ora文件中的SQLNET-AUTHENTICATION-SERVICES-none-参数，如果在数据库开启的状态下，as-sysdba将无法登录，只能使用网络服务名和service-name登录" class="headerlink" title="2.4、启动数据库之后，再次启用sqlnet.ora文件中的SQLNET.AUTHENTICATION_SERVICES=(none)参数，如果在数据库开启的状态下，as sysdba将无法登录，只能使用网络服务名和service_name登录"></a>2.4、启动数据库之后，再次启用sqlnet.ora文件中的SQLNET.AUTHENTICATION_SERVICES=(none)参数，如果在数据库开启的状态下，as sysdba将无法登录，只能使用网络服务名和service_name登录</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">oracle@dax-mysql-slave admin]$ sqlplus / as sysdba</span><br><span class="line">ERROR:</span><br><span class="line">ORA-01017: invalid username/password; logon denied</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus sys/oracle as sysdba</span><br><span class="line">ERROR:</span><br><span class="line">ORA-01017: invalid username/password; logon denied</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle as sysdba</span><br><span class="line">ERROR:</span><br><span class="line">ORA-01017: invalid username/password; logon denied</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle@boston as sysdba</span><br><span class="line">ERROR:</span><br><span class="line">ORA-01017: invalid username/password; logon denied</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle@boston</span><br><span class="line">10:13:30 TEST@ boston&gt; exit</span><br><span class="line"></span><br><span class="line">[oracle@dax-mysql-slave admin]$ sqlplus test/oracle@192.168.168.177:1521/boston.us.oracle.com</span><br><span class="line">10:16:49 TEST@ 192.168.168.177:1521/boston.us.oracle.com&gt; select * from user_role_privs;</span><br><span class="line"></span><br><span class="line">USERNAME		       GRANTED_ROLE		      ADM DEF OS_</span><br><span class="line">------------------------------ ------------------------------ --- --- ---</span><br><span class="line">TEST			       CONNECT			      NO  YES NO</span><br><span class="line">TEST			       DBA			          NO  YES NO</span><br><span class="line">TEST			       RESOURCE 		      NO  YES NO</span><br><span class="line">Elapsed: 00:00:00.02</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/oracle/">oracle</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/12/21/remote_login_passwordfile&SQLNET.AUTHENTICATION_SERVICES参数/"><span>点击阅读</span></a></h3>
     
   
 </article>
