@@ -112,6 +112,76 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/02/13/cassandra使用nodetool decommission之后发现丢失数据的解决办法/"><span>[Cassandra] cassandra使用nodetool decommission之后发现丢失数据的解决办法</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/02/13/cassandra使用nodetool decommission之后发现丢失数据的解决办法/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-13T06:12:00.000Z">
+          2019-02-13
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、故事背景"><a href="#1、故事背景" class="headerlink" title="1、故事背景"></a>1、故事背景</h4><p>当某一个节点执行nodetool decommission时，这个节点会被退役，该节点上的数据会流到其他正在活动的节点，但是该节点上的数据不会被清除，会保留在数据文件下。当发现剩余的的节点下未完全同步该退役的节点，可使用以下办法尝试去恢复数据。<br>被退役节点为（A），活动节点为（B）</p>
+<h4 id="2、尝试重新启动A节点，报错如下："><a href="#2、尝试重新启动A节点，报错如下：" class="headerlink" title="2、尝试重新启动A节点，报错如下："></a>2、尝试重新启动A节点，报错如下：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">This node was decommissioned and will not rejoin the ring unless cassandra.override_decommission=true has been set, or all existing data is removed and th</span><br><span class="line">e node is bootstrapped again</span><br><span class="line">Fatal configuration error; unable to start server.  See log for stacktrace.</span><br><span class="line">ERROR [main] 2019-02-12 06:03:30,000 CassandraDaemon.java:749 - Fatal configuration error</span><br><span class="line">org.apache.cassandra.exceptions.ConfigurationException: This node was decommissioned and will not rejoin the ring unless cassandra.override_decommission=t</span><br><span class="line">rue has been set, or all existing data is removed and the node is bootstrapped again</span><br></pre></td></tr></table></figure>
+<h4 id="3、报错提示要么删除目录下的所有数据，要么使用override-decommission-true参数启动，下面以添加参数启动，启动正常，启动命令："><a href="#3、报错提示要么删除目录下的所有数据，要么使用override-decommission-true参数启动，下面以添加参数启动，启动正常，启动命令：" class="headerlink" title="3、报错提示要么删除目录下的所有数据，要么使用override_decommission=true参数启动，下面以添加参数启动，启动正常，启动命令："></a>3、报错提示要么删除目录下的所有数据，要么使用override_decommission=true参数启动，下面以添加参数启动，启动正常，启动命令：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cassandra -Dcassandra.override_decommission=true -R</span><br></pre></td></tr></table></figure>
+<h4 id="4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来"><a href="#4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来" class="headerlink" title="4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来"></a>4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cdax@cqlsh&gt; desc keyspaces;</span><br><span class="line">system_auth system_distributed system_schema  system system_traces</span><br></pre></td></tr></table></figure>
+<h4 id="5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件："><a href="#5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件：" class="headerlink" title="5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件："></a>5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sstableloader -d 127.0.0.1 /tmp/test/trade_event-8d5d68508fe211e88a9ca166a7412712</span><br></pre></td></tr></table></figure>
+<h4 id="6、提示当前节点下不存在test-trade-event表，需要自己先手动创建该表，去B节点上执行desc-test-trade-event-查看建表语句，重新在A节点创建该表。"><a href="#6、提示当前节点下不存在test-trade-event表，需要自己先手动创建该表，去B节点上执行desc-test-trade-event-查看建表语句，重新在A节点创建该表。" class="headerlink" title="6、提示当前节点下不存在test.trade_event表，需要自己先手动创建该表，去B节点上执行desc test_trade_event,查看建表语句，重新在A节点创建该表。"></a>6、提示当前节点下不存在test.trade_event表，需要自己先手动创建该表，去B节点上执行desc test_trade_event,查看建表语句，重新在A节点创建该表。</h4><p>创建完成之后再次执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sstableloader -d 127.0.0.1 /tmp/test/trade_event-8d5d68508fe211e88a9ca166a7412712</span><br></pre></td></tr></table></figure></p>
+<h4 id="7、文件下的数据全部导入test-trade-event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下："><a href="#7、文件下的数据全部导入test-trade-event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下：" class="headerlink" title="7、文件下的数据全部导入test.trade_event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下："></a>7、文件下的数据全部导入test.trade_event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy trade_event to &apos;/tmp/trade_event.sql&apos; with header=true;</span><br></pre></td></tr></table></figure>
+<h4 id="8、恢复之前须知："><a href="#8、恢复之前须知：" class="headerlink" title="8、恢复之前须知："></a>8、恢复之前须知：</h4><p>copy from操作并不会覆盖掉以前所有旧的数据，只会将A节点存在，B节点不存的数据导入到B节点。但是如果是B和A两个节点主键相同，其他字段数据不同，使用copy from的情况下，A节点的数据会覆盖掉B节点的数据。<br>因为我们decommission节点之后，启动应用发现缺少数据，导致应用无法起来，这种情况下B节点没有最新数据插入，因此可以执行copy from操作。如果无法确定B节点是否有新的数据插入，建议先根据某个表对应的时间戳先校验，确保没有最新数据插入的情况下，再使用上面的方法执行。</p>
+<h4 id="9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy-from操作将数据恢复："><a href="#9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy-from操作将数据恢复：" class="headerlink" title="9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy from操作将数据恢复："></a>9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy from操作将数据恢复：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">COPY trade_event FROM &apos;/home/test/trade_event.sql&apos; WITH HEADER = TRUE ;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/cassandra/">cassandra</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/02/13/cassandra使用nodetool decommission之后发现丢失数据的解决办法/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/01/30/mysql into outfile数据导出/"><span>[Mysql] SELECT ... INTO OUTFILE &#39;file_name&#39;将查询到的数据写入文件</span></a></h3>
     
   
@@ -734,71 +804,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2019/01/09/linux操作系统字符集与ssh工具字符集配置问题/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2019/01/09/mysql大小写敏感参数/"><span>[Mysql] mysql大小写敏感参数</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2019/01/09/mysql大小写敏感参数/" rel="bookmark">
-        <time class="entry-date published" datetime="2019-01-09T09:22:00.000Z">
-          2019-01-09
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、lower-case-file-system"><a href="#1、lower-case-file-system" class="headerlink" title="1、lower_case_file_system"></a>1、lower_case_file_system</h4><p>value=ON|OFF<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">该参数代表mysql数据目录所在的文件系统下的文件名的大小写是否敏感，off代表大小写铭感，on代表大小写不敏感。该变量是个只读参数，只代表一个文件系统属性，进行设置对文件系统没有任何影响。</span><br></pre></td></tr></table></figure></p>
-<h4 id="2、lower-case-table-names"><a href="#2、lower-case-table-names" class="headerlink" title="2、lower_case_table_names"></a>2、lower_case_table_names</h4><p>value=0|1|2<br>不同值代表的含义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">默认值为0，如果设置为0，表名是被指定存储的并且会进行大小写敏感的比较。</span><br><span class="line">如果设置为1，表名存为小写，不进行大小写敏感的比较。</span><br><span class="line">如果设置为2，表名按指定的存储，但是按小写的方式比较。这个参数同时适用于库名和表别名。</span><br></pre></td></tr></table></figure></p>
-<p>不同操作系统的默认值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">如果是windows，值默认为1。</span><br><span class="line">如果是macos，值默认是2。</span><br><span class="line">如果是linux默认是0，且不支持设置为2，如果这是为2，服务端会强制用0替代。</span><br></pre></td></tr></table></figure></p>
-<p>使用过程要注意的问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1)如果MySQL服务运行在操作系统（windows或者macos）上，mysql的数据目录所在的文件系统是大小写不敏感的，因此不能设置lower_case_table_names为0。这种组合是不被支持的，当执行INSERT INTO...SELECT...FROM tbl_name操作时，因为tb1_name的小写，会导致系统hang主。</span><br><span class="line">2)在myisam表中，使用不同的字母大小写访问表，会引起索引损坏。</span><br><span class="line">3)如果在一个大小写不明感的文件系统上设置lower_case_table_names=0，会打印error信息并退出服务。</span><br><span class="line">4)如果使用innodb引擎表，不管什么平台，都需要设置该参数为1，强制将名称转换为小写。</span><br><span class="line">5)数据库禁止启动的时候使用的lower_case_table_names的值与数据库初始化时的值不一致。这个限制是因为，当数据库初始化时候，数据字典表字段的排序是基于当时的值定义的。如果重启以不同的lower_case_table_names值启动，会导致在标识符的排序和比较引起不一致性。</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2019/01/09/mysql大小写敏感参数/"><span>点击阅读</span></a></h3>
     
   
 </article>

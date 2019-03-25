@@ -112,6 +112,70 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/03/25/linux 下used显示使用的内存过大，但实际进程占用的内存很小/"><span>[Linux] linux 下used显示使用的内存过大，但实际进程占用的内存很小</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/03/25/linux 下used显示使用的内存过大，但实际进程占用的内存很小/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-03-25T10:49:00.000Z">
+          2019-03-25
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h1 id="1、查看当前系统内存的使用情况："><a href="#1、查看当前系统内存的使用情况：" class="headerlink" title="1、查看当前系统内存的使用情况："></a>1、查看当前系统内存的使用情况：</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@zabbix-zyl gopmonitor]<span class="comment"># top|head -10</span></span><br><span class="line">top - 10:25:34 up 90 days,  1:31,  4 users,  load average: 0.65, 0.58, 0.37</span><br><span class="line">Tasks: 1027 total,   1 running, 1025 sleeping,   0 stopped,   1 zombie</span><br><span class="line">Cpu(s):  0.8%us,  0.5%sy,  0.0%ni, 97.6%id,  1.2%wa,  0.0%hi,  0.0%si,  0.0%st</span><br><span class="line">Mem:  16318608k total, 15056496k used,  1262112k free,   202316k buffers</span><br><span class="line">Swap: 10485756k total,  3422652k used,  7063104k free,   364088k cached</span><br><span class="line">PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND</span><br><span class="line">116159 root      20   0 15700 1868  832 R  3.8  0.0   0:00.03 top</span><br><span class="line">  3901 zabbix    20   0 3699m 5800 3432 S  1.9  0.0   0:14.09 zabbix_server</span><br><span class="line">     1 root      20   0 19356  848  628 S  0.0  0.0   0:07.99 init</span><br><span class="line">[root@zabbix-zyl gopmonitor]<span class="comment"># free -m</span></span><br><span class="line">             total       used       free     shared    buffers     cached</span><br><span class="line">Mem:         15936      14704       1231          2        197        355</span><br><span class="line">-/+ buffers/cache:      14151       1785</span><br><span class="line">Swap:        10239       3342       6897</span><br></pre></td></tr></table></figure>
+<h1 id="2、释放所有缓存再次查看-缓存释放掉了："><a href="#2、释放所有缓存再次查看-缓存释放掉了：" class="headerlink" title="2、释放所有缓存再次查看,缓存释放掉了："></a>2、释放所有缓存再次查看,缓存释放掉了：</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@zabbix-zyl gopmonitor]<span class="comment"># echo 3 &gt; /proc/sys/vm/drop_caches</span></span><br><span class="line">[root@zabbix-zyl gopmonitor]<span class="comment"># free -m</span></span><br><span class="line">             total       used       free     shared    buffers     cached</span><br><span class="line">Mem:         15936       4141      11794          2          8         47</span><br><span class="line">-/+ buffers/cache:       4086      11849</span><br><span class="line">Swap:        10239       3342       6897</span><br></pre></td></tr></table></figure>
+<h1 id="3、关于-proc-sys-vm-drop-caches参数不同值对应的含义："><a href="#3、关于-proc-sys-vm-drop-caches参数不同值对应的含义：" class="headerlink" title="3、关于/proc/sys/vm/drop_caches参数不同值对应的含义："></a>3、关于/proc/sys/vm/drop_caches参数不同值对应的含义：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0：不释放（系统默认值）</span><br><span class="line">1：释放页缓存</span><br><span class="line">2：释放dentries和inodes</span><br><span class="line">3：释放所有缓存（ 不是破坏性操作，脏的对象（比如脏页）不会被释放，可以运行sync命令，使用sync命令强制缓冲区的所有数据写入磁盘。）</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/03/25/linux 下used显示使用的内存过大，但实际进程占用的内存很小/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/03/22/oracle基于rowid删除重复行/"><span>[Oracle] oracle基于rowid删除重复行</span></a></h3>
     
   
@@ -761,76 +825,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2019/02/14/oracle-DB_NAME、DB_UNIQUE_NAME、GLOBAL_NAME、INSTANCE_NAME、SERVICE_NAME详解/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2019/02/13/cassandra使用nodetool decommission之后发现丢失数据的解决办法/"><span>[Cassandra] cassandra使用nodetool decommission之后发现丢失数据的解决办法</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2019/02/13/cassandra使用nodetool decommission之后发现丢失数据的解决办法/" rel="bookmark">
-        <time class="entry-date published" datetime="2019-02-13T06:12:00.000Z">
-          2019-02-13
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、故事背景"><a href="#1、故事背景" class="headerlink" title="1、故事背景"></a>1、故事背景</h4><p>当某一个节点执行nodetool decommission时，这个节点会被退役，该节点上的数据会流到其他正在活动的节点，但是该节点上的数据不会被清除，会保留在数据文件下。当发现剩余的的节点下未完全同步该退役的节点，可使用以下办法尝试去恢复数据。<br>被退役节点为（A），活动节点为（B）</p>
-<h4 id="2、尝试重新启动A节点，报错如下："><a href="#2、尝试重新启动A节点，报错如下：" class="headerlink" title="2、尝试重新启动A节点，报错如下："></a>2、尝试重新启动A节点，报错如下：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">This node was decommissioned and will not rejoin the ring unless cassandra.override_decommission=true has been set, or all existing data is removed and th</span><br><span class="line">e node is bootstrapped again</span><br><span class="line">Fatal configuration error; unable to start server.  See log for stacktrace.</span><br><span class="line">ERROR [main] 2019-02-12 06:03:30,000 CassandraDaemon.java:749 - Fatal configuration error</span><br><span class="line">org.apache.cassandra.exceptions.ConfigurationException: This node was decommissioned and will not rejoin the ring unless cassandra.override_decommission=t</span><br><span class="line">rue has been set, or all existing data is removed and the node is bootstrapped again</span><br></pre></td></tr></table></figure>
-<h4 id="3、报错提示要么删除目录下的所有数据，要么使用override-decommission-true参数启动，下面以添加参数启动，启动正常，启动命令："><a href="#3、报错提示要么删除目录下的所有数据，要么使用override-decommission-true参数启动，下面以添加参数启动，启动正常，启动命令：" class="headerlink" title="3、报错提示要么删除目录下的所有数据，要么使用override_decommission=true参数启动，下面以添加参数启动，启动正常，启动命令："></a>3、报错提示要么删除目录下的所有数据，要么使用override_decommission=true参数启动，下面以添加参数启动，启动正常，启动命令：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cassandra -Dcassandra.override_decommission=true -R</span><br></pre></td></tr></table></figure>
-<h4 id="4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来"><a href="#4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来" class="headerlink" title="4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来"></a>4、但是启动完成之后发现，只存在system相关的keyspaces，其它数据没办法加载出来</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cdax@cqlsh&gt; desc keyspaces;</span><br><span class="line">system_auth system_distributed system_schema  system system_traces</span><br></pre></td></tr></table></figure>
-<h4 id="5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件："><a href="#5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件：" class="headerlink" title="5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件："></a>5、因为要恢复的keyspace–“test”数据目录存在，尝试使用sstableloader去加载数据文件：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sstableloader -d 127.0.0.1 /tmp/test/trade_event-8d5d68508fe211e88a9ca166a7412712</span><br></pre></td></tr></table></figure>
-<h4 id="6、提示当前节点下不存在test-trade-event表，需要自己先手动创建该表，去B节点上执行desc-test-trade-event-查看建表语句，重新在A节点创建该表。"><a href="#6、提示当前节点下不存在test-trade-event表，需要自己先手动创建该表，去B节点上执行desc-test-trade-event-查看建表语句，重新在A节点创建该表。" class="headerlink" title="6、提示当前节点下不存在test.trade_event表，需要自己先手动创建该表，去B节点上执行desc test_trade_event,查看建表语句，重新在A节点创建该表。"></a>6、提示当前节点下不存在test.trade_event表，需要自己先手动创建该表，去B节点上执行desc test_trade_event,查看建表语句，重新在A节点创建该表。</h4><p>创建完成之后再次执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sstableloader -d 127.0.0.1 /tmp/test/trade_event-8d5d68508fe211e88a9ca166a7412712</span><br></pre></td></tr></table></figure></p>
-<h4 id="7、文件下的数据全部导入test-trade-event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下："><a href="#7、文件下的数据全部导入test-trade-event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下：" class="headerlink" title="7、文件下的数据全部导入test.trade_event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下："></a>7、文件下的数据全部导入test.trade_event表下面，然后使用copy将该表下面的数据全部导入到某一单独文件下：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy trade_event to &apos;/tmp/trade_event.sql&apos; with header=true;</span><br></pre></td></tr></table></figure>
-<h4 id="8、恢复之前须知："><a href="#8、恢复之前须知：" class="headerlink" title="8、恢复之前须知："></a>8、恢复之前须知：</h4><p>copy from操作并不会覆盖掉以前所有旧的数据，只会将A节点存在，B节点不存的数据导入到B节点。但是如果是B和A两个节点主键相同，其他字段数据不同，使用copy from的情况下，A节点的数据会覆盖掉B节点的数据。<br>因为我们decommission节点之后，启动应用发现缺少数据，导致应用无法起来，这种情况下B节点没有最新数据插入，因此可以执行copy from操作。如果无法确定B节点是否有新的数据插入，建议先根据某个表对应的时间戳先校验，确保没有最新数据插入的情况下，再使用上面的方法执行。</p>
-<h4 id="9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy-from操作将数据恢复："><a href="#9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy-from操作将数据恢复：" class="headerlink" title="9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy from操作将数据恢复："></a>9、导出完成之后，将导出的文件拷贝到B节点，之后再B节点上执行copy from操作将数据恢复：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">COPY trade_event FROM &apos;/home/test/trade_event.sql&apos; WITH HEADER = TRUE ;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/cassandra/">cassandra</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2019/02/13/cassandra使用nodetool decommission之后发现丢失数据的解决办法/"><span>点击阅读</span></a></h3>
     
   
 </article>
