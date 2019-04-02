@@ -1,0 +1,328 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Oracle] sqlplus 连接方式 | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、sqlplus 用户名/密码@连接字符串sqlplus scott/tiger@&amp;quot;(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.168.177)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=chic">
+  
+
+  
+  
+  <meta name="keywords" content="oracle">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Oracle] sqlplus 连接方式"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Oracle] sqlplus 连接方式</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/04/02/sqlplus连接方式/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-04-02T08:02:00.000Z">
+          2019-04-02
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h1 id="1、sqlplus-用户名-密码-连接字符串"><a href="#1、sqlplus-用户名-密码-连接字符串" class="headerlink" title="1、sqlplus 用户名/密码@连接字符串"></a>1、sqlplus 用户名/密码@连接字符串</h1><p><code>sqlplus scott/tiger@&quot;(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.168.177)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=chicago)))&quot;</code><br>或者<br><code>sqlplus scott/tiger@&quot;(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.168.177)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=chicago)))&quot;</code><br>eg：<br><code>sqlplus scott/tiger@192.168.168.177:1521/boston.us.oracle.cn</code></p>
+<h1 id="2、sqlplus-用户名-密码-ip-port-service-name"><a href="#2、sqlplus-用户名-密码-ip-port-service-name" class="headerlink" title="2、sqlplus 用户名/密码@ip:port/service_name"></a>2、sqlplus 用户名/密码@ip:port/service_name</h1><p><code>sqlplus corer111/core@192.168.168.65:1521/oibs1</code></p>
+<h1 id="3、sqlplus-用户名-密码-net-service-name"><a href="#3、sqlplus-用户名-密码-net-service-name" class="headerlink" title="3、sqlplus 用户名/密码@net_service_name"></a>3、sqlplus 用户名/密码@net_service_name</h1><p><code>sqlplus  scott/tiger@boston177</code></p>
+<h1 id="4、本地验证sys用户登录-监听是否开启和以及数据库是否启动都不影响登录"><a href="#4、本地验证sys用户登录-监听是否开启和以及数据库是否启动都不影响登录" class="headerlink" title="4、本地验证sys用户登录,监听是否开启和以及数据库是否启动都不影响登录"></a>4、本地验证sys用户登录,监听是否开启和以及数据库是否启动都不影响登录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export ORACLE_SID=***</span><br><span class="line">sqlplus / as sysdba</span><br></pre></td></tr></table></figure>
+<h1 id="5、数据库用户登录，数据库要确保在启动状态，监听是否可用不影响"><a href="#5、数据库用户登录，数据库要确保在启动状态，监听是否可用不影响" class="headerlink" title="5、数据库用户登录，数据库要确保在启动状态，监听是否可用不影响"></a>5、数据库用户登录，数据库要确保在启动状态，监听是否可用不影响</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlplus scott/tiger</span><br></pre></td></tr></table></figure>
+<h1 id="6、客户端使用external-password-store"><a href="#6、客户端使用external-password-store" class="headerlink" title="6、客户端使用external password store"></a>6、客户端使用external password store</h1><h2 id="6-1、客户端先创建wallet（D-software-oracle-product-11-2-0-client-1-wallets为指定生成wallet的目录）："><a href="#6-1、客户端先创建wallet（D-software-oracle-product-11-2-0-client-1-wallets为指定生成wallet的目录）：" class="headerlink" title="6.1、客户端先创建wallet（D:\software\oracle\product\11.2.0\client_1\wallets为指定生成wallet的目录）："></a>6.1、客户端先创建wallet（D:\software\oracle\product\11.2.0\client_1\wallets为指定生成wallet的目录）：</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkstore -wrl D:\software\oracle\product\11.2.0\client_1\wallets -create</span><br></pre></td></tr></table></figure>
+<h2 id="6-2、在wallet里面创建数据库连接认证："><a href="#6-2、在wallet里面创建数据库连接认证：" class="headerlink" title="6.2、在wallet里面创建数据库连接认证："></a>6.2、在wallet里面创建数据库连接认证：</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkstore -wrl wallet_location -createCredential db_connect_string username</span><br></pre></td></tr></table></figure>
+<p>wallet_location：创建钱包的位置<br>db_connect_string ：对应的tns中指定的网络服务名<br>username：连接数据库使用的用户名<br>eg：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkstore -wrl D:\software\oracle\product\11.2.0\client_1\wallets -createCredential boston177 scott</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/zeven0707/picture/master/owmpic/13.png" alt="13"></p>
+<h2 id="6-3、修改sqlnet-ora配置文件，添加wallet相关参数："><a href="#6-3、修改sqlnet-ora配置文件，添加wallet相关参数：" class="headerlink" title="6.3、修改sqlnet.ora配置文件，添加wallet相关参数："></a>6.3、修改sqlnet.ora配置文件，添加wallet相关参数：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">WALLET_LOCATION =</span><br><span class="line">  (SOURCE =</span><br><span class="line">    (METHOD = FILE)</span><br><span class="line">    (METHOD_DATA =</span><br><span class="line">  (DIRECTORY = D:\software\oracle\product\11.2.0\client_1\network\admin)</span><br><span class="line">  )</span><br><span class="line"> )</span><br><span class="line"></span><br><span class="line">SQLNET.WALLET_OVERRIDE = TRUE</span><br></pre></td></tr></table></figure>
+<p>测试是否能够正常连接：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlplus /@boston177</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/zeven0707/picture/master/owmpic/14.png" alt="14"></p>
+<h2 id="6-4、如果后面用户名密码发生变更，直接修改外部钱包认证即可，应用端不需要做任何变更-修改数据库用户密码之后修改外部面认证："><a href="#6-4、如果后面用户名密码发生变更，直接修改外部钱包认证即可，应用端不需要做任何变更-修改数据库用户密码之后修改外部面认证：" class="headerlink" title="6.4、如果后面用户名密码发生变更，直接修改外部钱包认证即可，应用端不需要做任何变更,修改数据库用户密码之后修改外部面认证："></a>6.4、如果后面用户名密码发生变更，直接修改外部钱包认证即可，应用端不需要做任何变更,修改数据库用户密码之后修改外部面认证：</h2><p>查看有哪些外部密码认证：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkstore -wrl D:\software\oracle\product\11.2.0\client_1\wallets -listCredential</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/zeven0707/picture/master/owmpic/11.png" alt="11"></p>
+<p>修改外部密码认证：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkstore -wrl D:\software\oracle\product\11.2.0\client_1\wallets  -modifyCredential boston177 scott</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/zeven0707/picture/master/owmpic/15.png" alt="15"></p>
+<h2 id="6-5、删除外部密码认证："><a href="#6-5、删除外部密码认证：" class="headerlink" title="6.5、删除外部密码认证："></a>6.5、删除外部密码认证：</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkstore -wrl D:\software\oracle\product\11.2.0\client_1\wallets -deleteCredential boston177</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/zeven0707/picture/master/owmpic/12.png" alt="12"></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1、sqlplus-用户名-密码-连接字符串"><span class="toc-number">1.</span> <span class="toc-text">1、sqlplus 用户名/密码@连接字符串</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2、sqlplus-用户名-密码-ip-port-service-name"><span class="toc-number">2.</span> <span class="toc-text">2、sqlplus 用户名/密码@ip:port/service_name</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3、sqlplus-用户名-密码-net-service-name"><span class="toc-number">3.</span> <span class="toc-text">3、sqlplus 用户名/密码@net_service_name</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4、本地验证sys用户登录-监听是否开启和以及数据库是否启动都不影响登录"><span class="toc-number">4.</span> <span class="toc-text">4、本地验证sys用户登录,监听是否开启和以及数据库是否启动都不影响登录</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5、数据库用户登录，数据库要确保在启动状态，监听是否可用不影响"><span class="toc-number">5.</span> <span class="toc-text">5、数据库用户登录，数据库要确保在启动状态，监听是否可用不影响</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6、客户端使用external-password-store"><span class="toc-number">6.</span> <span class="toc-text">6、客户端使用external password store</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1、客户端先创建wallet（D-software-oracle-product-11-2-0-client-1-wallets为指定生成wallet的目录）："><span class="toc-number">6.1.</span> <span class="toc-text">6.1、客户端先创建wallet（D:\software\oracle\product\11.2.0\client_1\wallets为指定生成wallet的目录）：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2、在wallet里面创建数据库连接认证："><span class="toc-number">6.2.</span> <span class="toc-text">6.2、在wallet里面创建数据库连接认证：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3、修改sqlnet-ora配置文件，添加wallet相关参数："><span class="toc-number">6.3.</span> <span class="toc-text">6.3、修改sqlnet.ora配置文件，添加wallet相关参数：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4、如果后面用户名密码发生变更，直接修改外部钱包认证即可，应用端不需要做任何变更-修改数据库用户密码之后修改外部面认证："><span class="toc-number">6.4.</span> <span class="toc-text">6.4、如果后面用户名密码发生变更，直接修改外部钱包认证即可，应用端不需要做任何变更,修改数据库用户密码之后修改外部面认证：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-5、删除外部密码认证："><span class="toc-number">6.5.</span> <span class="toc-text">6.5、删除外部密码认证：</span></a></li></ol></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Oracle] sqlplus 连接方式'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2019 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
