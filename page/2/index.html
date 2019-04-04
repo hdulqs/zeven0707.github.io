@@ -112,6 +112,72 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/02/26/ORA-00020 maximum number of processes (150) exceeded/"><span>[Oracle] oracle ORA-00020: maximum number of processes (150) exceeded</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/02/26/ORA-00020 maximum number of processes (150) exceeded/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-26T06:24:00.000Z">
+          2019-02-26
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、报错提示oracle的会话连接数达到上限，解决方法如下"><a href="#1、报错提示oracle的会话连接数达到上限，解决方法如下" class="headerlink" title="1、报错提示oracle的会话连接数达到上限，解决方法如下"></a>1、报错提示oracle的会话连接数达到上限，解决方法如下</h4><h4 id="2、发生报错之后，使用sqlplus-as-sysdba也不能登录，oracle不像mysql一样专门为超级管理员用户保留一个连接会话，oracle只能通过杀掉session连接才能再次登录。"><a href="#2、发生报错之后，使用sqlplus-as-sysdba也不能登录，oracle不像mysql一样专门为超级管理员用户保留一个连接会话，oracle只能通过杀掉session连接才能再次登录。" class="headerlink" title="2、发生报错之后，使用sqlplus / as sysdba也不能登录，oracle不像mysql一样专门为超级管理员用户保留一个连接会话，oracle只能通过杀掉session连接才能再次登录。"></a>2、发生报错之后，使用sqlplus / as sysdba也不能登录，oracle不像mysql一样专门为超级管理员用户保留一个连接会话，oracle只能通过杀掉session连接才能再次登录。</h4><h6 id="2-1、批量杀掉会话连接："><a href="#2-1、批量杀掉会话连接：" class="headerlink" title="2.1、批量杀掉会话连接："></a>2.1、批量杀掉会话连接：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep oracle|grep LOCAL|grep -v grep|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</span><br></pre></td></tr></table></figure>
+<p>如果当前系统下存在多个实例(可以手动指定${ORACLE_SID}，不指定会使用当前环境变量默认下的值)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep oracle$&#123;ORACLE_SID&#125;|grep LOCAL|grep -v grep|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</span><br></pre></td></tr></table></figure></p>
+<h5 id="2-2、单独杀掉会话连接"><a href="#2-2、单独杀掉会话连接" class="headerlink" title="2.2、单独杀掉会话连接"></a>2.2、单独杀掉会话连接</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep oracle$&#123;ORACLE_SID&#125;|grep LOCAL|awk &apos;&#123;print $2&#125;&apos;</span><br><span class="line">kill -9 ***</span><br></pre></td></tr></table></figure>
+<h4 id="3、杀掉会话连接后，等待一段时间再次sqlplus-as-sysdba登录显示正常。"><a href="#3、杀掉会话连接后，等待一段时间再次sqlplus-as-sysdba登录显示正常。" class="headerlink" title="3、杀掉会话连接后，等待一段时间再次sqlplus / as sysdba登录显示正常。"></a>3、杀掉会话连接后，等待一段时间再次sqlplus / as sysdba登录显示正常。</h4><p>登录之后修改process进程数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter system set processes=500 scope=spfile;</span><br></pre></td></tr></table></figure></p>
+<p>修改完该参数之后要重新启动db，才能生效,该参数不支持动态修改。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/02/26/ORA-00020 maximum number of processes (150) exceeded/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/02/14/goaccess安装/"><span>[Linux] nginx日志分析工具goaccess</span></a></h3>
     
   
@@ -757,70 +823,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2019/01/22/mysql参数NO_AUTO_CREATE_USER/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2019/01/14/sqlserver2017数据导入sqlserver2016/"><span>[Sqlserver] Sqlserver2017数据库导入低版本sqlserver2016数据库</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2019/01/14/sqlserver2017数据导入sqlserver2016/" rel="bookmark">
-        <time class="entry-date published" datetime="2019-01-14T06:54:00.000Z">
-          2019-01-14
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、源库操作"><a href="#1、源库操作" class="headerlink" title="1、源库操作"></a>1、源库操作</h4><p>通过sqlserver manager studio登录sqlserver2017，对要备份的库进行操作：tasks–&gt;Generate scripts<br><img src="https://i.imgur.com/3QLtong.jpg" alt=""><br>点击下一步Next：<br><img src="https://i.imgur.com/TgGqSV7.png" alt=""><br>可以选择要备份整个库，还是只备份这个库的某个对象，我们这里备份整个库：<br><img src="https://i.imgur.com/Qrh498i.png" alt=""><br>点击下一步，点击advanced，进行编辑，将Script for server version修改为要目标库的版本（sqlserver2016）,Type of data to script改为Schema and data：<br><img src="https://i.imgur.com/JKIEDUd.png" alt=""><br>修改备份的路径，点击next:<br><img src="https://i.imgur.com/ncNCo1R.jpg" alt=""><br>开始导出数据：<br><img src="https://i.imgur.com/9iFyYH9.png" alt=""></p>
-<h4 id="2、目标库操作"><a href="#2、目标库操作" class="headerlink" title="2、目标库操作"></a>2、目标库操作</h4><p>数据导出完成之后，将备份的数据拷贝到目标端服务器，目录根据自己需求定义，然后通过management studio登录sqlserver2016数据库（这里安装sqlserver2016的过程中，发现没有自带managerment studio管理软件，需要自己单独安装，sqlserver2016 management studio下载链接，点击<a href="https://download.microsoft.com/download/9/3/3/933EA6DD-58C5-4B78-8BEC-2DF389C72BE0/SSMS-Setup-ENU.exe" target="_blank" rel="noopener">此处</a></p>
-<p>登录management studio打开拷贝过来的脚本，修改脚本：<br>将数据路径和日志路径修改为本地的sqlserver路径，如果database已经建立了，可以把create database参数改为use<br><img src="https://i.imgur.com/3JeTUFi.jpg" alt=""></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/sqlserver/">sqlserver</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2019/01/14/sqlserver2017数据导入sqlserver2016/"><span>点击阅读</span></a></h3>
     
   
 </article>
