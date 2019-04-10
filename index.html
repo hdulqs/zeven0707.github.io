@@ -112,6 +112,70 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/04/10/oracle 禁用fast recovery area/"><span>[Oracle] oracle 禁用fast recovery area</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/04/10/oracle 禁用fast recovery area/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-04-10T08:46:00.000Z">
+          2019-04-10
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h1 id="1、如果数据库开启了flashback-database需要禁用"><a href="#1、如果数据库开启了flashback-database需要禁用" class="headerlink" title="1、如果数据库开启了flashback database需要禁用"></a>1、如果数据库开启了flashback database需要禁用</h1><p><code>alter database flashback off;</code></p>
+<h1 id="2、修改log-archive-dest-n参数，将其值修改为非fast-recovery-area"><a href="#2、修改log-archive-dest-n参数，将其值修改为非fast-recovery-area" class="headerlink" title="2、修改log_archive_dest_n参数，将其值修改为非fast recovery area"></a>2、修改log_archive_dest_n参数，将其值修改为非fast recovery area</h1><p>未修改之前：<br><code>LOG_ARCHIVE_DEST_1=&#39;LOCATION=USE_DB_RECOVERY_FILE_DEST&#39;</code><br>（LOCATION=USE_DB_RECOVERY_FILE_DEST配置fast recovery area，该参数值为 DB_RECOVERY_FILE_DEST初始化参数指定的值）<br>修改为非FRA：<br><code>ALTER SYSTEM SET LOG_ARCHIVE_DEST_1=&#39;LOCATION=/ORACLE/DBS/&#39;;</code></p>
+<h1 id="3、之后禁用fra初始化参数"><a href="#3、之后禁用fra初始化参数" class="headerlink" title="3、之后禁用fra初始化参数"></a>3、之后禁用fra初始化参数</h1><p><code>ALTER SYSTEM SET DB_RECOVERY_FILE_DEST=&#39;&#39;;</code></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/04/10/oracle 禁用fast recovery area/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/04/04/nexus登录之后提示报错System Requirement max file descriptors [4096] likely too low, increase to at least [65536]/"><span>[Linux] nexus 登录之后提示报错System Requirement: max file descriptors [4096] likely too low, increase to at least [65536]</span></a></h3>
     
   
@@ -760,76 +824,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2019/03/11/oracle查询乱码问题/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2019/02/27/记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程/"><span>[Linux] 记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2019/02/27/记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程/" rel="bookmark">
-        <time class="entry-date published" datetime="2019-02-27T09:26:00.000Z">
-          2019-02-27
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、服务器收到cpu报警，cpu被占用达到100-，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示"><a href="#1、服务器收到cpu报警，cpu被占用达到100-，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示" class="headerlink" title="1、服务器收到cpu报警，cpu被占用达到100%，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示"></a>1、服务器收到cpu报警，cpu被占用达到100%，登录服务器查看，发现cpu被一个watchbog的进程占满了，如下图所示</h4><p><img src="https://i.imgur.com/dsX0Vyz.png" alt=""><br>该进程为被植入的挖矿程序，该程序会在cron下面写入脚本，定期去pastebin.com下载木马开始挖矿，如果删除不彻底仍然会不定期启动这个挖矿程序。</p>
-<h4 id="2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制："><a href="#2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制：" class="headerlink" title="2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制："></a>2、下面开始删除这个病毒木马，防火墙配置，禁用这个域名对应ip的出入限制：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -s 104.20.209.21 -j DROP</span><br><span class="line">iptables -A OUTPUT -s 104.20.209.21 -j DROP</span><br><span class="line">iptables -A OUTPUT -j DROP -d 104.20.209.21</span><br></pre></td></tr></table></figure>
-<p>保存修改内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/sbin/service iptables save</span><br></pre></td></tr></table></figure></p>
-<p>为安全起见，同时修改本地hosts文件添加，将pastebin.com重定向到本地：<br>cat /etc/hosts|grep pastebin<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 pastebin.com</span><br></pre></td></tr></table></figure></p>
-<h4 id="3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒-如果确认病毒可以被彻底删除，这不无需操作"><a href="#3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒-如果确认病毒可以被彻底删除，这不无需操作" class="headerlink" title="3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒(如果确认病毒可以被彻底删除，这不无需操作)"></a>3、移除wget、curl脚本里面会使用curl和wget等命令下载病毒(如果确认病毒可以被彻底删除，这不无需操作)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mv /usr/bin/curl /usr/bin/lruc</span><br><span class="line">mv /usr/bin/wget /usr/bin/tegw</span><br></pre></td></tr></table></figure>
-<h4 id="4、杀掉watchbog进程"><a href="#4、杀掉watchbog进程" class="headerlink" title="4、杀掉watchbog进程"></a>4、杀掉watchbog进程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep watchbog|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</span><br></pre></td></tr></table></figure>
-<h4 id="5、删掉cron里面的相关任务"><a href="#5、删掉cron里面的相关任务" class="headerlink" title="5、删掉cron里面的相关任务"></a>5、删掉cron里面的相关任务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br><span class="line">/etc/cron.d     </span><br><span class="line">/etc/cron.deny    </span><br><span class="line">/etc/cron.monthly  </span><br><span class="line">/etc/cron.daily  </span><br><span class="line">/etc/cron.hourly  </span><br><span class="line">/etc/crontab       </span><br><span class="line">/etc/cron.weekly</span><br></pre></td></tr></table></figure>
-<p>上面所有的文档一定要都仔细检查一边，有相关curl pastebin.com等信息要彻底删除</p>
-<h4 id="6、在cron的文件下还发现的其他脚本命令，-bin-httpntp、-bin-ftpsdns等，同时删除watchbog"><a href="#6、在cron的文件下还发现的其他脚本命令，-bin-httpntp、-bin-ftpsdns等，同时删除watchbog" class="headerlink" title="6、在cron的文件下还发现的其他脚本命令，/bin/httpntp、/bin/ftpsdns等，同时删除watchbog"></a>6、在cron的文件下还发现的其他脚本命令，/bin/httpntp、/bin/ftpsdns等，同时删除watchbog</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/bin/watchbog</span><br><span class="line">rm -rf /bin/httpntp</span><br><span class="line">rm -rf /bin/ftpsdns</span><br></pre></td></tr></table></figure>
-<h4 id="7、如果-tmp目录下存在文件-tmp-timesyncc-service，也要删除"><a href="#7、如果-tmp目录下存在文件-tmp-timesyncc-service，也要删除" class="headerlink" title="7、如果/tmp目录下存在文件/tmp/timesyncc.service，也要删除"></a>7、如果/tmp目录下存在文件/tmp/<em>timesyncc.service</em>，也要删除</h4><h4 id="8、参考链接"><a href="#8、参考链接" class="headerlink" title="8、参考链接"></a>8、<a href="http://sudhakarbellamkonda.blogspot.com/2018/11/blocking-watchbog-malwareransomware.html" target="_blank" rel="noopener">参考链接</a></h4>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/linux/">linux</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2019/02/27/记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程/"><span>点击阅读</span></a></h3>
     
   
 </article>

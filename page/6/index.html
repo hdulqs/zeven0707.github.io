@@ -112,6 +112,77 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/10/30/测试mysql or和in对sql查询效率的影响/"><span>[Mysql] 测试mysql or和in对sql查询效率的影响</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/30/测试mysql or和in对sql查询效率的影响/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-30T04:39:00.000Z">
+          2018-10-30
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、创建基表测试数据"><a href="#1、创建基表测试数据" class="headerlink" title="1、创建基表测试数据"></a>1、创建基表测试数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `test1` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into test1(name,age) values(&apos;lucy&apos;,10),(&apos;bobo&apos;,18),(&apos;david&apos;,20),(&apos;tom&apos;,21),(&apos;dobu&apos;,22),(&apos;dali&apos;,12);</span><br></pre></td></tr></table></figure>
+<h4 id="2、创建中间表"><a href="#2、创建中间表" class="headerlink" title="2、创建中间表"></a>2、创建中间表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `testfororder` (</span><br><span class="line">  `id` int(7) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=14699990 DEFAULT CHARSET=utf8mb4;</span><br></pre></td></tr></table></figure>
+<p>创建存储过程对中间表插入数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">drop procedure if exists test;</span><br><span class="line">delimiter //</span><br><span class="line">create procedure test()</span><br><span class="line"> begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i=0;</span><br><span class="line">  while i&lt;300000 do</span><br><span class="line">   insert into testfororder(newid,name,age) select concat(i,name),FLOOR(18 + (RAND() * 12)) from test1;</span><br><span class="line">   set i=i+1;</span><br><span class="line">  end while;</span><br><span class="line"> end//</span><br><span class="line"> delimiter ;</span><br><span class="line">调用存储过程：</span><br><span class="line">call test();</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、创建测试表："><a href="#3、创建测试表：" class="headerlink" title="3、创建测试表："></a>3、创建测试表：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `sequence` (</span><br><span class="line">  `id` int(10) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `newid` int(10) NOT NULL,</span><br><span class="line">  `name` varchar(20) DEFAULT NULL,</span><br><span class="line">  `age` int(4) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=89179437 DEFAULT CHARSET=utf8mb4;</span><br><span class="line"></span><br><span class="line">insert into sequence(newid,name,age) select * from testfororder;</span><br></pre></td></tr></table></figure>
+<p>数据量根据自己需求可以多次导入</p>
+<h4 id="4、查看sequence测试表数据："><a href="#4、查看sequence测试表数据：" class="headerlink" title="4、查看sequence测试表数据："></a>4、查看sequence测试表数据：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from sequence;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">| 12600000 |</span><br><span class="line">+----------+</span><br><span class="line">1 row in set (2.83 sec)</span><br></pre></td></tr></table></figure>
+<h4 id="5、在newid没有索引的情况下，in和or的对比："><a href="#5、在newid没有索引的情况下，in和or的对比：" class="headerlink" title="5、在newid没有索引的情况下，in和or的对比："></a>5、在newid没有索引的情况下，in和or的对比：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">repl@db 16:14:  [aaaa]&gt; select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (4.47 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid =116670 or newid = 116677 or newid = 116684 or newid =116691 or newid = 116698 or newid=116705 or newid=116719 or newid=116726;</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (6.77 sec)</span><br></pre></td></tr></table></figure>
+<p>没有索引的情况下使用in查询效率高于or</p>
+<h4 id="6、创建newid索引，再次进行测试："><a href="#6、创建newid索引，再次进行测试：" class="headerlink" title="6、创建newid索引，再次进行测试："></a>6、创建newid索引，再次进行测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"> create index newid_ind on sequence(newid);</span><br><span class="line">select * from sequence where  newid in (116670,116677,116684,116691,116698,116705,116719,116726);</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">select * from sequence where  newid =116670 or newid = 116677 or newid = 116684 or newid =116691 or newid = 116698 or newid=116705 or newid=116719 or newid=116726;</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">| id       | newid  | name      | age  |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">|   100003 | 116670 | 2381lucy  |   26 |</span><br><span class="line">...</span><br><span class="line">| 76679494 | 116726 | 2382bobo  |   21 |</span><br><span class="line">+----------+--------+-----------+------+</span><br><span class="line">56 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<p>在newid存在索引的情况下，使用or和in查询对sql查询效率影响较小。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/30/测试mysql or和in对sql查询效率的影响/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/28/Old incarnation found while trying to add node/"><span>[Mysql] Old incarnation found while trying to add node</span></a></h3>
     
   
@@ -170,6 +241,69 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/28/Old incarnation found while trying to add node/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
+          2018-10-25
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
@@ -248,69 +382,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/25/mysql数据库使用innobackupex和mysqldump备份恢复的对比/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/25/安装mysqlclient客户端/"><span>[Mysql] yum安装mysql-client客户端(centos7)</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/25/安装mysqlclient客户端/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-25T14:30:00.000Z">
-          2018-10-25
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、配置yum源"><a href="#1、配置yum源" class="headerlink" title="1、配置yum源"></a>1、配置yum源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/\$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql&quot; &gt; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看配置文件是否正确"><a href="#2、查看配置文件是否正确" class="headerlink" title="2、查看配置文件是否正确:"></a>2、查看配置文件是否正确:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
-<h4 id="3、安装mysql-client："><a href="#3、安装mysql-client：" class="headerlink" title="3、安装mysql-client："></a>3、安装mysql-client：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum install mysql-community-client</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/25/安装mysqlclient客户端/"><span>点击阅读</span></a></h3>
     
   
 </article>
@@ -731,72 +802,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/10/18/linux区分当前服务器是物理机还是虚拟机/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/10/18/mysql忘记root密码，修改密码方法/"><span>[Mysql] mysql忘记root密码，修改密码方法</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/10/18/mysql忘记root密码，修改密码方法/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-10-18T02:23:00.000Z">
-          2018-10-18
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="1、修改my-cnf文件，在-mysqld-下添加’skip-grant-tables’参数："><a href="#1、修改my-cnf文件，在-mysqld-下添加’skip-grant-tables’参数：" class="headerlink" title="1、修改my.cnf文件，在[mysqld]下添加’skip-grant-tables’参数："></a>1、修改my.cnf文件，在[mysqld]下添加’skip-grant-tables’参数：</h3><p>cat /usr/local/mysql/etc/my.cnf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">!include /usr/local/mysql/etc/mysqld.cnf</span><br><span class="line">port            = 3306</span><br><span class="line">basedir         = /usr/local/mysql/</span><br><span class="line">socket          = /usr/local/mysql/tmp/mysql.sock</span><br><span class="line">pid-file        = /usr/local/mysql/var/mysql.pid</span><br><span class="line">datadir         = /usr/local/mysql/var/</span><br><span class="line">skip-grant-tables</span><br></pre></td></tr></table></figure></p>
-<h3 id="2、重启mysql进程："><a href="#2、重启mysql进程：" class="headerlink" title="2、重启mysql进程："></a>2、重启mysql进程：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysql restart</span><br></pre></td></tr></table></figure>
-<h3 id="3、进入mysql控制台，修改mysql密码："><a href="#3、进入mysql控制台，修改mysql密码：" class="headerlink" title="3、进入mysql控制台，修改mysql密码："></a>3、进入mysql控制台，修改mysql密码：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; USE mysql ; </span><br><span class="line">Database changed</span><br><span class="line">mysql&gt;  UPDATE user SET Password = password ( &apos;12345678&apos; ) WHERE User = &apos;root&apos; ; </span><br><span class="line">Query OK, 1 row affected (0.06 sec)</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line">mysql&gt; flush privileges ; </span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line">mysql&gt; quit</span><br></pre></td></tr></table></figure>
-<h3 id="4、注释掉my-cnf配置文件下的skip-grant-tables这行参数，重新启动mysql："><a href="#4、注释掉my-cnf配置文件下的skip-grant-tables这行参数，重新启动mysql：" class="headerlink" title="4、注释掉my.cnf配置文件下的skip-grant-tables这行参数，重新启动mysql："></a>4、注释掉my.cnf配置文件下的skip-grant-tables这行参数，重新启动mysql：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysql restart</span><br></pre></td></tr></table></figure>
-<h3 id="5、测试密码是否修改成功-能否正常登陆控制台："><a href="#5、测试密码是否修改成功-能否正常登陆控制台：" class="headerlink" title="5、测试密码是否修改成功,能否正常登陆控制台："></a>5、测试密码是否修改成功,能否正常登陆控制台：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p12345678</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/10/18/mysql忘记root密码，修改密码方法/"><span>点击阅读</span></a></h3>
     
   
 </article>

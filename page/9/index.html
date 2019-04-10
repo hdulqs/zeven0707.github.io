@@ -112,6 +112,77 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/09/05/mysql前缀索引/"><span>[Mysql] mysql前缀索引详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/09/05/mysql前缀索引/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-09-05T03:49:24.000Z">
+          2018-09-05
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h3 id="1、使用前缀索引注意事项："><a href="#1、使用前缀索引注意事项：" class="headerlink" title="1、使用前缀索引注意事项："></a>1、使用前缀索引注意事项：</h3><p>1)、列类型为char，varchar，binary，varbinary可以创建前缀索引；<br>2)、列类型为blob，text必须创建前缀索引，而且只有innodb，myisam，blackhole的存储引擎前缀索引才生效；<br>3)、前缀限制是以字节为单位的，但是在create table，alter table，create index语句中索引指定的前缀长度的值为：非二进制类型的（cahr varchar，text）的字符串数据量、二进制类型的（binary，varbinary，blob）的字节数量。当用多字节字符串集为非二进制字符串列创建前缀索引长度时，需要考虑这一点。<br>是否支持前缀索引和前缀的长度跟存储引擎有关系。例如，innodb引擎表前缀索引支持767字节长度，如果开启innodb_large_prefix参数，支持3072字节长度。myisam存储引擎表，前缀长度为1000字节。NDB引擎不支持前缀索引。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_large_prefix'</span>;</span><br><span class="line">+<span class="comment">---------------------+-------+</span></span><br><span class="line">| Variable_name       | Value |</span><br><span class="line">+<span class="comment">---------------------+-------+</span></span><br><span class="line">| innodb_large_prefix | ON    |</span><br><span class="line">+<span class="comment">---------------------+-------+</span></span><br></pre></td></tr></table></figure></p>
+<p>4)、以mysql5.7.17为例，如果一个指定的索引前缀长度超过最大列数据类型大小，create index时会如下处理索引：<br>对于非唯一索引，或者一个错误发生(严格sqlmode开启)，或者索引长度降低到最大列数据类型大小并产生一个警告信息(如果strcit sql mode没有开启)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">show variables like &apos;sql_mode&apos;;</span><br><span class="line">+---------------+------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Variable_name | Value                                                                                                                  |</span><br><span class="line">+---------------+------------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| sql_mode      | STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION |</span><br><span class="line">+---------------+------------------------------------------------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure></p>
+<p>严格模式是指将SQL_MODE变量设置为STRICT_TRANS_TABLES或STRICT_ALL_TABLES中的至少一种。<br>对于唯一索引，不管sqlmode模式是何种，都会直接报错，因为降低索引长度会插入非唯一的条目不满足唯一性需求。</p>
+<p>5)、创建前缀索引语句：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE INDEX part_of_name ON customer (name(10));</span><br></pre></td></tr></table></figure></p>
+<p>如果列中的名字在前10个字节中通常是不同的，查询性能不应该慢于创建整个name列索引的查询。另外使用列前缀索引使索引文件更小，能够节省更多的磁盘空间并且增加插入速度。</p>
+<h3 id="2、下面是根据网上提供的方法做的测试，参考链接"><a href="#2、下面是根据网上提供的方法做的测试，参考链接" class="headerlink" title="2、下面是根据网上提供的方法做的测试，参考链接"></a>2、下面是根据网上提供的方法做的测试，<a href="https://blog.csdn.net/dhrome/article/details/72853153" target="_blank" rel="noopener">参考链接</a></h3><p>1)、插入测试数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">create table music(</span><br><span class="line">name varchar(30)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">insert into music values(&apos;BITE&apos;),(&apos;There for you&apos;),(&apos;Scarborough Fair&apos;),(&apos;Shape of You&apos;),(&apos;Marvin Gaye&apos;),(&apos;Pretty Girl&apos;),(&apos;Pretty Boy&apos;),(&apos;Walk Away&apos;),(&apos;YOUTH&apos;),(&apos;Paris&apos;);</span><br><span class="line"></span><br><span class="line">insert into music values (&apos;Scarborough Fair&apos;),(&apos;Shape of You&apos;),(&apos;Marvin Gaye&apos;),(&apos;Pretty Girl&apos;),(&apos;Pretty Boy&apos;),(&apos;Walk Away&apos;),(&apos;YOUTH&apos;),(&apos;Paris&apos;);</span><br></pre></td></tr></table></figure></p>
+<p>2)、查看完整列索引选择性<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@db 03:31:  [exchange_market]&gt; select count(distinct name) / count(*) from music;</span><br><span class="line">+---------------------------------+</span><br><span class="line">| count(distinct name) / count(*) |</span><br><span class="line">+---------------------------------+</span><br><span class="line">|                          0.5556 |</span><br><span class="line">+---------------------------------+</span><br></pre></td></tr></table></figure></p>
+<p>3)、查找合适的前缀索引长度<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">select count(distinct left(name,1))/count(*) as sel1, count(distinct left(name,2))/count(*) as sel2, count(distinct left(name,3))/count(*) as sel3, count(distinct left(name,4))/count(*) as sel4 from music;</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">| sel1   | sel2   | sel3   | sel4   |</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">| 0.3889 | 0.5000 | 0.5000 | 0.5000 |</span><br><span class="line">+--------+--------+--------+--------+</span><br></pre></td></tr></table></figure></p>
+<p>4)、可以看到当前缀长度为2是已经接近完整列索引选择性,添加前缀索引<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">alter table music add index music_index(name(2));</span><br><span class="line">Query OK, 0 rows affected (0.06 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">show index from music;</span><br><span class="line">+-------+------------+-------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| Table | Non_unique | Key_name    | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+-------+------------+-------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| music |          1 | music_index |            1 | name        | A         |           9 |        2 | NULL   | YES  | BTREE      |         |               |</span><br><span class="line">+-------+------------+-------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br></pre></td></tr></table></figure></p>
+<p>5)、查询索引是否被正常应用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">select * from music where name like &apos;s%&apos;;</span><br><span class="line">+------------------+</span><br><span class="line">| name             |</span><br><span class="line">+------------------+</span><br><span class="line">| Scarborough Fair |</span><br><span class="line">| Scarborough Fair |</span><br><span class="line">| Shape of You     |</span><br><span class="line">| Shape of You     |</span><br><span class="line">+------------------+</span><br><span class="line">4 rows in set (0.07 sec)</span><br><span class="line"></span><br><span class="line">explain select * from music where name like &apos;s%&apos;;</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+-------------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | music | NULL       | range | music_index   | music_index | 11      | NULL |    4 |   100.00 | Using where |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/mysql/">mysql</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/09/05/mysql前缀索引/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/09/04/使用mysqladmin查看innodb_buffer_pool缓存命中率及缓存使用情况/"><span>[Mysql] 使用mysqladmin查看innodb_buffer_pool缓存命中率及缓存使用情况</span></a></h3>
     
   
@@ -329,7 +400,7 @@ var _hmt = _hmt || [];
 
     <span class="post-tags">
       <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a><a href="/tags/mongodb/">mongodb</a><a href="/tags/redis/">redis</a><a href="/tags/grafana/">grafana</a><a href="/tags/prometheus/">prometheus</a>
+        <a href="/tags/mysql/">mysql</a><a href="/tags/redis/">redis</a><a href="/tags/mongodb/">mongodb</a><a href="/tags/grafana/">grafana</a><a href="/tags/prometheus/">prometheus</a>
     </span>
     
 
@@ -807,72 +878,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/08/23/centos7.2服务器使用df -h卡死问题/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/08/21/InnoDB-page_cleaner-1000ms intended loop took xxxms/"><span>[Mysql] InnoDB：page_cleaner：1000ms intended loop took xxxms</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/08/21/InnoDB-page_cleaner-1000ms intended loop took xxxms/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-08-21T07:10:20.000Z">
-          2018-08-21
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h2 id="1、在查看mysqllog日志的时候不经意间发现一条这个提示："><a href="#1、在查看mysqllog日志的时候不经意间发现一条这个提示：" class="headerlink" title="1、在查看mysqllog日志的时候不经意间发现一条这个提示："></a>1、在查看mysqllog日志的时候不经意间发现一条这个提示：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Note] InnoDB: page_cleaner: 1000ms intended loop took 16111ms. The settings might not be optimal. (flushed=7 and evicted=0, during the time.)</span><br></pre></td></tr></table></figure>
-<p>造成该问题的主要原因：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">page_cleaner_thread:脏页清理线程负责将脏页从内存写到磁盘。</span><br><span class="line"></span><br><span class="line">出现该问题的原因：上面提示的信息的含义是,有大量脏页需要刷新，理论上应该在1s内完成，但实际却用了16s的时间将脏页刷新到磁盘，它接受脏页的数量远远大于它每秒能够处理脏页的能力，因此为了避免该问题，可降低每秒循环期间搜索脏页的深度（innodb_lru_scan_depth）。</span><br><span class="line"></span><br><span class="line">如果数据库存在很多的buffer pool instance 将会引起更多的刷新工作，因此如果只是增大 buffer pool instances 而没有降低lru_scan_depth,很可能会引起性能瓶颈。</span><br><span class="line"></span><br><span class="line">如果只是临时对数据库进行大量导入操作造成的这类问题,可以忽略这个问题不需关注。如果数据库一直存在大量更新操作，快速创建大量的脏页，该问题一直存在需要关注。</span><br></pre></td></tr></table></figure></p>
-<p>下面是官方文档对lru_scan_depth参数的解释，中文为自己对官方文档的理解翻译，错误之处望大家指正。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">A setting smaller than the default is generally suitable for most workloads. A value that is much higher than necessary may impact performance. Only consider increasing the value if you have spare I/O capacity under a typical workload. Conversely, if a write-intensive workload saturates your I/O capacity, decrease the value, especially in the case of a large buffer pool.</span><br><span class="line">When tuning innodb_lru_scan_depth, start with a low value and configure the setting upward with the goal of rarely seeing zero free pages. Also, consider adjusting innodb_lru_scan_depth when changing the number of buffer pool instances, since innodb_lru_scan_depth * innodb_buffer_pool_instances defines the amount of work performed by the page cleaner thread each second.</span><br><span class="line">比默认值小适合于大多数工作负载，如果设置比默认值大可能会影响性能。只有当有额外的磁盘io容量的时候才考虑需不需要增加该值。相反，如果在写密集度负载已经使io容量饱和，需要降低该值，尤其是buffer pool的值设置特别大的时候。</span><br><span class="line"></span><br><span class="line">如果lru_scan_depth值特别低，而且存在0空闲页，可以考虑调高该值。如果调整buffer pool instances时，需要考虑是否调整innodb_lru_scan_depth大小，因为innodb_lru_scan_depth * innodb_buffer_pool_instances决定了每秒page cleaner thread处理的工作量。</span><br></pre></td></tr></table></figure></p>
-<h2 id="2、解决方法"><a href="#2、解决方法" class="headerlink" title="2、解决方法"></a>2、解决方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET GLOBAL innodb_lru_scan_depth=256;</span><br></pre></td></tr></table></figure>
-<p>该参数默认只为1024。<br>这只是数据库级别调整，出现该问题还需要查看服务器硬件问题，磁盘io是否达到瓶颈扥问题。</p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/08/21/InnoDB-page_cleaner-1000ms intended loop took xxxms/"><span>点击阅读</span></a></h3>
     
   
 </article>
