@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html>
+<head >
+  <meta charset="utf-8">
+  
+  <title>[Oracle] rman 参数配置(advanced) | zeven&#39;s blog</title>
+
+  
+  <meta name="author" content="zeven0707&#39;s blog">
+  
+
+  
+  <meta name="description" content="1、设置每个通道创建备份集的最大值：CONFIGURE MAXSETSIZE TO UNLIMITED; # default设置每个通道能够创建备份集的最大值为1G;CONFIGURE MAXSETSIZE TO 1 G;使用backupset备份时，如果存在某个表空间文件大于1G，则会提示报错
+1">
+  
+
+  
+  
+  <meta name="keywords" content="oracle">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="[Oracle] rman 参数配置(advanced)"/>
+
+  <meta property="og:site_name" content="zeven&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="zeven&#39;s blog" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">zeven0707&#39;s blog</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">主页</a></li>
+            
+              <li><a href="/archives">日志</a></li>
+            
+              <li><a href="/about">关于</a></li>
+            
+              <li><a href="/tags">标签</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>[Oracle] rman 参数配置(advanced)</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/04/11/rman 参数配置(advanced)/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-04-11T10:34:00.000Z">
+          2019-04-11
+        </time>
+      </a>
+    </span>
+    <br />
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h1 id="1、设置每个通道创建备份集的最大值："><a href="#1、设置每个通道创建备份集的最大值：" class="headerlink" title="1、设置每个通道创建备份集的最大值："></a>1、设置每个通道创建备份集的最大值：</h1><p><code>CONFIGURE MAXSETSIZE TO UNLIMITED; # default</code><br>设置每个通道能够创建备份集的最大值为1G;<br><code>CONFIGURE MAXSETSIZE TO 1 G;</code><br>使用backupset备份时，如果存在某个表空间文件大于1G，则会提示报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RMAN-03002: failure of backup command at 04/13/2019 23:32:46</span><br><span class="line">RMAN-06183: datafile or datafile copy /data/u01/app/oracle/oradata/boston/sysaux01.dbf (file number 2) larger than MAXSETSIZE</span><br></pre></td></tr></table></figure>
+<h1 id="2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块"><a href="#2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块" class="headerlink" title="2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块"></a>2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">如果系统参数配置了多个通道，可以直接添加maxpiecesize：</span><br><span class="line">CONFIGURE CHANNEL 1 DEVICE TYPE DISK MAXPIECESIZE 100 M;</span><br><span class="line">CONFIGURE CHANNEL 2 DEVICE TYPE DISK MAXPIECESIZE 50 M;</span><br><span class="line">CONFIGURE CHANNEL 3 DEVICE TYPE DISK MAXPIECESIZE 50 M;</span><br><span class="line"></span><br><span class="line">RMAN&gt; backup as compressed backupset full database format &apos;/tmp/backuporacle/db_%d_%T_%U&apos;;</span><br><span class="line">Starting backup at 2019:04:14 00:17:11</span><br><span class="line">using channel ORA_DISK_1</span><br><span class="line">using channel ORA_DISK_2</span><br><span class="line">using channel ORA_DISK_3</span><br><span class="line">......</span><br><span class="line">channel ORA_DISK_3: finished piece 1 at 2019:04:14 00:17:15</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kituu587_1_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_3: backup set complete, elapsed time: 00:00:03</span><br><span class="line">channel ORA_DISK_2: finished piece 1 at 2019:04:14 00:17:19</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_1_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 2 at 2019:04:14 00:17:19</span><br><span class="line">channel ORA_DISK_2: finished piece 2 at 2019:04:14 00:17:26</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_2_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 3 at 2019:04:14 00:17:26</span><br><span class="line">channel ORA_DISK_1: finished piece 1 at 2019:04:14 00:17:29</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kgtuu587_1_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 2 at 2019:04:14 00:17:29</span><br><span class="line">channel ORA_DISK_2: finished piece 3 at 2019:04:14 00:17:36</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_3_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 4 at 2019:04:14 00:17:36</span><br><span class="line">channel ORA_DISK_2: finished piece 4 at 2019:04:14 00:17:43</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_4_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 5 at 2019:04:14 00:17:43</span><br><span class="line">channel ORA_DISK_1: finished piece 2 at 2019:04:14 00:17:44</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kgtuu587_2_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 3 at 2019:04:14 00:17:44</span><br><span class="line">channel ORA_DISK_2: finished piece 5 at 2019:04:14 00:17:45</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_5_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: backup set complete, elapsed time: 00:00:34</span><br><span class="line">channel ORA_DISK_1: finished piece 3 at 2019:04:14 00:17:59</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kgtuu587_3_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_1: backup set complete, elapsed time: 00:00:48</span><br><span class="line">Finished backup at 2019:04:14 00:17:59</span><br></pre></td></tr></table></figure>
+<p>备份完成之后的文件大小如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-rw-r-----. 1 oracle oinstall 5.1M 4月  14 00:17 db_BOSTON_20190414_kituu587_1_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_1_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_2_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  99M 4月  14 00:17 db_BOSTON_20190414_kgtuu587_1_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_3_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_4_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  99M 4月  14 00:17 db_BOSTON_20190414_kgtuu587_2_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall 4.4M 4月  14 00:17 db_BOSTON_20190414_khtuu587_5_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  44M 4月  14 00:17 db_BOSTON_20190414_kgtuu587_3_1</span><br></pre></td></tr></table></figure>
+<p>通道1备份的数据块小于100M，通道2、通道3备份的数据块小于50M<br>也可以在run命令下，分配通道时手动指定参数，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">run &#123;</span><br><span class="line">allocate channel t1 type disk maxpiecesize = 50M;</span><br><span class="line">allocate channel t2 type disk maxpiecesize = 80M;</span><br><span class="line">allocate channel t3 type disk;</span><br><span class="line">backup as compressed backupset full database format &apos;/tmp/backuporacle/db_%d_%T_%U&apos;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="3、完全备份数据时，单独排除某一个数据库不备份"><a href="#3、完全备份数据时，单独排除某一个数据库不备份" class="headerlink" title="3、完全备份数据时，单独排除某一个数据库不备份"></a>3、完全备份数据时，单独排除某一个数据库不备份</h1><p><code>CONFIGURE EXCLUDE FOR TABLESPACE users;</code><br>开始备份，tablespace users被自动过滤掉，没有备份：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">RMAN&gt; backup as compressed backupset full database format &apos;/tmp/backuporacle/db_%d_%T_%U&apos;;</span><br><span class="line">Starting backup at 2019:04:14 00:32:50</span><br><span class="line">allocated channel: ORA_DISK_1</span><br><span class="line">channel ORA_DISK_1: SID=397 device type=DISK</span><br><span class="line">allocated channel: ORA_DISK_2</span><br><span class="line">channel ORA_DISK_2: SID=585 device type=DISK</span><br><span class="line">allocated channel: ORA_DISK_3</span><br><span class="line">channel ORA_DISK_3: SID=12 device type=DISK</span><br><span class="line">file 4 is excluded from whole database backup</span><br><span class="line">channel ORA_DISK_1: starting compressed full datafile backup set</span><br><span class="line">channel ORA_DISK_1: specifying datafile(s) in backup set</span><br><span class="line">input datafile file number=00002 name=/data/u01/app/oracle/oradata/boston/sysaux01.dbf</span><br><span class="line">input datafile file number=00003 name=/data/u01/app/oracle/oradata/boston/undotbs01.dbf</span><br><span class="line">channel ORA_DISK_1: starting piece 1 at 2019:04:14 00:32:51</span><br><span class="line">channel ORA_DISK_2: starting compressed full datafile backup set</span><br><span class="line">channel ORA_DISK_2: specifying datafile(s) in backup set</span><br><span class="line">input datafile file number=00001 name=/data/u01/app/oracle/oradata/boston/system01.dbf</span><br><span class="line">input datafile file number=00005 name=/data/u01/app/oracle/oradata/boston/test001.dbf</span><br><span class="line">channel ORA_DISK_2: starting piece 1 at 2019:04:14 00:32:51</span><br><span class="line">channel ORA_DISK_2: finished piece 1 at 2019:04:14 00:32:58</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_1_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 2 at 2019:04:14 00:32:58</span><br><span class="line">channel ORA_DISK_2: finished piece 2 at 2019:04:14 00:33:05</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_2_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 3 at 2019:04:14 00:33:05</span><br><span class="line">channel ORA_DISK_1: finished piece 1 at 2019:04:14 00:33:06</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kktuu65j_1_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 2 at 2019:04:14 00:33:06</span><br><span class="line">channel ORA_DISK_2: finished piece 3 at 2019:04:14 00:33:13</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_3_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 4 at 2019:04:14 00:33:13</span><br><span class="line">channel ORA_DISK_2: finished piece 4 at 2019:04:14 00:33:20</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_4_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 5 at 2019:04:14 00:33:20</span><br><span class="line">channel ORA_DISK_1: finished piece 2 at 2019:04:14 00:33:21</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kktuu65j_2_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 3 at 2019:04:14 00:33:21</span><br><span class="line">channel ORA_DISK_2: finished piece 5 at 2019:04:14 00:33:22</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_5_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: backup set complete, elapsed time: 00:00:31</span><br><span class="line">channel ORA_DISK_1: finished piece 3 at 2019:04:14 00:33:36</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kktuu65j_3_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_1: backup set complete, elapsed time: 00:00:45</span><br><span class="line">Finished backup at 2019:04:14 00:33:36</span><br></pre></td></tr></table></figure>
+<h1 id="4、配置snapshot-control-file-location"><a href="#4、配置snapshot-control-file-location" class="headerlink" title="4、配置snapshot control file location"></a>4、配置snapshot control file location</h1><p>因为控制文件一直是在适时刷新的，不能确保数据文件和控制文件的一致性，因此rman在备份和同步recovery catalog时会用到snapshot control file，开始备份时会创建或者更新（如果snapshot controlfile 存在）snapshot controlfile，之后rman使用snapshot controlfile进行备份和同步。<br>snapshot controlfile这是在rman备份和同步的时候才会用到，oracle在创建表空间、切换日志、执行检查点并不会把信息写到snapshot controlfile下。</p>
+<p>rman查看snapshot controlfile</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RMAN&gt; show snapshot controlfile name;</span><br><span class="line">RMAN configuration parameters for database with db_unique_name BOSTON are:</span><br><span class="line">CONFIGURE SNAPSHOT CONTROLFILE NAME TO &apos;/home/oracle/snapcf_boston.f&apos;;</span><br></pre></td></tr></table></figure>
+<p>修改snapshot controlfile路径CONFIGURE SNAPSHOT CONTROLFILE NAME TO ‘/root/snap_boston.ctl’;<br>设置的路径oralce用户必须有访问权限，如果没有访问权限，会报下面错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ORA-01580: error creating control backup file /root/snap_boston.ctl</span><br><span class="line">ORA-27037: unable to obtain file status</span><br><span class="line">Linux-x86_64 Error: 13: Permission denied</span><br><span class="line">Additional information: 6</span><br><span class="line"></span><br><span class="line">RMAN-08132: WARNING: cannot update recovery area reclaimable file list</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1、设置每个通道创建备份集的最大值："><span class="toc-number">1.</span> <span class="toc-text">1、设置每个通道创建备份集的最大值：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块"><span class="toc-number">2.</span> <span class="toc-text">2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3、完全备份数据时，单独排除某一个数据库不备份"><span class="toc-number">3.</span> <span class="toc-text">3、完全备份数据时，单独排除某一个数据库不备份</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4、配置snapshot-control-file-location"><span class="toc-number">4.</span> <span class="toc-text">4、配置snapshot control file location</span></a></li></ol>
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '[Oracle] rman 参数配置(advanced)'
+		var GitHub_id = 'zeven0707'
+		var client_id = '2b0cc50fd55624b20d70'
+		var client_secret = '489e4e840e0186f96ad172932b583e2fe68729c8'
+		var repo = 'zeven0707.github.io'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br/><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    </br>
+    
+      
+        &copy; 2019 zeven0707&#39;s blog
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('30')
+    let iconText = '❤'
+    let color = 'red'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>

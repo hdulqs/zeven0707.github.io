@@ -112,6 +112,75 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/12/17/centos7安装rac报错ohasd failed to start/"><span>[Oracle] centos7安装rac报错ohasd failed to start</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/12/17/centos7安装rac报错ohasd failed to start/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-12-17T07:41:00.000Z">
+          2018-12-17
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、具体报错信息"><a href="#1、具体报错信息" class="headerlink" title="1、具体报错信息"></a>1、具体报错信息</h4><p>安装完成grid之后，在执行/u01/app/11.2.0.4/grid/root.sh命令时报以下错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ohasd failed to start</span><br><span class="line">Failed to start the Clusterware. Last 20 lines of the alert log follow</span><br></pre></td></tr></table></figure></p>
+<h4 id="2、单独在linux-7中为ohasd设置一个服务。"><a href="#2、单独在linux-7中为ohasd设置一个服务。" class="headerlink" title="2、单独在linux 7中为ohasd设置一个服务。"></a>2、单独在linux 7中为ohasd设置一个服务。</h4><p>1、创建服务ohas.service的服务文件并赋予权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">touch /usr/lib/systemd/system/ohas.service</span><br><span class="line">chmod 777 /usr/lib/systemd/system/ohas.service</span><br></pre></td></tr></table></figure></p>
+<p>2、往ohas.service服务文件添加启动ohasd的相关信息<br>vi /usr/lib/systemd/system/ohas.service<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Oracle High Availability Services</span><br><span class="line">After=syslog.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/etc/init.d/init.ohasd run &gt;/dev/null 2&gt;&amp;1 Type=simple</span><br><span class="line">Restart=always</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure></p>
+<p>3、重新加载守护进程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br></pre></td></tr></table></figure></p>
+<p>设置守护进程自动启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable ohas.service</span><br></pre></td></tr></table></figure></p>
+<p>手工启动ohas服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start ohas.service</span><br></pre></td></tr></table></figure></p>
+<p>4、重新运行root.sh脚本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh root.sh</span><br></pre></td></tr></table></figure></p>
+<p>5：查看ohas服务状态<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ohas.service</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/12/17/centos7安装rac报错ohasd failed to start/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/12/17/oracle udev配置/"><span>[Oracle] oracle udev配置</span></a></h3>
     
   
@@ -902,74 +971,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/11/12/vsftpd配置ssl/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/11/09/mysql-mgr解散集群并重新添加/"><span>[Mysql] mysql-mgr解散集群并重新加入集群</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/11/09/mysql-mgr解散集群并重新添加/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-11-09T09:21:00.000Z">
-          2018-11-09
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、查看集群状态"><a href="#1、查看集群状态" class="headerlink" title="1、查看集群状态"></a>1、查看集群状态</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> MySQL  dax-mysql-master:3306  JS &gt; cluster = dba.getCluster(&quot;prodCluster&quot;)</span><br><span class="line">&lt;Cluster:prodCluster&gt;</span><br><span class="line"> MySQL  dax-mysql-master:3306  JS &gt; cluster.status()</span><br><span class="line">&#123;</span><br><span class="line">    &quot;clusterName&quot;: &quot;prodCluster&quot;, </span><br><span class="line">    &quot;defaultReplicaSet&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;default&quot;, </span><br><span class="line">        &quot;primary&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">        &quot;ssl&quot;: &quot;DISABLED&quot;, </span><br><span class="line">        &quot;status&quot;: &quot;OK_NO_TOLERANCE&quot;, </span><br><span class="line">        &quot;statusText&quot;: &quot;Cluster is NOT tolerant to any failures.&quot;, </span><br><span class="line">        &quot;topology&quot;: &#123;</span><br><span class="line">            &quot;dax-mysql-master:3306&quot;: &#123;</span><br><span class="line">                &quot;address&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">                &quot;mode&quot;: &quot;R/W&quot;, </span><br><span class="line">                &quot;readReplicas&quot;: &#123;&#125;, </span><br><span class="line">                &quot;role&quot;: &quot;HA&quot;, </span><br><span class="line">                &quot;status&quot;: &quot;ONLINE&quot;</span><br><span class="line">            &#125;, </span><br><span class="line">            &quot;dax-mysql-slave:3306&quot;: &#123;</span><br><span class="line">                &quot;address&quot;: &quot;dax-mysql-slave:3306&quot;, </span><br><span class="line">                &quot;mode&quot;: &quot;R/O&quot;, </span><br><span class="line">                &quot;readReplicas&quot;: &#123;&#125;, </span><br><span class="line">                &quot;role&quot;: &quot;HA&quot;, </span><br><span class="line">                &quot;status&quot;: &quot;ONLINE&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, </span><br><span class="line">    &quot;groupInformationSourceMember&quot;: &quot;mysql://repl@dax-mysql-master:3306&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="2、解散集群："><a href="#2、解散集群：" class="headerlink" title="2、解散集群："></a>2、解散集群：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"> MySQL  dax-mysql-master:3306  JS &gt; cluster.dissolve()</span><br><span class="line">The cluster still has active ReplicaSets.</span><br><span class="line">Please use cluster.dissolve(&#123;force: true&#125;) to deactivate replication</span><br><span class="line">and unregister the ReplicaSets from the cluster.</span><br><span class="line"></span><br><span class="line">The following replicasets are currently registered:</span><br><span class="line">&#123;</span><br><span class="line">    &quot;clusterName&quot;: &quot;prodCluster&quot;, </span><br><span class="line">    &quot;defaultReplicaSet&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;default&quot;, </span><br><span class="line">        &quot;topology&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;address&quot;: &quot;dax-mysql-slave:3306&quot;, </span><br><span class="line">                &quot;label&quot;: &quot;dax-mysql-slave:3306&quot;, </span><br><span class="line">                &quot;role&quot;: &quot;HA&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;address&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">                &quot;label&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">                &quot;role&quot;: &quot;HA&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> MySQL  dax-mysql-master:3306  JS &gt; cluster.dissolve(&#123;force: true&#125;)</span><br><span class="line">WARNING: On instance &apos;dax-mysql-slave:3306&apos; configuration cannot be persisted since MySQL version 5.7.22 does not support the SET PERSIST command (MySQL version &gt;= 8.0.5 required). Please set the &apos;group_replication_start_on_boot&apos; variable to &apos;OFF&apos; in the server configuration file, otherwise it might rejoin the cluster upon restart.</span><br><span class="line">WARNING: On instance &apos;dax-mysql-master:3306&apos; configuration cannot be persisted since MySQL version 5.7.22 does not support the SET PERSIST command (MySQL version &gt;= 8.0.5 required). Please set the &apos;group_replication_start_on_boot&apos; variable to &apos;OFF&apos; in the server configuration file, otherwise it might rejoin the cluster upon restart.</span><br><span class="line">The cluster was successfully dissolved.</span><br><span class="line">Replication was disabled but user data was left intact.</span><br></pre></td></tr></table></figure>
-<h4 id="3、查看集群信息已经被删掉了："><a href="#3、查看集群信息已经被删掉了：" class="headerlink" title="3、查看集群信息已经被删掉了："></a>3、查看集群信息已经被删掉了：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@db 16:54:  [mysql_innodb_cluster_metadata]&gt; select * from clusters;</span><br><span class="line">Empty set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<h4 id="4、重新建立集群："><a href="#4、重新建立集群：" class="headerlink" title="4、重新建立集群："></a>4、重新建立集群：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">MySQL  dax-mysql-master:3306  JS &gt; var cluster = dba.createCluster(&apos;prodCluster&apos;);</span><br><span class="line">A new InnoDB cluster will be created on instance &apos;repl@dax-mysql-master:3306&apos;.</span><br><span class="line"></span><br><span class="line">Validating instance at dax-mysql-master:3306...</span><br><span class="line"></span><br><span class="line">This instance reports its own address as dax-mysql-master</span><br><span class="line">WARNING: The following tables do not have a Primary Key or equivalent column: </span><br><span class="line">aaaa.test</span><br><span class="line"></span><br><span class="line">Group Replication requires tables to use InnoDB and have a PRIMARY KEY or PRIMARY KEY Equivalent (non-null unique key). Tables that do not follow these requirements will be readable but not updateable when used with Group Replication. If your applications make updates (INSERT, UPDATE or DELETE) to these tables, ensure they use the InnoDB storage engine and have a PRIMARY KEY or PRIMARY KEY Equivalent.</span><br><span class="line"></span><br><span class="line">Instance configuration is suitable.</span><br><span class="line">Creating InnoDB cluster &apos;prodCluster&apos; on &apos;repl@dax-mysql-master:3306&apos;...</span><br><span class="line">WARNING: On instance &apos;dax-mysql-master:3306&apos; membership change cannot be persisted since MySQL version 5.7.22 does not support the SET PERSIST command (MySQL version &gt;= 8.0.5 required). Please use the &lt;Dba&gt;.configureLocalInstance command locally to persist the changes.</span><br><span class="line">Adding Seed Instance...</span><br><span class="line"></span><br><span class="line">Cluster successfully created. Use Cluster.addInstance() to add MySQL instances.</span><br><span class="line">At least 3 instances are needed for the cluster to be able to withstand up to</span><br><span class="line">one server failure.</span><br></pre></td></tr></table></figure>
-<h4 id="5、-查看集群状态，现在只有一个节点信息"><a href="#5、-查看集群状态，现在只有一个节点信息" class="headerlink" title="5、 查看集群状态，现在只有一个节点信息"></a>5、 查看集群状态，现在只有一个节点信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">MySQL  dax-mysql-master:3306  JS &gt; cluster.status();</span><br><span class="line">&#123;</span><br><span class="line">    &quot;clusterName&quot;: &quot;prodCluster&quot;, </span><br><span class="line">    &quot;defaultReplicaSet&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;default&quot;, </span><br><span class="line">        &quot;primary&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">        &quot;ssl&quot;: &quot;DISABLED&quot;, </span><br><span class="line">        &quot;status&quot;: &quot;OK_NO_TOLERANCE&quot;, </span><br><span class="line">        &quot;statusText&quot;: &quot;Cluster is NOT tolerant to any failures.&quot;, </span><br><span class="line">        &quot;topology&quot;: &#123;</span><br><span class="line">            &quot;dax-mysql-master:3306&quot;: &#123;</span><br><span class="line">                &quot;address&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">                &quot;mode&quot;: &quot;R/W&quot;, </span><br><span class="line">                &quot;readReplicas&quot;: &#123;&#125;, </span><br><span class="line">                &quot;role&quot;: &quot;HA&quot;, </span><br><span class="line">                &quot;status&quot;: &quot;ONLINE&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, </span><br><span class="line">    &quot;groupInformationSourceMember&quot;: &quot;mysql://repl@dax-mysql-master:3306&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="6、添加新的节点："><a href="#6、添加新的节点：" class="headerlink" title="6、添加新的节点："></a>6、添加新的节点：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">cluster.addInstance(&apos;dax-mysql-slave:3306&apos;)</span><br><span class="line"></span><br><span class="line"> MySQL  dax-mysql-master:3306  JS &gt; cluster.addInstance(&apos;dax-mysql-slave:3306&apos;)</span><br><span class="line">A new instance will be added to the InnoDB cluster. Depending on the amount of</span><br><span class="line">data on the cluster this might take from a few seconds to several hours.</span><br><span class="line"></span><br><span class="line">Please provide the password for &apos;root@dax-mysql-slave:3306&apos;: ********</span><br><span class="line">Adding instance to the cluster ...</span><br><span class="line"></span><br><span class="line">Validating instance at dax-mysql-slave:3306...</span><br><span class="line"></span><br><span class="line">This instance reports its own address as dax-mysql-slave</span><br><span class="line">WARNING: The following tables do not have a Primary Key or equivalent column: </span><br><span class="line">aaaa.test</span><br><span class="line"></span><br><span class="line">Group Replication requires tables to use InnoDB and have a PRIMARY KEY or PRIMARY KEY Equivalent (non-null unique key). Tables that do not follow these requirements will be readable but not updateable when used with Group Replication. If your applications make updates (INSERT, UPDATE or DELETE) to these tables, ensure they use the InnoDB storage engine and have a PRIMARY KEY or PRIMARY KEY Equivalent.</span><br><span class="line"></span><br><span class="line">Instance configuration is suitable.</span><br><span class="line">WARNING: On instance &apos;dax-mysql-slave:3306&apos; membership change cannot be persisted since MySQL version 5.7.22 does not support the SET PERSIST command (MySQL version &gt;= 8.0.5 required). Please use the &lt;Dba&gt;.configureLocalInstance command locally to persist the changes.</span><br><span class="line">WARNING: On instance &apos;dax-mysql-master:3306&apos; membership change cannot be persisted since MySQL version 5.7.22 does not support the SET PERSIST command (MySQL version &gt;= 8.0.5 required). Please use the &lt;Dba&gt;.configureLocalInstance command locally to persist the changes.</span><br><span class="line">The instance &apos;root@dax-mysql-slave:3306&apos; was successfully added to the cluster.</span><br></pre></td></tr></table></figure>
-<h4 id="7、查看集群状态，可以看到两个节点了："><a href="#7、查看集群状态，可以看到两个节点了：" class="headerlink" title="7、查看集群状态，可以看到两个节点了："></a>7、查看集群状态，可以看到两个节点了：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"> MySQL  dax-mysql-master:3306  JS &gt; cluster.status();</span><br><span class="line">&#123;</span><br><span class="line">    &quot;clusterName&quot;: &quot;prodCluster&quot;, </span><br><span class="line">    &quot;defaultReplicaSet&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;default&quot;, </span><br><span class="line">        &quot;primary&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">        &quot;ssl&quot;: &quot;DISABLED&quot;, </span><br><span class="line">        &quot;status&quot;: &quot;OK_NO_TOLERANCE&quot;, </span><br><span class="line">        &quot;statusText&quot;: &quot;Cluster is NOT tolerant to any failures.&quot;, </span><br><span class="line">        &quot;topology&quot;: &#123;</span><br><span class="line">            &quot;dax-mysql-master:3306&quot;: &#123;</span><br><span class="line">                &quot;address&quot;: &quot;dax-mysql-master:3306&quot;, </span><br><span class="line">                &quot;mode&quot;: &quot;R/W&quot;, </span><br><span class="line">                &quot;readReplicas&quot;: &#123;&#125;, </span><br><span class="line">                &quot;role&quot;: &quot;HA&quot;, </span><br><span class="line">                &quot;status&quot;: &quot;ONLINE&quot;</span><br><span class="line">            &#125;, </span><br><span class="line">            &quot;dax-mysql-slave:3306&quot;: &#123;</span><br><span class="line">                &quot;address&quot;: &quot;dax-mysql-slave:3306&quot;, </span><br><span class="line">                &quot;mode&quot;: &quot;R/O&quot;, </span><br><span class="line">                &quot;readReplicas&quot;: &#123;&#125;, </span><br><span class="line">                &quot;role&quot;: &quot;HA&quot;, </span><br><span class="line">                &quot;status&quot;: &quot;ONLINE&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, </span><br><span class="line">    &quot;groupInformationSourceMember&quot;: &quot;mysql://repl@dax-mysql-master:3306&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">root@db 17:14:  [mysql_innodb_cluster_metadata]&gt; SELECT * FROM performance_schema.replication_group_members;</span><br><span class="line">+---------------------------+--------------------------------------+------------------+-------------+--------------+</span><br><span class="line">| CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST      | MEMBER_PORT | MEMBER_STATE |</span><br><span class="line">+---------------------------+--------------------------------------+------------------+-------------+--------------+</span><br><span class="line">| group_replication_applier | bddd9c32-8fee-11e8-ac79-525400edbe8d | dax-mysql-slave  |        3306 | ONLINE       |</span><br><span class="line">| group_replication_applier | d5bd8edd-9a1d-11e8-993e-525400578639 | dax-mysql-master |        3306 | ONLINE       |</span><br><span class="line">+---------------------------+--------------------------------------+------------------+-------------+--------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">root@db 17:14:  [mysql_innodb_cluster_metadata]&gt; show status like &apos;%primary%&apos;;</span><br><span class="line">+----------------------------------+--------------------------------------+</span><br><span class="line">| Variable_name                    | Value                                |</span><br><span class="line">+----------------------------------+--------------------------------------+</span><br><span class="line">| group_replication_primary_member | d5bd8edd-9a1d-11e8-993e-525400578639 |</span><br><span class="line">+----------------------------------+--------------------------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/11/09/mysql-mgr解散集群并重新添加/"><span>点击阅读</span></a></h3>
     
   
 </article>

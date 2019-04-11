@@ -112,6 +112,72 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/01/23/修改oracle用户密码永不过期/"><span>[Oracle] 修改oracle用户密码永不过期</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/01/23/修改oracle用户密码永不过期/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-01-23T08:01:00.000Z">
+          2019-01-23
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、查看用户有无过期"><a href="#1、查看用户有无过期" class="headerlink" title="1、查看用户有无过期"></a>1、查看用户有无过期</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select username,account_status,expiry_date from dba_users;</span><br></pre></td></tr></table></figure>
+<h4 id="2、查看用户使用概要文件"><a href="#2、查看用户使用概要文件" class="headerlink" title="2、查看用户使用概要文件"></a>2、查看用户使用概要文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT username,PROFILE FROM dba_users;</span><br></pre></td></tr></table></figure>
+<h4 id="3、查看概要文件密码有效期"><a href="#3、查看概要文件密码有效期" class="headerlink" title="3、查看概要文件密码有效期"></a>3、查看概要文件密码有效期</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br></pre></td></tr></table></figure>
+<h4 id="4、修改概要文件有效期"><a href="#4、修改概要文件有效期" class="headerlink" title="4、修改概要文件有效期"></a>4、修改概要文件有效期</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;</span><br></pre></td></tr></table></figure>
+<h4 id="5、再次查看用户过期时间，expiry-date字段已经变为空"><a href="#5、再次查看用户过期时间，expiry-date字段已经变为空" class="headerlink" title="5、再次查看用户过期时间，expiry_date字段已经变为空"></a>5、再次查看用户过期时间，expiry_date字段已经变为空</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select username,account_status,expiry_date from dba_users;</span><br></pre></td></tr></table></figure>
+<h4 id="6、rac环境在任意一个节点执行即可。"><a href="#6、rac环境在任意一个节点执行即可。" class="headerlink" title="6、rac环境在任意一个节点执行即可。"></a>6、rac环境在任意一个节点执行即可。</h4>
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/01/23/修改oracle用户密码永不过期/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/01/22/mysql参数NO_AUTO_CREATE_USER/"><span>[Mysql] mysql参数NO_AUTO_CREATE_USER</span></a></h3>
     
   
@@ -742,75 +808,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/12/17/oracle安装rlwrap/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/12/17/centos7安装rac报错ohasd failed to start/"><span>[Oracle] centos7安装rac报错ohasd failed to start</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/12/17/centos7安装rac报错ohasd failed to start/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-12-17T07:41:00.000Z">
-          2018-12-17
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、具体报错信息"><a href="#1、具体报错信息" class="headerlink" title="1、具体报错信息"></a>1、具体报错信息</h4><p>安装完成grid之后，在执行/u01/app/11.2.0.4/grid/root.sh命令时报以下错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ohasd failed to start</span><br><span class="line">Failed to start the Clusterware. Last 20 lines of the alert log follow</span><br></pre></td></tr></table></figure></p>
-<h4 id="2、单独在linux-7中为ohasd设置一个服务。"><a href="#2、单独在linux-7中为ohasd设置一个服务。" class="headerlink" title="2、单独在linux 7中为ohasd设置一个服务。"></a>2、单独在linux 7中为ohasd设置一个服务。</h4><p>1、创建服务ohas.service的服务文件并赋予权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">touch /usr/lib/systemd/system/ohas.service</span><br><span class="line">chmod 777 /usr/lib/systemd/system/ohas.service</span><br></pre></td></tr></table></figure></p>
-<p>2、往ohas.service服务文件添加启动ohasd的相关信息<br>vi /usr/lib/systemd/system/ohas.service<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Oracle High Availability Services</span><br><span class="line">After=syslog.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/etc/init.d/init.ohasd run &gt;/dev/null 2&gt;&amp;1 Type=simple</span><br><span class="line">Restart=always</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure></p>
-<p>3、重新加载守护进程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br></pre></td></tr></table></figure></p>
-<p>设置守护进程自动启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable ohas.service</span><br></pre></td></tr></table></figure></p>
-<p>手工启动ohas服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start ohas.service</span><br></pre></td></tr></table></figure></p>
-<p>4、重新运行root.sh脚本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh root.sh</span><br></pre></td></tr></table></figure></p>
-<p>5：查看ohas服务状态<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ohas.service</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/oracle/">oracle</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/12/17/centos7安装rac报错ohasd failed to start/"><span>点击阅读</span></a></h3>
     
   
 </article>

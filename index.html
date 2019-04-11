@@ -112,6 +112,81 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/04/11/rman 参数配置(advanced)/"><span>[Oracle] rman 参数配置(advanced)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/04/11/rman 参数配置(advanced)/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-04-11T10:34:00.000Z">
+          2019-04-11
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h1 id="1、设置每个通道创建备份集的最大值："><a href="#1、设置每个通道创建备份集的最大值：" class="headerlink" title="1、设置每个通道创建备份集的最大值："></a>1、设置每个通道创建备份集的最大值：</h1><p><code>CONFIGURE MAXSETSIZE TO UNLIMITED; # default</code><br>设置每个通道能够创建备份集的最大值为1G;<br><code>CONFIGURE MAXSETSIZE TO 1 G;</code><br>使用backupset备份时，如果存在某个表空间文件大于1G，则会提示报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RMAN-03002: failure of backup command at 04/13/2019 23:32:46</span><br><span class="line">RMAN-06183: datafile or datafile copy /data/u01/app/oracle/oradata/boston/sysaux01.dbf (file number 2) larger than MAXSETSIZE</span><br></pre></td></tr></table></figure>
+<h1 id="2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块"><a href="#2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块" class="headerlink" title="2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块"></a>2、设置每个通道创建备份块的最大值，如果达到最大值会创建下一个备份块</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">如果系统参数配置了多个通道，可以直接添加maxpiecesize：</span><br><span class="line">CONFIGURE CHANNEL 1 DEVICE TYPE DISK MAXPIECESIZE 100 M;</span><br><span class="line">CONFIGURE CHANNEL 2 DEVICE TYPE DISK MAXPIECESIZE 50 M;</span><br><span class="line">CONFIGURE CHANNEL 3 DEVICE TYPE DISK MAXPIECESIZE 50 M;</span><br><span class="line"></span><br><span class="line">RMAN&gt; backup as compressed backupset full database format &apos;/tmp/backuporacle/db_%d_%T_%U&apos;;</span><br><span class="line">Starting backup at 2019:04:14 00:17:11</span><br><span class="line">using channel ORA_DISK_1</span><br><span class="line">using channel ORA_DISK_2</span><br><span class="line">using channel ORA_DISK_3</span><br><span class="line">......</span><br><span class="line">channel ORA_DISK_3: finished piece 1 at 2019:04:14 00:17:15</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kituu587_1_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_3: backup set complete, elapsed time: 00:00:03</span><br><span class="line">channel ORA_DISK_2: finished piece 1 at 2019:04:14 00:17:19</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_1_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 2 at 2019:04:14 00:17:19</span><br><span class="line">channel ORA_DISK_2: finished piece 2 at 2019:04:14 00:17:26</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_2_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 3 at 2019:04:14 00:17:26</span><br><span class="line">channel ORA_DISK_1: finished piece 1 at 2019:04:14 00:17:29</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kgtuu587_1_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 2 at 2019:04:14 00:17:29</span><br><span class="line">channel ORA_DISK_2: finished piece 3 at 2019:04:14 00:17:36</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_3_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 4 at 2019:04:14 00:17:36</span><br><span class="line">channel ORA_DISK_2: finished piece 4 at 2019:04:14 00:17:43</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_4_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 5 at 2019:04:14 00:17:43</span><br><span class="line">channel ORA_DISK_1: finished piece 2 at 2019:04:14 00:17:44</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kgtuu587_2_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 3 at 2019:04:14 00:17:44</span><br><span class="line">channel ORA_DISK_2: finished piece 5 at 2019:04:14 00:17:45</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_khtuu587_5_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_2: backup set complete, elapsed time: 00:00:34</span><br><span class="line">channel ORA_DISK_1: finished piece 3 at 2019:04:14 00:17:59</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kgtuu587_3_1 tag=TAG20190414T001711 comment=NONE</span><br><span class="line">channel ORA_DISK_1: backup set complete, elapsed time: 00:00:48</span><br><span class="line">Finished backup at 2019:04:14 00:17:59</span><br></pre></td></tr></table></figure>
+<p>备份完成之后的文件大小如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-rw-r-----. 1 oracle oinstall 5.1M 4月  14 00:17 db_BOSTON_20190414_kituu587_1_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_1_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_2_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  99M 4月  14 00:17 db_BOSTON_20190414_kgtuu587_1_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_3_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  49M 4月  14 00:17 db_BOSTON_20190414_khtuu587_4_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  99M 4月  14 00:17 db_BOSTON_20190414_kgtuu587_2_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall 4.4M 4月  14 00:17 db_BOSTON_20190414_khtuu587_5_1</span><br><span class="line">-rw-r-----. 1 oracle oinstall  44M 4月  14 00:17 db_BOSTON_20190414_kgtuu587_3_1</span><br></pre></td></tr></table></figure>
+<p>通道1备份的数据块小于100M，通道2、通道3备份的数据块小于50M<br>也可以在run命令下，分配通道时手动指定参数，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">run &#123;</span><br><span class="line">allocate channel t1 type disk maxpiecesize = 50M;</span><br><span class="line">allocate channel t2 type disk maxpiecesize = 80M;</span><br><span class="line">allocate channel t3 type disk;</span><br><span class="line">backup as compressed backupset full database format &apos;/tmp/backuporacle/db_%d_%T_%U&apos;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="3、完全备份数据时，单独排除某一个数据库不备份"><a href="#3、完全备份数据时，单独排除某一个数据库不备份" class="headerlink" title="3、完全备份数据时，单独排除某一个数据库不备份"></a>3、完全备份数据时，单独排除某一个数据库不备份</h1><p><code>CONFIGURE EXCLUDE FOR TABLESPACE users;</code><br>开始备份，tablespace users被自动过滤掉，没有备份：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">RMAN&gt; backup as compressed backupset full database format &apos;/tmp/backuporacle/db_%d_%T_%U&apos;;</span><br><span class="line">Starting backup at 2019:04:14 00:32:50</span><br><span class="line">allocated channel: ORA_DISK_1</span><br><span class="line">channel ORA_DISK_1: SID=397 device type=DISK</span><br><span class="line">allocated channel: ORA_DISK_2</span><br><span class="line">channel ORA_DISK_2: SID=585 device type=DISK</span><br><span class="line">allocated channel: ORA_DISK_3</span><br><span class="line">channel ORA_DISK_3: SID=12 device type=DISK</span><br><span class="line">file 4 is excluded from whole database backup</span><br><span class="line">channel ORA_DISK_1: starting compressed full datafile backup set</span><br><span class="line">channel ORA_DISK_1: specifying datafile(s) in backup set</span><br><span class="line">input datafile file number=00002 name=/data/u01/app/oracle/oradata/boston/sysaux01.dbf</span><br><span class="line">input datafile file number=00003 name=/data/u01/app/oracle/oradata/boston/undotbs01.dbf</span><br><span class="line">channel ORA_DISK_1: starting piece 1 at 2019:04:14 00:32:51</span><br><span class="line">channel ORA_DISK_2: starting compressed full datafile backup set</span><br><span class="line">channel ORA_DISK_2: specifying datafile(s) in backup set</span><br><span class="line">input datafile file number=00001 name=/data/u01/app/oracle/oradata/boston/system01.dbf</span><br><span class="line">input datafile file number=00005 name=/data/u01/app/oracle/oradata/boston/test001.dbf</span><br><span class="line">channel ORA_DISK_2: starting piece 1 at 2019:04:14 00:32:51</span><br><span class="line">channel ORA_DISK_2: finished piece 1 at 2019:04:14 00:32:58</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_1_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 2 at 2019:04:14 00:32:58</span><br><span class="line">channel ORA_DISK_2: finished piece 2 at 2019:04:14 00:33:05</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_2_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 3 at 2019:04:14 00:33:05</span><br><span class="line">channel ORA_DISK_1: finished piece 1 at 2019:04:14 00:33:06</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kktuu65j_1_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 2 at 2019:04:14 00:33:06</span><br><span class="line">channel ORA_DISK_2: finished piece 3 at 2019:04:14 00:33:13</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_3_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 4 at 2019:04:14 00:33:13</span><br><span class="line">channel ORA_DISK_2: finished piece 4 at 2019:04:14 00:33:20</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_4_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: starting piece 5 at 2019:04:14 00:33:20</span><br><span class="line">channel ORA_DISK_1: finished piece 2 at 2019:04:14 00:33:21</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kktuu65j_2_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_1: starting piece 3 at 2019:04:14 00:33:21</span><br><span class="line">channel ORA_DISK_2: finished piece 5 at 2019:04:14 00:33:22</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kltuu65j_5_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_2: backup set complete, elapsed time: 00:00:31</span><br><span class="line">channel ORA_DISK_1: finished piece 3 at 2019:04:14 00:33:36</span><br><span class="line">piece handle=/tmp/backuporacle/db_BOSTON_20190414_kktuu65j_3_1 tag=TAG20190414T003251 comment=NONE</span><br><span class="line">channel ORA_DISK_1: backup set complete, elapsed time: 00:00:45</span><br><span class="line">Finished backup at 2019:04:14 00:33:36</span><br></pre></td></tr></table></figure>
+<h1 id="4、配置snapshot-control-file-location"><a href="#4、配置snapshot-control-file-location" class="headerlink" title="4、配置snapshot control file location"></a>4、配置snapshot control file location</h1><p>因为控制文件一直是在适时刷新的，不能确保数据文件和控制文件的一致性，因此rman在备份和同步recovery catalog时会用到snapshot control file，开始备份时会创建或者更新（如果snapshot controlfile 存在）snapshot controlfile，之后rman使用snapshot controlfile进行备份和同步。<br>snapshot controlfile这是在rman备份和同步的时候才会用到，oracle在创建表空间、切换日志、执行检查点并不会把信息写到snapshot controlfile下。</p>
+<p>rman查看snapshot controlfile</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RMAN&gt; show snapshot controlfile name;</span><br><span class="line">RMAN configuration parameters for database with db_unique_name BOSTON are:</span><br><span class="line">CONFIGURE SNAPSHOT CONTROLFILE NAME TO &apos;/home/oracle/snapcf_boston.f&apos;;</span><br></pre></td></tr></table></figure>
+<p>修改snapshot controlfile路径CONFIGURE SNAPSHOT CONTROLFILE NAME TO ‘/root/snap_boston.ctl’;<br>设置的路径oralce用户必须有访问权限，如果没有访问权限，会报下面错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ORA-01580: error creating control backup file /root/snap_boston.ctl</span><br><span class="line">ORA-27037: unable to obtain file status</span><br><span class="line">Linux-x86_64 Error: 13: Permission denied</span><br><span class="line">Additional information: 6</span><br><span class="line"></span><br><span class="line">RMAN-08132: WARNING: cannot update recovery area reclaimable file list</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/04/11/rman 参数配置(advanced)/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/04/10/oracle 禁用fast recovery area/"><span>[Oracle] oracle 禁用fast recovery area</span></a></h3>
     
   
@@ -755,75 +830,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2019/03/13/Access gitlab return 422 error/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2019/03/11/oracle查询乱码问题/"><span>[Oracle] oracle查询乱码、导入sql脚本乱码问题</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2019/03/11/oracle查询乱码问题/" rel="bookmark">
-        <time class="entry-date published" datetime="2019-03-11T02:59:00.000Z">
-          2019-03-11
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、查看当前数据库字符集"><a href="#1、查看当前数据库字符集" class="headerlink" title="1、查看当前数据库字符集"></a>1、查看当前数据库字符集</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">02:30:58 SYS@ chicago&gt; select * from nls_database_parameters;</span><br><span class="line"></span><br><span class="line">PARAMETER                      VALUE</span><br><span class="line">------------------------------ --------------------------------------------------------------------------------</span><br><span class="line">NLS_LANGUAGE                   AMERICAN</span><br><span class="line">NLS_TERRITORY                  AMERICA</span><br><span class="line">NLS_CURRENCY                   $</span><br><span class="line">NLS_ISO_CURRENCY               AMERICA</span><br><span class="line">NLS_NUMERIC_CHARACTERS         .,</span><br><span class="line">NLS_CHARACTERSET               ZHS16GBK</span><br><span class="line">NLS_CALENDAR                   GREGORIAN</span><br><span class="line">NLS_DATE_FORMAT                DD-MON-RR</span><br><span class="line">NLS_DATE_LANGUAGE              AMERICAN</span><br><span class="line">NLS_SORT                       BINARY</span><br><span class="line">NLS_TIME_FORMAT                HH.MI.SSXFF AM</span><br><span class="line">NLS_TIMESTAMP_FORMAT           DD-MON-RR HH.MI.SSXFF AM</span><br><span class="line">NLS_TIME_TZ_FORMAT             HH.MI.SSXFF AM TZR</span><br><span class="line">NLS_TIMESTAMP_TZ_FORMAT        DD-MON-RR HH.MI.SSXFF AM TZR</span><br><span class="line">NLS_DUAL_CURRENCY              $</span><br><span class="line">NLS_COMP                       BINARY</span><br><span class="line">NLS_LENGTH_SEMANTICS           BYTE</span><br><span class="line">NLS_NCHAR_CONV_EXCP            FALSE</span><br><span class="line">NLS_NCHAR_CHARACTERSET         AL16UTF16</span><br><span class="line">NLS_RDBMS_VERSION              11.2.0.4.0</span><br><span class="line"></span><br><span class="line">20 rows selected.</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例："><a href="#2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例：" class="headerlink" title="2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例："></a>2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例：</h4><p><img src="https://i.imgur.com/oMuYtyk.png" alt=""></p>
-<h4 id="3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS-LANG"><a href="#3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS-LANG" class="headerlink" title="3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS_LANG"></a>3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS_LANG</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[oracle@dax-mysql-slave ~]$ echo $NLS_LANG</span><br><span class="line">AMERICAN_AMERICA.ZHS16GBK</span><br></pre></td></tr></table></figure>
-<p>如果为空，或者与数据库字符集不匹配，修改为与数据库相同的字符集</p>
-<h4 id="4、-在linux系统LANG环境变量为en-US-UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码："><a href="#4、-在linux系统LANG环境变量为en-US-UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码：" class="headerlink" title="4、 在linux系统LANG环境变量为en_US.UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码："></a>4、 在linux系统LANG环境变量为en_US.UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码：</h4><p><img src="https://i.imgur.com/ebmBiTj.png" alt=""><br>这种情况下在sqlplus执行sql脚本，会报错，<br><img src="https://i.imgur.com/L5lQ2Wj.png" alt=""></p>
-<h4 id="5、要执行脚本，需要修改LANG变量，将该传输修改为gbk"><a href="#5、要执行脚本，需要修改LANG变量，将该传输修改为gbk" class="headerlink" title="5、要执行脚本，需要修改LANG变量，将该传输修改为gbk"></a>5、要执行脚本，需要修改LANG变量，将该传输修改为gbk</h4><p><img src="https://i.imgur.com/PivConY.png" alt=""></p>
-<h4 id="6、重新编辑文本文件"><a href="#6、重新编辑文本文件" class="headerlink" title="6、重新编辑文本文件"></a>6、重新编辑文本文件</h4><p><img src="https://i.imgur.com/TTzE7F2.png" alt=""></p>
-<h4 id="7、在sqlplus下再次执行脚本"><a href="#7、在sqlplus下再次执行脚本" class="headerlink" title="7、在sqlplus下再次执行脚本"></a>7、在sqlplus下再次执行脚本</h4><p><img src="https://i.imgur.com/kxJgkwD.png" alt=""><br><img src="https://i.imgur.com/ahLMjdB.png" alt=""><br>脚本执行成功。</p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/oracle/">oracle</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2019/03/11/oracle查询乱码问题/"><span>点击阅读</span></a></h3>
     
   
 </article>

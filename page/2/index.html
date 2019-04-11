@@ -112,6 +112,75 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/03/11/oracle查询乱码问题/"><span>[Oracle] oracle查询乱码、导入sql脚本乱码问题</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/03/11/oracle查询乱码问题/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-03-11T02:59:00.000Z">
+          2019-03-11
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、查看当前数据库字符集"><a href="#1、查看当前数据库字符集" class="headerlink" title="1、查看当前数据库字符集"></a>1、查看当前数据库字符集</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">02:30:58 SYS@ chicago&gt; select * from nls_database_parameters;</span><br><span class="line"></span><br><span class="line">PARAMETER                      VALUE</span><br><span class="line">------------------------------ --------------------------------------------------------------------------------</span><br><span class="line">NLS_LANGUAGE                   AMERICAN</span><br><span class="line">NLS_TERRITORY                  AMERICA</span><br><span class="line">NLS_CURRENCY                   $</span><br><span class="line">NLS_ISO_CURRENCY               AMERICA</span><br><span class="line">NLS_NUMERIC_CHARACTERS         .,</span><br><span class="line">NLS_CHARACTERSET               ZHS16GBK</span><br><span class="line">NLS_CALENDAR                   GREGORIAN</span><br><span class="line">NLS_DATE_FORMAT                DD-MON-RR</span><br><span class="line">NLS_DATE_LANGUAGE              AMERICAN</span><br><span class="line">NLS_SORT                       BINARY</span><br><span class="line">NLS_TIME_FORMAT                HH.MI.SSXFF AM</span><br><span class="line">NLS_TIMESTAMP_FORMAT           DD-MON-RR HH.MI.SSXFF AM</span><br><span class="line">NLS_TIME_TZ_FORMAT             HH.MI.SSXFF AM TZR</span><br><span class="line">NLS_TIMESTAMP_TZ_FORMAT        DD-MON-RR HH.MI.SSXFF AM TZR</span><br><span class="line">NLS_DUAL_CURRENCY              $</span><br><span class="line">NLS_COMP                       BINARY</span><br><span class="line">NLS_LENGTH_SEMANTICS           BYTE</span><br><span class="line">NLS_NCHAR_CONV_EXCP            FALSE</span><br><span class="line">NLS_NCHAR_CHARACTERSET         AL16UTF16</span><br><span class="line">NLS_RDBMS_VERSION              11.2.0.4.0</span><br><span class="line"></span><br><span class="line">20 rows selected.</span><br></pre></td></tr></table></figure>
+<h4 id="2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例："><a href="#2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例：" class="headerlink" title="2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例："></a>2、查看当前连接终端字符编码是否为gbk，如果不是gbk需要修改，以securecrt为例：</h4><p><img src="https://i.imgur.com/oMuYtyk.png" alt=""></p>
+<h4 id="3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS-LANG"><a href="#3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS-LANG" class="headerlink" title="3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS_LANG"></a>3、如果都是gbk，查询出来的仍为乱码，再次查看环境变量NLS_LANG</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[oracle@dax-mysql-slave ~]$ echo $NLS_LANG</span><br><span class="line">AMERICAN_AMERICA.ZHS16GBK</span><br></pre></td></tr></table></figure>
+<p>如果为空，或者与数据库字符集不匹配，修改为与数据库相同的字符集</p>
+<h4 id="4、-在linux系统LANG环境变量为en-US-UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码："><a href="#4、-在linux系统LANG环境变量为en-US-UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码：" class="headerlink" title="4、 在linux系统LANG环境变量为en_US.UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码："></a>4、 在linux系统LANG环境变量为en_US.UTF-8，其他以上参数都为gbk的情况下，查看带有中文的文本文件会是乱码：</h4><p><img src="https://i.imgur.com/ebmBiTj.png" alt=""><br>这种情况下在sqlplus执行sql脚本，会报错，<br><img src="https://i.imgur.com/L5lQ2Wj.png" alt=""></p>
+<h4 id="5、要执行脚本，需要修改LANG变量，将该传输修改为gbk"><a href="#5、要执行脚本，需要修改LANG变量，将该传输修改为gbk" class="headerlink" title="5、要执行脚本，需要修改LANG变量，将该传输修改为gbk"></a>5、要执行脚本，需要修改LANG变量，将该传输修改为gbk</h4><p><img src="https://i.imgur.com/PivConY.png" alt=""></p>
+<h4 id="6、重新编辑文本文件"><a href="#6、重新编辑文本文件" class="headerlink" title="6、重新编辑文本文件"></a>6、重新编辑文本文件</h4><p><img src="https://i.imgur.com/TTzE7F2.png" alt=""></p>
+<h4 id="7、在sqlplus下再次执行脚本"><a href="#7、在sqlplus下再次执行脚本" class="headerlink" title="7、在sqlplus下再次执行脚本"></a>7、在sqlplus下再次执行脚本</h4><p><img src="https://i.imgur.com/kxJgkwD.png" alt=""><br><img src="https://i.imgur.com/ahLMjdB.png" alt=""><br>脚本执行成功。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/03/11/oracle查询乱码问题/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/02/27/记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程/"><span>[Linux] 记一次服务器被植入watchbog（并不是linux自带的watchdog进程）挖坑病毒的处理过程</span></a></h3>
     
   
@@ -762,72 +831,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2019/01/23/oracle设置用户名密码复杂性校验/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2019/01/23/修改oracle用户密码永不过期/"><span>[Oracle] 修改oracle用户密码永不过期</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2019/01/23/修改oracle用户密码永不过期/" rel="bookmark">
-        <time class="entry-date published" datetime="2019-01-23T08:01:00.000Z">
-          2019-01-23
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、查看用户有无过期"><a href="#1、查看用户有无过期" class="headerlink" title="1、查看用户有无过期"></a>1、查看用户有无过期</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select username,account_status,expiry_date from dba_users;</span><br></pre></td></tr></table></figure>
-<h4 id="2、查看用户使用概要文件"><a href="#2、查看用户使用概要文件" class="headerlink" title="2、查看用户使用概要文件"></a>2、查看用户使用概要文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT username,PROFILE FROM dba_users;</span><br></pre></td></tr></table></figure>
-<h4 id="3、查看概要文件密码有效期"><a href="#3、查看概要文件密码有效期" class="headerlink" title="3、查看概要文件密码有效期"></a>3、查看概要文件密码有效期</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br></pre></td></tr></table></figure>
-<h4 id="4、修改概要文件有效期"><a href="#4、修改概要文件有效期" class="headerlink" title="4、修改概要文件有效期"></a>4、修改概要文件有效期</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;</span><br></pre></td></tr></table></figure>
-<h4 id="5、再次查看用户过期时间，expiry-date字段已经变为空"><a href="#5、再次查看用户过期时间，expiry-date字段已经变为空" class="headerlink" title="5、再次查看用户过期时间，expiry_date字段已经变为空"></a>5、再次查看用户过期时间，expiry_date字段已经变为空</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select username,account_status,expiry_date from dba_users;</span><br></pre></td></tr></table></figure>
-<h4 id="6、rac环境在任意一个节点执行即可。"><a href="#6、rac环境在任意一个节点执行即可。" class="headerlink" title="6、rac环境在任意一个节点执行即可。"></a>6、rac环境在任意一个节点执行即可。</h4>
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/oracle/">oracle</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2019/01/23/修改oracle用户密码永不过期/"><span>点击阅读</span></a></h3>
     
   
 </article>
