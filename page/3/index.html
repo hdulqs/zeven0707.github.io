@@ -112,6 +112,77 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2019/01/23/oracle设置用户名密码复杂性校验/"><span>[Oracle] oracle设置用户名密码复杂性校验</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/01/23/oracle设置用户名密码复杂性校验/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-01-23T08:02:00.000Z">
+          2019-01-23
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、在-ORACLE-HOME-rdbms-admin-目录下存在一个文件utlpwdmg-sql-里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本："><a href="#1、在-ORACLE-HOME-rdbms-admin-目录下存在一个文件utlpwdmg-sql-里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本：" class="headerlink" title="1、在$ORACLE_HOME/rdbms/admin/目录下存在一个文件utlpwdmg.sql,里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本："></a>1、在$ORACLE_HOME/rdbms/admin/目录下存在一个文件utlpwdmg.sql,里面有默认的配置可以直接执行，也可根据自己的需求修改配置文件再执行该脚本：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sql&gt;@?/rdbms/admin/utlpwdmg.sql</span><br></pre></td></tr></table></figure>
+<h4 id="2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误："><a href="#2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误：" class="headerlink" title="2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误："></a>2、执行完成之后，再次修改密码使用简单的密码，将提示28003错误：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">14:16:23 SYS@ boston&gt; alter user test identified by oracle;</span><br><span class="line">alter user test identified by oracle</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28003: password verification for the specified password failed</span><br><span class="line">ORA-20001: Password length less than 8</span><br></pre></td></tr></table></figure>
+<h4 id="3、查看修改后的概要文件下的参数"><a href="#3、查看修改后的概要文件下的参数" class="headerlink" title="3、查看修改后的概要文件下的参数"></a>3、查看修改后的概要文件下的参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line"></span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br></pre></td></tr></table></figure>
+<h4 id="4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD-REUSE-TIME和PASSWORD-REUSE-MAX参数没有限制："><a href="#4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD-REUSE-TIME和PASSWORD-REUSE-MAX参数没有限制：" class="headerlink" title="4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD_REUSE_TIME和PASSWORD_REUSE_MAX参数没有限制："></a>4、现在重置密码的时候，密码还是可以复用的，因为PASSWORD_REUSE_TIME和PASSWORD_REUSE_MAX参数没有限制：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">15:04:58 SYS@ boston&gt; alter user test identified by Testdb123</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.11</span><br><span class="line">15:06:04 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">User altered.</span><br></pre></td></tr></table></figure>
+<h4 id="5、下面修改PASSWORD-REUSE-TIME-用户名可以在多长时间之后可以复用-或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD-REUSE-MAX）"><a href="#5、下面修改PASSWORD-REUSE-TIME-用户名可以在多长时间之后可以复用-或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD-REUSE-MAX）" class="headerlink" title="5、下面修改PASSWORD_REUSE_TIME(用户名可以在多长时间之后可以复用)或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD_REUSE_MAX）"></a>5、下面修改PASSWORD_REUSE_TIME(用户名可以在多长时间之后可以复用)或者密码修改过多少次之后可以复用以前的旧密码（PASSWORD_REUSE_MAX）</h4><p>，官方文档提示，只修改两个参数中的任意一个，另一个参数为unlimited，结果是用户永远不能复用密码：</p>
+<h5 id="5-1、只单独修改PASSWORD-REUSE-TIME"><a href="#5-1、只单独修改PASSWORD-REUSE-TIME" class="headerlink" title="5.1、只单独修改PASSWORD_REUSE_TIME"></a>5.1、只单独修改PASSWORD_REUSE_TIME</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">15:13:17 SYS@ boston&gt; ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME 1;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.08</span><br><span class="line">15:13:18 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line"></span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">再次修改用户已经提示</span><br><span class="line">15:13:22 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">alter user test identified by Testdb123</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28007: the password cannot be reused</span><br><span class="line">Elapsed: 00:00:00.02</span><br></pre></td></tr></table></figure>
+<h5 id="5-2、只单独修改PASSWORD-REUSE-MAX"><a href="#5-2、只单独修改PASSWORD-REUSE-MAX" class="headerlink" title="5.2、只单独修改PASSWORD_REUSE_MAX"></a>5.2、只单独修改PASSWORD_REUSE_MAX</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME UNLIMITED;</span><br><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_MAX 5;</span><br><span class="line">ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME UNLIMITED;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.05</span><br><span class="line">15:19:26 SYS@ boston&gt; ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_MAX 5;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">15:19:26 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD UNLIMITED</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD 5</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">6 rows selected.</span><br><span class="line">Elapsed: 00:00:00.01</span><br><span class="line">15:19:29 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">alter user test identified by Testdb123</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28007: the password cannot be reused</span><br></pre></td></tr></table></figure>
+<h5 id="5-3、下面同时修改这两个参数："><a href="#5-3、下面同时修改这两个参数：" class="headerlink" title="5.3、下面同时修改这两个参数："></a>5.3、下面同时修改这两个参数：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">15:21:45 SYS@ boston&gt; ALTER PROFILE DEFAULT LIMIT PASSWORD_REUSE_TIME 1;</span><br><span class="line">Profile altered.</span><br><span class="line">Elapsed: 00:00:00.05</span><br><span class="line">15:21:46 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line"></span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD 5</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">设置一天之后，并且修改5次不同密码之后才能复用之前的密码，下面为了满足要求，修改系统时间：</span><br><span class="line">15:23:00 SYS@ boston&gt; select sysdate from dual;</span><br><span class="line">SYSDATE</span><br><span class="line">-------------------</span><br><span class="line">2019:01:23 15:23:04</span><br><span class="line">[oracle@dax-mysql-slave admin]$ date -s 20190125</span><br><span class="line">date: 无法设置日期: 不允许的操作</span><br><span class="line">2019年 01月 25日 星期五 00:00:00 CST</span><br><span class="line">[oracle@dax-mysql-slave admin]$ exit</span><br><span class="line">登出</span><br><span class="line">[root@dax-mysql-slave ~]# date -s 20190125</span><br><span class="line">2019年 01月 25日 星期五 00:00:00 CST</span><br><span class="line">[root@dax-mysql-slave ~]# su - oracle</span><br><span class="line">上一次登录：三 1月 23 13:44:53 CST 2019pts/2 上</span><br><span class="line">[oracle@dax-mysql-slave ~]$ date</span><br><span class="line">2019年 01月 25日 星期五 00:00:06 CST</span><br><span class="line">[oracle@dax-mysql-slave ~]$ sql</span><br><span class="line">00:00:26 SYS@ boston&gt; select sysdate from dual;</span><br><span class="line">SYSDATE</span><br><span class="line">-------------------</span><br><span class="line">2019:01:25 00:00:34</span><br><span class="line">Elapsed: 00:00:00.00</span><br><span class="line">00:00:34 SYS@ boston&gt; SELECT * FROM dba_profiles s WHERE s.profile=&apos;DEFAULT&apos; AND resource_name like &apos;PASSWORD%&apos;;</span><br><span class="line">PROFILE 		       RESOURCE_NAME			RESOURCE LIMIT</span><br><span class="line">------------------------------ -------------------------------- -------- ----------------------------------------</span><br><span class="line">DEFAULT 		       PASSWORD_LIFE_TIME		PASSWORD 180</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_REUSE_MAX		PASSWORD 5</span><br><span class="line">DEFAULT 		       PASSWORD_VERIFY_FUNCTION 	PASSWORD VERIFY_FUNCTION_11G</span><br><span class="line">DEFAULT 		       PASSWORD_LOCK_TIME		PASSWORD 1</span><br><span class="line">DEFAULT 		       PASSWORD_GRACE_TIME		PASSWORD 7</span><br><span class="line">6 rows selected.</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">修改5次不同的密码：</span><br><span class="line">00:04:17 SYS@ boston&gt; alter user test identified by Testdb128;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.08</span><br><span class="line">00:04:29 SYS@ boston&gt; alter user test identified by Testdb129;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.03</span><br><span class="line">00:04:33 SYS@ boston&gt; alter user test identified by Testdb130;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.04</span><br><span class="line">00:04:37 SYS@ boston&gt; alter user test identified by Testdb131;</span><br><span class="line">User altered.</span><br><span class="line">Elapsed: 00:00:00.04</span><br><span class="line">00:04:39 SYS@ boston&gt; alter user test identified by Testdb132;</span><br><span class="line">User altered.</span><br><span class="line">修改5次之后再次修改为以前的密码，修改正常：</span><br><span class="line">Elapsed: 00:00:00.04</span><br><span class="line">00:04:40 SYS@ boston&gt; alter user test identified by Testdb123;</span><br><span class="line">User altered.</span><br><span class="line">再次修改为上面修改的新的密码，提示不能复用：</span><br><span class="line">Elapsed: 00:00:00.05</span><br><span class="line">00:04:46 SYS@ boston&gt; alter user test identified by Testdb130;</span><br><span class="line">alter user test identified by Testdb130</span><br><span class="line">*</span><br><span class="line">ERROR at line 1:</span><br><span class="line">ORA-28007: the password cannot be reused</span><br><span class="line">Elapsed: 00:00:00.02</span><br><span class="line">00:04:56 SYS@ boston&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令："><a href="#6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令：" class="headerlink" title="6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令："></a>6、还原上面的操作，在oracle下面有一个还原脚本，执行下面命令：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sql&gt;@?/rdbms/admin/undopwd.sql</span><br></pre></td></tr></table></figure>
+<p>上面的脚本把PASSWORD_LIFE_TIME、PASSWORD_REUSE_TIME等参数改为了unlimitd，但是PASSWORD_VERIFY_FUNCTION的限制函数VERIFY_FUNCTION_11G仍然存在，如果不把这个清空，密码的复杂度校验仍然存在，清空密码复杂度校验执行下面操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sql&gt;alter profile default limit PASSWORD_VERIFY_FUNCTION null;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2019/01/23/oracle设置用户名密码复杂性校验/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2019/01/23/修改oracle用户密码永不过期/"><span>[Oracle] 修改oracle用户密码永不过期</span></a></h3>
     
   
@@ -740,74 +811,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/12/17/zabbix监控域名证书过期时间/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/12/17/oracle安装rlwrap/"><span>[Oracle] 为oracle-sqlplus安装rlwrap</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/12/17/oracle安装rlwrap/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-12-17T07:49:00.000Z">
-          2018-12-17
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h4 id="1、安装rlwrap-0-42-1-1-x86-64-rpm方式"><a href="#1、安装rlwrap-0-42-1-1-x86-64-rpm方式" class="headerlink" title="1、安装rlwrap-0.42-1.1.x86_64.rpm方式"></a>1、安装rlwrap-0.42-1.1.x86_64.rpm方式</h4><p>下载rlwrap-0.42-1.1.x86_64.rpm<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/home%3A/Ledest%3A/misc/CentOS_7/src/rlwrap-0.42-1.1.x86_64.rpm</span><br></pre></td></tr></table></figure></p>
-<h4 id="2、安装rlwarp"><a href="#2、安装rlwarp" class="headerlink" title="2、安装rlwarp"></a>2、安装rlwarp</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum localinstall rlwrap-0.42-1.1.x86_64.rpm</span><br></pre></td></tr></table></figure>
-<h4 id="3、修改环境变量文件"><a href="#3、修改环境变量文件" class="headerlink" title="3、修改环境变量文件"></a>3、修改环境变量文件</h4><p>grep ‘rlwrap’ ~/.bash_profile<br>alias sql=’rlwrap sqlplus “/ as sysdba”‘<br>alias rman=’rlwrap rman’</p>
-<h4 id="4、如果找不到x86-64类型的文件，下载-rlwrap-0-42-1-1-src-rpm"><a href="#4、如果找不到x86-64类型的文件，下载-rlwrap-0-42-1-1-src-rpm" class="headerlink" title="4、如果找不到x86_64类型的文件，下载 rlwrap-0.42-1.1.src.rpm"></a>4、如果找不到x86_64类型的文件，下载 rlwrap-0.42-1.1.src.rpm</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/home%3A/Ledest%3A/misc/CentOS_7/src/rlwrap-0.42-1.1.src.rpm</span><br></pre></td></tr></table></figure>
-<h4 id="5、安装依赖"><a href="#5、安装依赖" class="headerlink" title="5、安装依赖"></a>5、安装依赖</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install rpm-build -y</span><br><span class="line">yum install readline* libtermcap-devel* -y</span><br></pre></td></tr></table></figure>
-<h4 id="6、安装rlwarp"><a href="#6、安装rlwarp" class="headerlink" title="6、安装rlwarp"></a>6、安装rlwarp</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; rpm -i rlwrap-0.42-1.1.src.rpm </span><br><span class="line">warning: rlwrap-0.42-1.1.src.rpm: Header V3 RSA/SHA1 Signature, key ID 93680782: NOKEY</span><br><span class="line"></span><br><span class="line">shell &gt; cd rpmbuild/SOURCES</span><br><span class="line">shell &gt; tar -zxvf rlwrap-0.42.tar.gz </span><br><span class="line">shell &gt; cd rlwrap-0.42</span><br><span class="line">shell &gt; ls</span><br><span class="line">aclocal.m4  BUGS       completions  configure     COPYING  filters  Makefile.am  NEWS  README  test  tools</span><br><span class="line">AUTHORS     ChangeLog  config.h.in  configure.ac  doc      INSTALL  Makefile.in  PLEA  src     TODO</span><br><span class="line"></span><br><span class="line">shell &gt; ./configure</span><br><span class="line">shell &gt; make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line">#### 7、之后修改环境变量</span><br></pre></td></tr></table></figure>
-<p>grep ‘rlwrap’ ~/.bash_profile<br>alias sql=’rlwrap sqlplus “/ as sysdba”‘<br>alias rman=’rlwrap rman’<br><code>`</code></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/oracle/">oracle</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/12/17/oracle安装rlwrap/"><span>点击阅读</span></a></h3>
     
   
 </article>

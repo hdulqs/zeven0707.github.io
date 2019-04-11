@@ -112,6 +112,73 @@ var _hmt = _hmt || [];
 
   
     
+    <h3 class="article-title"><a href="/2018/10/22/oracle-audit_file_dest和audit_trail参数详解/"><span>[Oracle] oracle-audit_file_dest和audit_trail参数详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/10/22/oracle-audit_file_dest和audit_trail参数详解/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-10-22T08:22:00.000Z">
+          2018-10-22
+        </time>
+      </a>
+    </span>
+    <br />
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <h4 id="1、AUDIT-FILE-DEST参数："><a href="#1、AUDIT-FILE-DEST参数：" class="headerlink" title="1、AUDIT_FILE_DEST参数："></a>1、AUDIT_FILE_DEST参数：</h4><p>当AUDIT_TRAIL初始化参数被设置为os, xml, or xml,extended，AUDIT_FILE_DEST指定操作系统目录，用于记录跟踪审计。<br>AUDIT_FILE_DEST的第一个默认值为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ORACLE_BASE/admin/ORACLE_SID/adump</span><br></pre></td></tr></table></figure></p>
+<p>如果第一个值指定的目录不存在或者该值不可用，会启用第二个默认值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ORACLE_HOME/rdbms/audit</span><br></pre></td></tr></table></figure></p>
+<p>这两个默认值只适用于unix系统，其他平台系统默认值不同。<br>在多租户cdb模式下,默认值会被追加pdb的guid，用于存储属于pdb的审计记录。<br>例如，pdb的guid为03E1F908EE04252CE053B280E80AAAA3，第一个默认目录是:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ORACLE_BASE/admin/ORACLE_SID/adump/03E1F908EE04252CE053B280E80AAAA3</span><br></pre></td></tr></table></figure></p>
+<p>关于pdb的guid可以通过V$CONTAINERS视图参看。</p>
+<p>如果AUDIT_TRAIL参数设置为xml, or xml,extended，审计记录会以xml的格式存储。如果AUDIT_SYS_OPERATIONS参数启用，用于审计sys用户的记录，审计信息也会强制写入这个位置。<br>在多租户容器数据库，audit_file_dest的值设置范围是cdb。虽然审计记录是每个pdb提供的，但是每个pdb不能修改该初始化参数。</p>
+<h4 id="2、audit-trail参数"><a href="#2、audit-trail参数" class="headerlink" title="2、audit_trail参数"></a>2、audit_trail参数</h4><p>value值详解：<br>none：禁用数据库审计<br>os：开启数据库审计，并将所有审计记录定向到操作系统的审计跟踪。<br>db：开启数据库审计，并将所有审计记录定向到数据库审计跟踪（sys.aud$)<br>db, extended:开启数据库审计，并将所有审计记录定向到数据库审计跟踪（sys.aud$),另外，sys.aud$表中类型为clob的两列（sqlbind和sqltext会被写入数据）<br>xml：开启数据库审计，并将所有审计记录以xml格式写入操作系统文件<br>xml,extended:开启数据库审计，并打印所有的审计记录列，包括SqlText和SqlBind字段</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/oracle/">oracle</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    <h3 class="article-read"><a href="/2018/10/22/oracle-audit_file_dest和audit_trail参数详解/"><span>点击阅读</span></a></h3>
+    
+  
+</article>
+
+
+
+
+
+  <article class="article-container ">
+
+  
+    
     <h3 class="article-title"><a href="/2018/10/18/linux区分当前服务器是物理机还是虚拟机/"><span>[Linux] linux区分当前服务器是物理机还是虚拟机方法</span></a></h3>
     
   
@@ -763,82 +830,6 @@ var _hmt = _hmt || [];
   
     
     <h3 class="article-read"><a href="/2018/09/13/Multi-threaded slave statistics for channel 'group_replication_applier'/"><span>点击阅读</span></a></h3>
-    
-  
-</article>
-
-
-
-
-
-  <article class="article-container ">
-
-  
-    
-    <h3 class="article-title"><a href="/2018/09/12/mysql 切割慢日志另附定期切割日志脚本/"><span>[Mysql] mysql切割慢日志</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2018/09/12/mysql 切割慢日志另附定期切割日志脚本/" rel="bookmark">
-        <time class="entry-date published" datetime="2018-09-12T11:04:10.000Z">
-          2018-09-12
-        </time>
-      </a>
-    </span>
-    <br />
-    
-  </div>
-
-
-  
-
-  <div class="article-content">
-    <div class="entry">
-      
-          <h3 id="0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割："><a href="#0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割：" class="headerlink" title="0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割："></a>0、去查看一个测试库的慢日志文件发现有11g的大小，根本没有办法使用mysqldumpslow去查询，因此想要先对日志进行切割：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">split几个主要参数：</span><br><span class="line">-b 	分割后的文档大小，单位是byte</span><br><span class="line">-C 	分割后的文档，单行最大byte数</span><br><span class="line">-d 	使用数字作为后缀，同时使用-a length指定后缀长度</span><br><span class="line">-l 	分割后文档的行数</span><br></pre></td></tr></table></figure>
-<h3 id="1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test-log，不指定后缀会使用默认后缀名aa-ab-ac…-等"><a href="#1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test-log，不指定后缀会使用默认后缀名aa-ab-ac…-等" class="headerlink" title="1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test.log，不指定后缀会使用默认后缀名aa,ab,ac….等"></a>1、使用split，按大小切割日志文件，每个文件1G大小，切割后的文件名前缀为test.log，不指定后缀会使用默认后缀名aa,ab,ac….等</h3><p>split slow.log -b 1G test.log<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ls -ltrh test.log*</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:08 test.logaa</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:09 test.logab</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:10 test.logac</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:11 test.logad</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:12 test.logae</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:13 test.logaf</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:14 test.logag</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:15 test.logah</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:16 test.logai</span><br><span class="line">-rw-r--r-- 1 root  root  1.0G Sep 12 03:17 test.logaj</span><br><span class="line">-rw-r--r-- 1 root  root  270M Sep 12 03:17 test.logak</span><br></pre></td></tr></table></figure></p>
-<h3 id="2、如果需要指定后缀可使用-d-a-参数（n）代表指定附加后缀的个数，比如切割test-logaa日志文件："><a href="#2、如果需要指定后缀可使用-d-a-参数（n）代表指定附加后缀的个数，比如切割test-logaa日志文件：" class="headerlink" title="2、如果需要指定后缀可使用-d -a  参数（n）代表指定附加后缀的个数，比如切割test.logaa日志文件："></a>2、如果需要指定后缀可使用-d -a <n> 参数（n）代表指定附加后缀的个数，比如切割test.logaa日志文件：</n></h3><p>split test.logaa -b 100M -d -a 2 logaa<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> ll logaa*</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa00</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa01</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa02</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa03</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa04</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa05</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa06</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa07</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:03 logaa08</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:04 logaa09</span><br><span class="line">-rw-r--r-- 1 root root  24M Sep 12 09:04 logaa10</span><br></pre></td></tr></table></figure></p>
-<p>split test.logab -b 100M -d -a 4 logab<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ls -ltrh logab*</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0000</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0001</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0002</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0003</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0004</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0005</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0006</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:05 logab0007</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:06 logab0008</span><br><span class="line">-rw-r--r-- 1 root root 100M Sep 12 09:06 logab0009</span><br><span class="line">-rw-r--r-- 1 root root  24M Sep 12 09:06 logab0010</span><br></pre></td></tr></table></figure></p>
-<h3 id="4、按行切割日志文件，查看准备切割的文件有多少行："><a href="#4、按行切割日志文件，查看准备切割的文件有多少行：" class="headerlink" title="4、按行切割日志文件，查看准备切割的文件有多少行："></a>4、按行切割日志文件，查看准备切割的文件有多少行：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat logab0001 |wc -l</span><br><span class="line">505</span><br></pre></td></tr></table></figure>
-<p>按每个文件60行切割<br>split logab0001 -l 60 logab0001<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ll logab0001*</span><br><span class="line">-rw-r--r-- 1 root root 104857600 Sep 12 09:05 logab0001</span><br><span class="line">-rw-r--r-- 1 root root  11922880 Sep 12 09:10 logab0001aa</span><br><span class="line">-rw-r--r-- 1 root root  12506422 Sep 12 09:10 logab0001ab</span><br><span class="line">-rw-r--r-- 1 root root  12506026 Sep 12 09:10 logab0001ac</span><br><span class="line">-rw-r--r-- 1 root root  12506635 Sep 12 09:10 logab0001ad</span><br><span class="line">-rw-r--r-- 1 root root  12506065 Sep 12 09:10 logab0001ae</span><br><span class="line">-rw-r--r-- 1 root root  12506313 Sep 12 09:10 logab0001af</span><br><span class="line">-rw-r--r-- 1 root root  12506206 Sep 12 09:10 logab0001ag</span><br><span class="line">-rw-r--r-- 1 root root  12506325 Sep 12 09:10 logab0001ah</span><br><span class="line">-rw-r--r-- 1 root root   5390728 Sep 12 09:10 logab0001ai</span><br></pre></td></tr></table></figure></p>
-<p>查看每个文件的行数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">for i in `ls logab0001*`;do echo &quot;$i文件行数&quot;`cat $i|wc -l` ;done </span><br><span class="line">logab0001文件行数505</span><br><span class="line">logab0001aa文件行数60</span><br><span class="line">logab0001ab文件行数60</span><br><span class="line">logab0001ac文件行数60</span><br><span class="line">logab0001ad文件行数60</span><br><span class="line">logab0001ae文件行数60</span><br><span class="line">logab0001af文件行数60</span><br><span class="line">logab0001ag文件行数60</span><br><span class="line">logab0001ah文件行数60</span><br><span class="line">logab0001ai文件行数25</span><br></pre></td></tr></table></figure></p>
-<h3 id="5、按每行字节数切割"><a href="#5、按每行字节数切割" class="headerlink" title="5、按每行字节数切割"></a>5、按每行字节数切割</h3><p>指定每行字节数最多不超过2000000个字节<br>split logab0001aa -C 2000000 testlog<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ls -lthr testlog*</span><br><span class="line">-rw-r--r-- 1 root root  1.5M Sep 12 10:19 testlogaa</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogab</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogac</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogad</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogae</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogaf</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogag</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogah</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogai</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogaj</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:19 testlogak</span><br></pre></td></tr></table></figure></p>
-<p>查看某一行的字节数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-slave log]# sed &apos;1p&apos; testlogaa|wc -c</span><br><span class="line">1960374</span><br></pre></td></tr></table></figure></p>
-<p>字节数小于2000000<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf testlog*</span><br></pre></td></tr></table></figure></p>
-<p>删除生成的日志文件，生成每行字节最大不超过1500000的日志文件：<br>split logab0001aa -C 1500000 testlog<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ls -lthr testlog*</span><br><span class="line">-rw-r--r-- 1 root root  449K Sep 12 10:22 testlogaa</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogab</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogac</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogad</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogae</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogaf</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogag</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogah</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogai</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogaj</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogak</span><br><span class="line">-rw-r--r-- 1 root root 1018K Sep 12 10:22 testlogal</span><br></pre></td></tr></table></figure></p>
-<p>查看某一行的字节数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@dax-mysql-slave log]# sed &apos;1p&apos; testlogaa|wc -c</span><br><span class="line">918219</span><br></pre></td></tr></table></figure></p>
-<p>字节数小于1500000</p>
-<h3 id="6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割："><a href="#6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割：" class="headerlink" title="6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割："></a>6、上面产生11g的慢日志文件主要是由于日志没有定期切割造成的，因此写了个脚本，定期对慢日志进行切割：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#mysql慢日志所在路径</span><br><span class="line">slowlogpath=/data/mysql/log</span><br><span class="line">#mysql慢日志文件名</span><br><span class="line">slowlogname=slow.log</span><br><span class="line">#当前系统时间</span><br><span class="line">stamp=`date +&apos;%Y%m%d&apos;`</span><br><span class="line">#与当前系统时间对比，七天前的时间</span><br><span class="line">oldstamp=`date +&quot;%Y%m%d&quot; -d &quot;-7 day&quot;`</span><br><span class="line">#mysql用户名</span><br><span class="line">username=root</span><br><span class="line">#mysql用户名密码</span><br><span class="line">password=12345678</span><br><span class="line">#mysql安装路径</span><br><span class="line">dbpath=/data/mysql/bin</span><br><span class="line">#移动mysql慢日志</span><br><span class="line">mv $&#123;slowlogpath&#125;/$&#123;slowlogname&#125;  $&#123;slowlogpath&#125;/$&#123;stamp&#125;_$&#123;slowlogname&#125;</span><br><span class="line">#重新生成slow日志文件：</span><br><span class="line">$&#123;dbpath&#125;/mysqladmin -u $&#123;username&#125; -p$&#123;password&#125; flush-logs slow</span><br><span class="line">#删除7天前的日志文件</span><br><span class="line">if [ -e $&#123;slowlogpath&#125;/$&#123;oldstamp&#125;_$&#123;slowlogname&#125; ];then</span><br><span class="line">   sudo rm -rf $&#123;slowlogpath&#125;/$&#123;oldstamp&#125;_$&#123;slowlogname&#125;</span><br><span class="line">else</span><br><span class="line">   :</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-<p>将脚本添加到定时任务：<br>crontab -l<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 * * * sh /data/script/split_mysqlslowlog.sh</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-  </div>
-
-  <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a><a href="/tags/linux/">linux</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div>
-  
-    
-    <h3 class="article-read"><a href="/2018/09/12/mysql 切割慢日志另附定期切割日志脚本/"><span>点击阅读</span></a></h3>
     
   
 </article>
